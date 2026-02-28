@@ -5,7 +5,8 @@ import { LastRaceCard } from '@/components/LastRaceCard';
 import { SprintCard } from '@/components/SprintCard';
 import { StandingsCard } from '@/components/StandingsCard';
 import { NewsCard } from '@/components/NewsCard';
-import { getNextMotoGPRaces, getLastMotoGPRace, getMotoGPStandings, getLastMotoGPSprint, getMotoGPSprintResults } from '@/data/api';
+import { CalendarCard } from '@/components/CalendarCard';
+import { getNextMotoGPRaces, getLastMotoGPRace, getMotoGPStandings, getLastMotoGPSprint, getMotoGPSprintResults, getMotoGPCalendar } from '@/data/api';
 import { NewsItem } from '@/types';
 
 export const revalidate = 60;
@@ -50,11 +51,12 @@ const mockNews: NewsItem[] = [
 ];
 
 export default async function MotoGPPage() {
-  const [nextRaces, lastRace, standings, lastSprint] = await Promise.all([
+  const [nextRaces, lastRace, standings, lastSprint, calendar] = await Promise.all([
     getNextMotoGPRaces(),
     getLastMotoGPRace(),
     getMotoGPStandings(),
     getLastMotoGPSprint(),
+    getMotoGPCalendar(),
   ]);
 
   const nextRace = nextRaces[0] || null;
@@ -135,6 +137,21 @@ export default async function MotoGPPage() {
               </div>
               <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-6">
                 <p className="text-zinc-500 text-sm">No completed races yet. First race of 2026 season starts March 1st.</p>
+              </div>
+            </div>
+          )}
+
+          {/* Calendar Section */}
+          {calendar.length > 0 && (
+            <div className="mb-14">
+              <div className="flex items-center mb-6">
+                <h2 className="text-xs text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                  <span className="w-1 h-3 rounded-full bg-emerald-500 inline-block"></span>
+                  2026 Calendar
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <CalendarCard races={calendar} type="motogp" />
               </div>
             </div>
           )}

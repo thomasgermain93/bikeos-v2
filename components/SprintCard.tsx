@@ -66,7 +66,7 @@ export function SprintCard({ race, sprintResults }: SprintCardProps) {
             </span>
           </div>
           <Link
-            href={`/${race.type}/sprint/${race.id}/`}
+            href={`/${race.type}/race/${race.id}/`}
             className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center -mr-2 px-2 py-3 -my-3 flex-shrink-0"
           >
             Full results →

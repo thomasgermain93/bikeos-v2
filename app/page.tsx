@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Header } from '@/components/Header';
 import { HeroSection } from '@/components/HeroSection';
 import { NextRaceCard } from '@/components/NextRaceCard';
@@ -208,7 +209,7 @@ export default async function HomePage() {
                 { href: '/mxgp/', label: 'MXGP', color: '#8B4513', desc: 'Motocross' },
                 { href: '/mx2/', label: 'MX2', color: '#228B22', desc: 'MX2 Class' },
               ].map((series) => (
-                <a
+                <Link
                   key={series.href}
                   href={series.href}
                   className="flex flex-col items-center p-4 border border-[var(--border-card)] rounded-xl bg-zinc-900 hover:bg-zinc-800/40 transition-colors"
@@ -219,7 +220,7 @@ export default async function HomePage() {
                   />
                   <span className="text-sm font-semibold text-white">{series.label}</span>
                   <span className="text-xs text-zinc-500">{series.desc}</span>
-                </a>
+                </Link>
               ))}
             </div>
           </div>

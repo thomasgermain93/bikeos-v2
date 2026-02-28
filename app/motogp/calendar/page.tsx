@@ -70,7 +70,7 @@ export default async function MotoGPCalendarPage() {
                     return (
                       <Link
                         key={race.id}
-                        href={`/motogp/race/${race.id}`}
+                        href={`/motogp/race/${race.id}/`}
                         className="flex flex-col md:flex-row md:items-center gap-4 p-4 border border-zinc-800 rounded-xl bg-zinc-900/30 hover:bg-zinc-800/40 transition-colors group"
                       >
                         {/* Round Number */}
