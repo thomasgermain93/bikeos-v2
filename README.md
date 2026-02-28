@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BikeOS v2 - Pixel-Perfect RaceOS Clone
 
-## Getting Started
+Clone pixel-perfect de [raceos.ai](https://raceos.ai) adapté pour MotoGP et WSBK.
 
-First, run the development server:
+## 🌐 Liens
+
+- **Site en ligne :** https://bikeos-v2.vercel.app
+- **Repository :** https://github.com/thomasgermain93/bikeos-v2
+
+## ✨ Fonctionnalités
+
+- **Design pixel-perfect** - Clone exact de raceos.ai (couleurs, typographie, spacing)
+- **Données réelles** - Intégration APIs MotoGP (PulseLive) et WSBK (TheSportsDB)
+- **Compte à rebours en temps réel** - Prochaines courses
+- **Résultats** - Dernières courses avec classements
+- **Classements** - Championnats pilotes
+- **Actualités** - Flux d'actualités
+
+## 🎨 Design System Exact
+
+Les couleurs, typographies et espacements sont extraits directement du code source de raceos.ai :
+
+- Background: `#0a0a0a`
+- Cards: `#18181b`
+- Bordures: `rgba(255,255,255,0.08)`
+- Texte: `#e4e4e7` (zinc-200)
+- F1 Badge: `#ef4444` / `#ef444418`
+- WSBK Badge: `#3b82f6` / `#3b82f618`
+- Typo: `font-mono` pour chiffres, `tracking-widest` pour labels
+
+## 🔌 APIs Utilisées
+
+| Source | Type | Données |
+|--------|------|---------|
+| PulseLive (MotoGP) | API Officielle | Calendrier, classements, résultats |
+| TheSportsDB | API Communautaire | WSBK calendrier, prochaines courses |
+
+## 🛠 Stack Technique
+
+- **Next.js 14** - App Router, Static Export
+- **TypeScript** - Typage strict
+- **Tailwind CSS** - Design system exact
+- **date-fns** - Manipulation des dates
+
+## 🚀 Développement
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📁 Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+app/
+├── motogp/page.tsx      # Page MotoGP
+├── wsbk/page.tsx        # Page WSBK
+├── layout.tsx           # Layout racine
+└── globals.css          # Variables CSS exactes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+components/
+├── Header.tsx           # Navigation sticky
+├── Countdown.tsx        # Compte à rebours
+├── NextRaceCard.tsx     # Card prochaine course
+├── LastRaceCard.tsx     # Card dernière course
+├── StandingsCard.tsx    # Card classements
+└── NewsCard.tsx         # Card actualités
 
-## Learn More
+data/
+└── api.ts               # Intégrations APIs
 
-To learn more about Next.js, take a look at the following resources:
+types/
+└── index.ts             # Types TypeScript
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📝 Notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Build statique pour hébergement sur Vercel
+- Revalidation des données toutes les 60 secondes
+- Fallback sur données mock si API indisponible
