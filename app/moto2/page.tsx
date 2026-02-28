@@ -1,4 +1,5 @@
 import { Header } from '@/components/Header';
+import { HeroSection, Moto2ASCII } from '@/components/HeroSection';
 import { NextRaceCard } from '@/components/NextRaceCard';
 import { LastRaceCard } from '@/components/LastRaceCard';
 import { StandingsCard } from '@/components/StandingsCard';
@@ -11,7 +12,7 @@ export const revalidate = 60;
 const mockNews: NewsItem[] = [
   {
     id: '1',
-    title: 'Fermín Aldeguer takes pole position at opening round',
+    title: 'González takes pole position at 2026 season opener',
     excerpt: 'The Spanish rider sets blistering pace in qualifying.',
     publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     source: 'MotoGP',
@@ -29,7 +30,7 @@ const mockNews: NewsItem[] = [
   },
   {
     id: '3',
-    title: 'Kalex introduces new chassis for 2025 season',
+    title: 'Kalex introduces evolution chassis for 2026 season',
     excerpt: 'Updated aerodynamics package debuts at Qatar.',
     publishedAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
     source: 'GPone',
@@ -60,6 +61,17 @@ export default async function Moto2Page() {
     <>
       <Header />
       <main className="min-h-screen bg-[#0a0a0a]">
+        {/* Hero with ASCII Art */}
+        <HeroSection
+          title="Moto2"
+          subtitle="FIM Moto2 World Championship — The intermediate class with equal 765cc Triumph engines."
+          nextRaceDate={nextRace?.date}
+          raceName={nextRace?.name}
+          raceLocation={`${nextRace?.circuit} · ${nextRace?.location}`}
+          asciiArt={<Moto2ASCII />}
+          accentColor="#FF6600"
+        />
+
         <div className="max-w-6xl mx-auto px-6 py-10">
           <h1 className="sr-only">BikeOS — Moto2 Live Data</h1>
 
@@ -107,7 +119,7 @@ export default async function Moto2Page() {
           <div className="max-w-6xl mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-sm text-zinc-600">
-                © 2025 BikeOS. Live Moto2 Data.
+                © 2026 BikeOS. Live Moto2 Data.
               </p>
               <p className="text-sm text-zinc-600">
                 Data provided by PulseLive & TheSportsDB

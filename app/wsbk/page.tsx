@@ -1,4 +1,5 @@
 import { Header } from '@/components/Header';
+import { HeroSection, WSBKASCII } from '@/components/HeroSection';
 import { NextRaceCard } from '@/components/NextRaceCard';
 import { LastRaceCard } from '@/components/LastRaceCard';
 import { NewsCard } from '@/components/NewsCard';
@@ -88,7 +89,7 @@ const mockStandings: Standing[] = [
 const mockNews: NewsItem[] = [
   {
     id: '1',
-    title: 'Razgatlioglu dominates Portimão opener',
+    title: 'Razgatlioglu dominates 2026 Portimão opener',
     excerpt: 'Turkish rider takes commanding victory in race one.',
     publishedAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
     source: 'WorldSBK',
@@ -106,7 +107,7 @@ const mockNews: NewsItem[] = [
   },
   {
     id: '3',
-    title: 'New BMW M 1000 RR shows promise in testing',
+    title: 'New BMW M 1000 RR shows promise in 2026 testing',
     excerpt: 'German manufacturer closes gap to leaders.',
     publishedAt: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString(),
     source: 'Motorsport',
@@ -127,6 +128,17 @@ export default async function WSBKPage() {
     <>
       <Header />
       <main className="min-h-screen bg-[#0a0a0a]">
+        {/* Hero with ASCII Art */}
+        <HeroSection
+          title="WorldSBK"
+          subtitle="FIM Superbike World Championship — Production-based motorcycles competing at the highest level."
+          nextRaceDate={nextRace?.date}
+          raceName={nextRace?.name}
+          raceLocation={`${nextRace?.circuit} · ${nextRace?.location}`}
+          asciiArt={<WSBKASCII />}
+          accentColor="#3b82f6"
+        />
+
         <div className="max-w-6xl mx-auto px-6 py-10">
           <h1 className="sr-only">BikeOS — WSBK Live Data</h1>
 
@@ -172,7 +184,7 @@ export default async function WSBKPage() {
           <div className="max-w-6xl mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-sm text-zinc-600">
-                © 2025 BikeOS. Live MotoGP & WSBK data.
+                © 2026 BikeOS. Live WSBK data.
               </p>
               <p className="text-sm text-zinc-600">
                 Data provided by TheSportsDB

@@ -1,4 +1,5 @@
 import { Header } from '@/components/Header';
+import { HeroSection, MXGPASCII } from '@/components/HeroSection';
 import { NextRaceCard } from '@/components/NextRaceCard';
 import { LastRaceCard } from '@/components/LastRaceCard';
 import { StandingsCard } from '@/components/StandingsCard';
@@ -19,16 +20,19 @@ export default async function MXGPPage() {
     <>
       <Header />
       <main className="min-h-screen bg-[#0a0a0a]">
+        {/* Hero with ASCII Art */}
+        <HeroSection
+          title="MXGP"
+          subtitle="FIM Motocross World Championship — The premier class of off-road motorcycle racing."
+          nextRaceDate={nextRace?.date}
+          raceName={nextRace?.name}
+          raceLocation={`${nextRace?.circuit} · ${nextRace?.location}`}
+          asciiArt={<MXGPASCII />}
+          accentColor="#8B4513"
+        />
+
         <div className="max-w-6xl mx-auto px-6 py-10">
           <h1 className="sr-only">BikeOS — MXGP Live Data</h1>
-
-          <div className="flex items-center gap-3 mb-8">
-            <span className="w-2 h-8 rounded-full" style={{ backgroundColor: '#8B4513' }}></span>
-            <div>
-              <h2 className="text-2xl font-semibold text-white tracking-tight">MXGP</h2>
-              <p className="text-xs text-zinc-500">FIM Motocross World Championship</p>
-            </div>
-          </div>
 
           {nextRace && (
             <div className="mb-14">
@@ -70,7 +74,7 @@ export default async function MXGPPage() {
           <div className="max-w-6xl mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-sm text-zinc-600">
-                © 2025 BikeOS. Live MXGP & MX2 data.
+                © 2026 BikeOS. Live MXGP data.
               </p>
               <p className="text-sm text-zinc-600">
                 Data provided by MXGP & FIM
