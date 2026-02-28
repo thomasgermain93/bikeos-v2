@@ -78,10 +78,14 @@ export async function scrapeMotoGPResults(raceId: string): Promise<RaceResult[] 
   }
 }
 
+// UUID saison 2026
+const MOTOGP_2026_SEASON_ID = 'e8c110ad-64aa-4e8e-8a86-f2f152f6a942';
+const MOTOGP_CATEGORY_ID = 'e8c110ad-64aa-4e8e-8a86-f2f152f6a942';
+
 export async function scrapeMotoGPStandings(): Promise<Standing[] | null> {
   try {
     const response = await fetch(
-      `${SCRAPER_CONFIG.endpoints.motogp}/results/standings?seasonUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942`,
+      `${SCRAPER_CONFIG.endpoints.motogp}/results/standings?seasonUuid=${MOTOGP_2026_SEASON_ID}&categoryUuid=${MOTOGP_CATEGORY_ID}`,
       { next: { revalidate: 0 } }
     );
     

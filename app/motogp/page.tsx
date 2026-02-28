@@ -2,9 +2,10 @@ import { Header } from '@/components/Header';
 import { HeroSection, MotoGPASCII } from '@/components/HeroSection';
 import { NextRaceCard } from '@/components/NextRaceCard';
 import { LastRaceCard } from '@/components/LastRaceCard';
+import { SprintCard } from '@/components/SprintCard';
 import { StandingsCard } from '@/components/StandingsCard';
 import { NewsCard } from '@/components/NewsCard';
-import { getNextMotoGPRaces, getLastMotoGPRace, getMotoGPStandings } from '@/data/api';
+import { getNextMotoGPRaces, getLastMotoGPRace, getMotoGPStandings, getLastMotoGPSprint, getMotoGPSprintResults } from '@/data/api';
 import { NewsItem } from '@/types';
 
 export const revalidate = 60;
@@ -49,13 +50,20 @@ const mockNews: NewsItem[] = [
 ];
 
 export default async function MotoGPPage() {
-  const [nextRaces, lastRace, standings] = await Promise.all([
+  const [nextRaces, lastRace, standings, lastSprint] = await Promise.all([
     getNextMotoGPRaces(),
     getLastMotoGPRace(),
     getMotoGPStandings(),
+    getLastMotoGPSprint(),
   ]);
 
   const nextRace = nextRaces[0] || null;
+  
+  // Récupérer les résultats de la sprint si disponible
+  let sprintResults = null;
+  if (lastSprint) {
+    sprintResults = await getMotoGPSprintResults(lastSprint.id);
+  }
 
   return (
     <>
@@ -86,6 +94,21 @@ export default async function MotoGPPage() {
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                 <NextRaceCard race={nextRace} />
+              </div>
+            </div>
+          )}
+
+          {/* Last Sprint Section */}
+          {lastSprint && sprintResults && sprintResults.length > 0 && (
+            <div className="mb-14">
+              <div className="flex items-center mb-6">
+                <h2 className="text-xs text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                  <span className="w-1 h-3 rounded-full bg-orange-500 inline-block"></span>
+                  Last Sprint
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <SprintCard race={lastSprint} sprintResults={sprintResults} />
               </div>
             </div>
           )}

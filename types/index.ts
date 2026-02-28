@@ -8,8 +8,10 @@ export interface Race {
   date: string;
   status: 'upcoming' | 'live' | 'finished';
   type: 'motogp' | 'moto2' | 'moto3' | 'wsbk' | 'mxgp' | 'mx2';
+  raceType?: 'race' | 'sprint' | 'feature';
   distance?: string;
   results?: RaceResult[];
+  sprintResults?: RaceResult[];
   fastestLap?: {
     rider: Rider;
     time: string;
