@@ -1,5 +1,5 @@
 import { Header } from '@/components/Header';
-import { HeroSection, HomeASCII } from '@/components/HeroSection';
+import { HeroSection } from '@/components/HeroSection';
 import { NextRaceCard } from '@/components/NextRaceCard';
 import { StandingsCard } from '@/components/StandingsCard';
 import { NewsCard } from '@/components/NewsCard';
@@ -128,7 +128,6 @@ export default async function HomePage() {
           nextRaceDate={closestRace?.date}
           raceName={closestRace?.name}
           raceLocation={`${closestRace?.circuit} · ${closestRace?.location}`}
-          asciiArt={<HomeASCII />}
           accentColor="#ef4444"
         />
 

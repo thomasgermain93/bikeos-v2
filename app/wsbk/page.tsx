@@ -1,5 +1,5 @@
 import { Header } from '@/components/Header';
-import { HeroSection, WSBKASCII } from '@/components/HeroSection';
+import { HeroSection } from '@/components/HeroSection';
 import { NextRaceCard } from '@/components/NextRaceCard';
 import { LastRaceCard } from '@/components/LastRaceCard';
 import { NewsCard } from '@/components/NewsCard';
@@ -135,7 +135,6 @@ export default async function WSBKPage() {
           nextRaceDate={nextRace?.date}
           raceName={nextRace?.name}
           raceLocation={`${nextRace?.circuit} · ${nextRace?.location}`}
-          asciiArt={<WSBKASCII />}
           accentColor="#3b82f6"
         />
 

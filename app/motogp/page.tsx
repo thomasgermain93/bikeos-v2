@@ -1,5 +1,5 @@
 import { Header } from '@/components/Header';
-import { HeroSection, MotoGPASCII } from '@/components/HeroSection';
+import { HeroSection } from '@/components/HeroSection';
 import { NextRaceCard } from '@/components/NextRaceCard';
 import { LastRaceCard } from '@/components/LastRaceCard';
 import { SprintCard } from '@/components/SprintCard';
@@ -76,7 +76,6 @@ export default async function MotoGPPage() {
           nextRaceDate={nextRace?.date}
           raceName={nextRace?.name}
           raceLocation={`${nextRace?.circuit} · ${nextRace?.location}`}
-          asciiArt={<MotoGPASCII />}
           accentColor="#ef4444"
         />
 

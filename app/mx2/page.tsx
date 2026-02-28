@@ -1,5 +1,5 @@
 import { Header } from '@/components/Header';
-import { HeroSection, MX2ASCII } from '@/components/HeroSection';
+import { HeroSection } from '@/components/HeroSection';
 import { NextRaceCard } from '@/components/NextRaceCard';
 import { LastRaceCard } from '@/components/LastRaceCard';
 import { StandingsCard } from '@/components/StandingsCard';
@@ -27,7 +27,6 @@ export default async function MX2Page() {
           nextRaceDate={nextRace?.date}
           raceName={nextRace?.name}
           raceLocation={`${nextRace?.circuit} · ${nextRace?.location}`}
-          asciiArt={<MX2ASCII />}
           accentColor="#228B22"
         />
 

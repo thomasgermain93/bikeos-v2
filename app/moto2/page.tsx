@@ -1,5 +1,5 @@
 import { Header } from '@/components/Header';
-import { HeroSection, Moto2ASCII } from '@/components/HeroSection';
+import { HeroSection } from '@/components/HeroSection';
 import { NextRaceCard } from '@/components/NextRaceCard';
 import { LastRaceCard } from '@/components/LastRaceCard';
 import { StandingsCard } from '@/components/StandingsCard';
@@ -68,7 +68,6 @@ export default async function Moto2Page() {
           nextRaceDate={nextRace?.date}
           raceName={nextRace?.name}
           raceLocation={`${nextRace?.circuit} · ${nextRace?.location}`}
-          asciiArt={<Moto2ASCII />}
           accentColor="#FF6600"
         />
 
