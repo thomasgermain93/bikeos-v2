@@ -107,9 +107,9 @@ export default async function Moto2Page() {
           {/* Standings & News Section */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {standings.length > 0 && (
-              <StandingsCard standings={standings} type="motogp" />
+              <StandingsCard standings={standings} type="moto2" />
             )}
-            <NewsCard news={mockNews} type="motogp" />
+            <NewsCard news={mockNews} type="moto2" />
           </div>
         </div>
 

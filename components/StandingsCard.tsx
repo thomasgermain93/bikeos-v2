@@ -76,7 +76,7 @@ export function StandingsCard({ standings, type }: StandingsCardProps) {
         </div>
         <div className="mt-1.5">
           <span className="text-sm font-medium text-zinc-400">Driver Standings</span>
-          <span className="text-zinc-600 text-xs ml-2">· 2025</span>
+          <span className="text-zinc-600 text-xs ml-2">· 2026</span>
         </div>
       </div>
       <div>

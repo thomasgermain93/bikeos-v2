@@ -107,9 +107,9 @@ export default async function Moto3Page() {
           {/* Standings & News Section */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {standings.length > 0 && (
-              <StandingsCard standings={standings} type="motogp" />
+              <StandingsCard standings={standings} type="moto3" />
             )}
-            <NewsCard news={mockNews} type="motogp" />
+            <NewsCard news={mockNews} type="moto3" />
           </div>
         </div>
 

@@ -4,11 +4,13 @@ import { NewsItem } from '@/types';
 
 interface NewsCardProps {
   news: NewsItem[];
-  type: 'motogp' | 'wsbk' | 'mxgp' | 'mx2';
+  type: 'motogp' | 'moto2' | 'moto3' | 'wsbk' | 'mxgp' | 'mx2';
 }
 
 const SERIES_COLORS: Record<string, string> = {
   motogp: '#ef4444',
+  moto2: '#FF6600',
+  moto3: '#00CC00',
   wsbk: '#3b82f6',
   mxgp: '#8B4513',
   mx2: '#228B22',
@@ -16,6 +18,8 @@ const SERIES_COLORS: Record<string, string> = {
 
 const SERIES_LABELS: Record<string, string> = {
   motogp: 'MotoGP',
+  moto2: 'Moto2',
+  moto3: 'Moto3',
   wsbk: 'WSBK',
   mxgp: 'MXGP',
   mx2: 'MX2',

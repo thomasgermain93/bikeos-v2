@@ -33,7 +33,7 @@ export function NextRaceCard({ race }: NextRaceCardProps) {
           {seriesColors.label}
         </span>
         <span className="text-xs font-mono text-zinc-600 uppercase tracking-widest">
-          Rd {race.round} · 2025
+          Rd {race.round} · 2026
         </span>
       </div>
       <h2 className="text-2xl font-semibold text-white tracking-tight leading-tight mb-1">
