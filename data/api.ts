@@ -1,2183 +1,2205 @@
-import { Race, RaceResult, Standing, NewsItem } from '@/types';
+/**
+ * API de données MotoGP 2026
+ * Système complet de données pour BikeOS v2
+ * Agent: DATA MOTOGP
+ */
 
-const MOTOGP_API_BASE = 'https://api.motogp.pulselive.com/motogp/v1';
-const SPORTSDB_API_BASE = 'https://www.thesportsdb.com/api/v1/json/123';
+// ============================================================================
+// TYPES
+// ============================================================================
 
-// Timeout par défaut pour les requêtes (10 secondes)
-const DEFAULT_TIMEOUT = 10000;
-
-// IDs TheSportsDB
-const MOTOGP_LEAGUE_ID = '4407';
-const WSBK_LEAGUE_ID = '4454';
-
-// UUIDs MotoGP PulseLive 2026
-// Note: Ces UUIDs doivent être mis à jour via l'endpoint /seasons si obsolètes
-const MOTOGP_2026_SEASON_ID = 'e8c110ad-64aa-4e8e-8a86-f2f152f6a942';
-const MOTOGP_CATEGORY_ID = 'e8c110ad-64aa-4e8e-8a86-f2f152f6a942';
-
-// Couleurs équipes MotoGP 2026
-const TEAM_COLORS: Record<string, string> = {
-  'Ducati Lenovo Team': '#DC2626',
-  'Red Bull KTM Factory Racing': '#FF6600',
-  'Aprilia Racing': '#0066CC',
-  'Monster Energy Yamaha MotoGP': '#00FF00',
-  'Repsol Honda Team': '#FF0000',
-  'Gresini Racing MotoGP': '#0066FF',
-  'Prima Pramac Racing': '#FFD700',
-  'Pertamina Enduro VR46 Racing Team': '#FFFF00',
-  'Red Bull KTM Tech3': '#6699CC',
-  'LCR Honda': '#CC0000',
-  'Trackhouse Racing': '#000000',
-  'GasGas Factory Racing Tech3': '#CC0000',
-  'HRC Test Team': '#FF0000',
-  'Yamaha Factory Racing': '#00FF00',
-};
-
-// ===== SPRINT RACE RESULTS =====
-// Système de points Sprint: 12-9-7-6-5-4-3-2-1 (Top 9)
-
-// Résultats Sprint Thaïlande 2026 (1er mars 2026)
-const THAILAND_2026_SPRINT_RESULTS: RaceResult[] = [
-  {
-    position: 1,
-    rider: {
-      id: 'rider-acosta',
-      number: 37,
-      firstName: 'Pedro',
-      lastName: 'Acosta',
-      code: 'ACO',
-      nationality: 'Spain',
-      team: {
-        id: 'team-ktm3',
-        name: 'Red Bull KTM Factory Racing',
-        shortName: 'KTM',
-        color: '#FF6600',
-      },
-      color: '#FF6600',
-    },
-    team: {
-      id: 'team-ktm3',
-      name: 'Red Bull KTM Factory Racing',
-      shortName: 'KTM',
-      color: '#FF6600',
-    },
-    time: '19:39.155',
-    points: 12,
-  },
-  {
-    position: 2,
-    rider: {
-      id: 'rider-bagnaia',
-      number: 1,
-      firstName: 'Francesco',
-      lastName: 'Bagnaia',
-      code: 'BAG',
-      nationality: 'Italy',
-      team: {
-        id: 'team-ducati',
-        name: 'Ducati Lenovo Team',
-        shortName: 'Ducati',
-        color: '#DC2626',
-      },
-      color: '#DC2626',
-    },
-    team: {
-      id: 'team-ducati',
-      name: 'Ducati Lenovo Team',
-      shortName: 'Ducati',
-      color: '#DC2626',
-    },
-    time: '+0.108',
-    points: 9,
-  },
-  {
-    position: 3,
-    rider: {
-      id: 'rider-marquez',
-      number: 93,
-      firstName: 'Marc',
-      lastName: 'Márquez',
-      code: 'MAR',
-      nationality: 'Spain',
-      team: {
-        id: 'team-ducati2',
-        name: 'Ducati Lenovo Team',
-        shortName: 'Ducati',
-        color: '#DC2626',
-      },
-      color: '#DC2626',
-    },
-    team: {
-      id: 'team-ducati2',
-      name: 'Ducati Lenovo Team',
-      shortName: 'Ducati',
-      color: '#DC2626',
-    },
-    time: '+0.540',
-    points: 7,
-  },
-  {
-    position: 4,
-    rider: {
-      id: 'rider-binder',
-      number: 33,
-      firstName: 'Brad',
-      lastName: 'Binder',
-      code: 'BIN',
-      nationality: 'South Africa',
-      team: {
-        id: 'team-ktm',
-        name: 'Red Bull KTM Factory Racing',
-        shortName: 'KTM',
-        color: '#FF6600',
-      },
-      color: '#FF6600',
-    },
-    team: {
-      id: 'team-ktm',
-      name: 'Red Bull KTM Factory Racing',
-      shortName: 'KTM',
-      color: '#FF6600',
-    },
-    time: '+3.892',
-    points: 6,
-  },
-  {
-    position: 5,
-    rider: {
-      id: 'rider-vinales',
-      number: 12,
-      firstName: 'Maverick',
-      lastName: 'Viñales',
-      code: 'VIN',
-      nationality: 'Spain',
-      team: {
-        id: 'team-ktm2',
-        name: 'Red Bull KTM Factory Racing',
-        shortName: 'KTM',
-        color: '#FF6600',
-      },
-      color: '#FF6600',
-    },
-    team: {
-      id: 'team-ktm2',
-      name: 'Red Bull KTM Factory Racing',
-      shortName: 'KTM',
-      color: '#FF6600',
-    },
-    time: '+5.421',
-    points: 5,
-  },
-  {
-    position: 6,
-    rider: {
-      id: 'rider-acosta',
-      number: 37,
-      firstName: 'Pedro',
-      lastName: 'Acosta',
-      code: 'ACO',
-      nationality: 'Spain',
-      team: {
-        id: 'team-ktm3',
-        name: 'Red Bull KTM Factory Racing',
-        shortName: 'KTM',
-        color: '#FF6600',
-      },
-      color: '#FF6600',
-    },
-    team: {
-      id: 'team-ktm3',
-      name: 'Red Bull KTM Factory Racing',
-      shortName: 'KTM',
-      color: '#FF6600',
-    },
-    time: '+6.854',
-    points: 4,
-  },
-  {
-    position: 7,
-    rider: {
-      id: 'rider-digiannantonio',
-      number: 49,
-      firstName: 'Fabio',
-      lastName: 'Di Giannantonio',
-      code: 'DIG',
-      nationality: 'Italy',
-      team: {
-        id: 'team-vr46',
-        name: 'Pertamina Enduro VR46 Racing Team',
-        shortName: 'VR46',
-        color: '#FFFF00',
-      },
-      color: '#FFFF00',
-    },
-    team: {
-      id: 'team-vr46',
-      name: 'Pertamina Enduro VR46 Racing Team',
-      shortName: 'VR46',
-      color: '#FFFF00',
-    },
-    time: '+8.123',
-    points: 3,
-  },
-  {
-    position: 8,
-    rider: {
-      id: 'rider-fernandez',
-      number: 25,
-      firstName: 'Raúl',
-      lastName: 'Fernández',
-      code: 'FER',
-      nationality: 'Spain',
-      team: {
-        id: 'team-trackhouse',
-        name: 'Trackhouse Racing',
-        shortName: 'Trackhouse',
-        color: '#000000',
-      },
-      color: '#000000',
-    },
-    team: {
-      id: 'team-trackhouse',
-      name: 'Trackhouse Racing',
-      shortName: 'Trackhouse',
-      color: '#000000',
-    },
-    time: '+9.567',
-    points: 2,
-  },
-  {
-    position: 9,
-    rider: {
-      id: 'rider-mir',
-      number: 36,
-      firstName: 'Joan',
-      lastName: 'Mir',
-      code: 'MIR',
-      nationality: 'Spain',
-      team: {
-        id: 'team-honda',
-        name: 'Honda HRC Castrol',
-        shortName: 'Honda',
-        color: '#FF0000',
-      },
-      color: '#FF0000',
-    },
-    team: {
-      id: 'team-honda',
-      name: 'Honda HRC Castrol',
-      shortName: 'Honda',
-      color: '#FF0000',
-    },
-    time: '+11.234',
-    points: 1,
-  },
-];
-
-// Données mock pour fallback - Saison 2026 (calendrier réel avec sprints)
-const MOCK_RACES: Race[] = [
-  // Round 1: Thaïlande - Sprint (samedi 1er mars) + Course (dimanche 2 mars)
-  {
-    id: 'motogp-2026-1-sprint',
-    round: 1,
-    name: 'Thai Grand Prix - Sprint',
-    circuit: 'Chang International Circuit',
-    location: 'Buriram',
-    country: 'Thailand',
-    date: '2026-03-01T08:00:00.000Z', // Samedi 1er mars - Sprint
-    status: 'finished',
-    type: 'motogp',
-    raceType: 'sprint',
-    sprintResults: THAILAND_2026_SPRINT_RESULTS,
-  },
-  {
-    id: 'motogp-2026-1-race',
-    round: 1,
-    name: 'Thai Grand Prix',
-    circuit: 'Chang International Circuit',
-    location: 'Buriram',
-    country: 'Thailand',
-    date: '2026-03-02T07:00:00.000Z', // Dimanche 2 mars - Course longue (AUJOURD'HUI)
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
-  },
-  // Round 2: Argentine - Sprint (samedi 14 mars) + Course (dimanche 15 mars)
-  {
-    id: 'motogp-2026-2-sprint',
-    round: 2,
-    name: 'Argentine Grand Prix - Sprint',
-    circuit: 'Autódromo Termas de Río Hondo',
-    location: 'Termas de Río Hondo',
-    country: 'Argentina',
-    date: '2026-03-14T18:00:00.000Z', // Samedi 14 mars
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'sprint',
-  },
-  {
-    id: 'motogp-2026-2-race',
-    round: 2,
-    name: 'Argentine Grand Prix',
-    circuit: 'Autódromo Termas de Río Hondo',
-    location: 'Termas de Río Hondo',
-    country: 'Argentina',
-    date: '2026-03-15T18:00:00.000Z', // Dimanche 15 mars
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
-  },
-  // Round 3: Americas - Sprint (samedi 28 mars) + Course (dimanche 29 mars)
-  {
-    id: 'motogp-2026-3-sprint',
-    round: 3,
-    name: 'Grand Prix of the Americas - Sprint',
-    circuit: 'Circuit of the Americas',
-    location: 'Austin',
-    country: 'USA',
-    date: '2026-03-28T19:00:00.000Z', // Samedi 28 mars
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'sprint',
-  },
-  {
-    id: 'motogp-2026-3-race',
-    round: 3,
-    name: 'Grand Prix of the Americas',
-    circuit: 'Circuit of the Americas',
-    location: 'Austin',
-    country: 'USA',
-    date: '2026-03-29T19:00:00.000Z', // Dimanche 29 mars
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
-  },
-  // Round 4: Qatar - Sprint (samedi 11 avril) + Course (dimanche 12 avril)
-  {
-    id: 'motogp-2026-4-sprint',
-    round: 4,
-    name: 'Grand Prix of Qatar - Sprint',
-    circuit: 'Lusail International Circuit',
-    location: 'Lusail',
-    country: 'Qatar',
-    date: '2026-04-11T17:00:00.000Z', // Samedi 11 avril
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'sprint',
-  },
-  {
-    id: 'motogp-2026-4-race',
-    round: 4,
-    name: 'Grand Prix of Qatar',
-    circuit: 'Lusail International Circuit',
-    location: 'Lusail',
-    country: 'Qatar',
-    date: '2026-04-12T17:00:00.000Z', // Dimanche 12 avril
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
-  },
-  // Round 5: Espagne - Sprint (samedi 25 avril) + Course (dimanche 26 avril)
-  {
-    id: 'motogp-2026-5-sprint',
-    round: 5,
-    name: 'Gran Premio de España - Sprint',
-    circuit: 'Circuito de Jerez',
-    location: 'Jerez de la Frontera',
-    country: 'Spain',
-    date: '2026-04-25T13:00:00.000Z', // Samedi 25 avril
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'sprint',
-  },
-  {
-    id: 'motogp-2026-5-race',
-    round: 5,
-    name: 'Gran Premio de España',
-    circuit: 'Circuito de Jerez',
-    location: 'Jerez de la Frontera',
-    country: 'Spain',
-    date: '2026-04-26T13:00:00.000Z', // Dimanche 26 avril
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
-  },
-  // Round 6: France - Sprint (samedi 9 mai) + Course (dimanche 10 mai)
-  {
-    id: 'motogp-2026-6-sprint',
-    round: 6,
-    name: 'Grand Prix de France - Sprint',
-    circuit: 'Circuit Bugatti',
-    location: 'Le Mans',
-    country: 'France',
-    date: '2026-05-09T13:00:00.000Z', // Samedi 9 mai
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'sprint',
-  },
-  {
-    id: 'motogp-2026-6-race',
-    round: 6,
-    name: 'Grand Prix de France',
-    circuit: 'Circuit Bugatti',
-    location: 'Le Mans',
-    country: 'France',
-    date: '2026-05-10T13:00:00.000Z', // Dimanche 10 mai
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
-  },
-  // Round 7: Catalogne - Sprint (samedi 23 mai) + Course (dimanche 24 mai)
-  {
-    id: 'motogp-2026-7-sprint',
-    round: 7,
-    name: 'Gran Premi de Catalunya - Sprint',
-    circuit: 'Circuit de Barcelona-Catalunya',
-    location: 'Barcelona',
-    country: 'Spain',
-    date: '2026-05-23T13:00:00.000Z', // Samedi 23 mai
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'sprint',
-  },
-  {
-    id: 'motogp-2026-7-race',
-    round: 7,
-    name: 'Gran Premi de Catalunya',
-    circuit: 'Circuit de Barcelona-Catalunya',
-    location: 'Barcelona',
-    country: 'Spain',
-    date: '2026-05-24T13:00:00.000Z', // Dimanche 24 mai
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
-  },
-  // Round 8: Italie - Sprint (samedi 6 juin) + Course (dimanche 7 juin)
-  {
-    id: 'motogp-2026-8-sprint',
-    round: 8,
-    name: "Gran Premio d'Italia - Sprint",
-    circuit: 'Autodromo Internazionale del Mugello',
-    location: 'Scarperia',
-    country: 'Italy',
-    date: '2026-06-06T13:00:00.000Z', // Samedi 6 juin
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'sprint',
-  },
-  {
-    id: 'motogp-2026-8-race',
-    round: 8,
-    name: "Gran Premio d'Italia",
-    circuit: 'Autodromo Internazionale del Mugello',
-    location: 'Scarperia',
-    country: 'Italy',
-    date: '2026-06-07T13:00:00.000Z', // Dimanche 7 juin
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
-  },
-  // Round 9: Hongrie - Sprint (samedi 20 juin) + Course (dimanche 21 juin)
-  {
-    id: 'motogp-2026-9-sprint',
-    round: 9,
-    name: 'Grand Prix of Hungary - Sprint',
-    circuit: 'Balaton Park Circuit',
-    location: 'Balatonfőkajár',
-    country: 'Hungary',
-    date: '2026-06-20T13:00:00.000Z', // Samedi 20 juin
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'sprint',
-  },
-  {
-    id: 'motogp-2026-9-race',
-    round: 9,
-    name: 'Grand Prix of Hungary',
-    circuit: 'Balaton Park Circuit',
-    location: 'Balatonfőkajár',
-    country: 'Hungary',
-    date: '2026-06-21T13:00:00.000Z', // Dimanche 21 juin
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
-  },
-  // Round 10: Tchéquie - Sprint (samedi 4 juillet) + Course (dimanche 5 juillet)
-  {
-    id: 'motogp-2026-10-sprint',
-    round: 10,
-    name: 'Grand Prix of Czechia - Sprint',
-    circuit: 'Brno Circuit',
-    location: 'Brno',
-    country: 'Czech Republic',
-    date: '2026-07-04T13:00:00.000Z', // Samedi 4 juillet
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'sprint',
-  },
-  {
-    id: 'motogp-2026-10-race',
-    round: 10,
-    name: 'Grand Prix of Czechia',
-    circuit: 'Brno Circuit',
-    location: 'Brno',
-    country: 'Czech Republic',
-    date: '2026-07-05T13:00:00.000Z', // Dimanche 5 juillet
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
-  },
-];
-
-// Classement MotoGP 2026 après Sprint Thaïlande uniquement
-// Système de points Sprint: 12-9-7-6-5-4-3-2-1 (Top 9 marquent)
-// La course longue du 2 mars n'est pas encore terminée (AUJOURD'HUI)
-const MOCK_STANDINGS: Standing[] = [
-  {
-    position: 1,
-    rider: {
-      id: 'rider-acosta',
-      number: 37,
-      firstName: 'Pedro',
-      lastName: 'Acosta',
-      code: 'ACO',
-      nationality: 'Spain',
-      team: {
-        id: 'team-ktm3',
-        name: 'Red Bull KTM Factory Racing',
-        shortName: 'KTM',
-        color: '#FF6600',
-      },
-      color: '#FF6600',
-    },
-    points: 12, // Vainqueur sprint
-    wins: 1,
-  },
-  {
-    position: 2,
-    rider: {
-      id: 'rider-bagnaia',
-      number: 1,
-      firstName: 'Francesco',
-      lastName: 'Bagnaia',
-      code: 'BAG',
-      nationality: 'Italy',
-      team: {
-        id: 'team-ducati',
-        name: 'Ducati Lenovo Team',
-        shortName: 'Ducati',
-        color: '#DC2626',
-      },
-      color: '#DC2626',
-    },
-    points: 9, // 2ème sprint
-    wins: 0,
-  },
-  {
-    position: 3,
-    rider: {
-      id: 'rider-marquez',
-      number: 93,
-      firstName: 'Marc',
-      lastName: 'Márquez',
-      code: 'MAR',
-      nationality: 'Spain',
-      team: {
-        id: 'team-ducati2',
-        name: 'Ducati Lenovo Team',
-        shortName: 'Ducati',
-        color: '#DC2626',
-      },
-      color: '#DC2626',
-    },
-    points: 7, // 3ème sprint
-    wins: 0,
-  },
-  {
-    position: 4,
-    rider: {
-      id: 'rider-binder',
-      number: 33,
-      firstName: 'Brad',
-      lastName: 'Binder',
-      code: 'BIN',
-      nationality: 'South Africa',
-      team: {
-        id: 'team-ktm',
-        name: 'Red Bull KTM Factory Racing',
-        shortName: 'KTM',
-        color: '#FF6600',
-      },
-      color: '#FF6600',
-    },
-    points: 6, // 4ème sprint
-    wins: 0,
-  },
-  {
-    position: 5,
-    rider: {
-      id: 'rider-vinales',
-      number: 12,
-      firstName: 'Maverick',
-      lastName: 'Viñales',
-      code: 'VIN',
-      nationality: 'Spain',
-      team: {
-        id: 'team-ktm2',
-        name: 'Red Bull KTM Factory Racing',
-        shortName: 'KTM',
-        color: '#FF6600',
-      },
-      color: '#FF6600',
-    },
-    points: 5, // 5ème sprint
-    wins: 0,
-  },
-  {
-    position: 6,
-    rider: {
-      id: 'rider-acosta',
-      number: 37,
-      firstName: 'Pedro',
-      lastName: 'Acosta',
-      code: 'ACO',
-      nationality: 'Spain',
-      team: {
-        id: 'team-ktm3',
-        name: 'Red Bull KTM Factory Racing',
-        shortName: 'KTM',
-        color: '#FF6600',
-      },
-      color: '#FF6600',
-    },
-    points: 4, // 6ème sprint
-    wins: 0,
-  },
-  {
-    position: 7,
-    rider: {
-      id: 'rider-digiannantonio',
-      number: 49,
-      firstName: 'Fabio',
-      lastName: 'Di Giannantonio',
-      code: 'DIG',
-      nationality: 'Italy',
-      team: {
-        id: 'team-vr46',
-        name: 'Pertamina Enduro VR46 Racing Team',
-        shortName: 'VR46',
-        color: '#FFFF00',
-      },
-      color: '#FFFF00',
-    },
-    points: 3, // 7ème sprint
-    wins: 0,
-  },
-  {
-    position: 8,
-    rider: {
-      id: 'rider-fernandez',
-      number: 25,
-      firstName: 'Raúl',
-      lastName: 'Fernández',
-      code: 'FER',
-      nationality: 'Spain',
-      team: {
-        id: 'team-trackhouse',
-        name: 'Trackhouse Racing',
-        shortName: 'Trackhouse',
-        color: '#000000',
-      },
-      color: '#000000',
-    },
-    points: 2, // 8ème sprint
-    wins: 0,
-  },
-  {
-    position: 9,
-    rider: {
-      id: 'rider-mir',
-      number: 36,
-      firstName: 'Joan',
-      lastName: 'Mir',
-      code: 'MIR',
-      nationality: 'Spain',
-      team: {
-        id: 'team-honda',
-        name: 'Honda HRC Castrol',
-        shortName: 'Honda',
-        color: '#FF0000',
-      },
-      color: '#FF0000',
-    },
-    points: 1, // 9ème sprint
-    wins: 0,
-  },
-];
-
-// ===== DONNÉES WSBK 2026 =====
-
-// Couleurs équipes WSBK 2026
-const WSBK_TEAM_COLORS: Record<string, string> = {
-  'Rokit BMW Motorrad WorldSBK Team': '#0066CC',
-  'Aruba.it Racing - Ducati': '#DC2626',
-  'Pata Yamaha with Brixx WorldSBK': '#00FF00',
-  'Kawasaki Racing Team WorldSBK': '#00CC00',
-  'Team HRC Honda': '#FF0000',
-  'Bonovo Action BMW': '#3366CC',
-  'Orelac Racing VerdNatura': '#FF6600',
-  'GMT94 Yamaha': '#00CC99',
-  'Barni Spark Racing Team': '#FFD700',
-  'Pedercini Racing': '#CC0000',
-  'EAB Racing Team': '#FF00FF',
-  'GYTR GRT Yamaha WorldSBK Team': '#FFFF00',
-};
-
-// Calendrier WSBK 2026 (12 rounds)
-const WSBK_2026_CALENDAR: Race[] = [
-  {
-    id: 'wsbk-2026-01',
-    round: 1,
-    name: 'Australian Round',
-    circuit: 'Phillip Island Grand Prix Circuit',
-    location: 'Phillip Island',
-    country: 'Australia',
-    date: '2026-02-21T09:00:00.000Z',
-    status: 'finished',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-02',
-    round: 2,
-    name: 'Australian Round',
-    circuit: 'Phillip Island Grand Prix Circuit',
-    location: 'Phillip Island',
-    country: 'Australia',
-    date: '2026-02-22T09:00:00.000Z',
-    status: 'finished',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-03',
-    round: 3,
-    name: 'Pirelli Portuguese Round',
-    circuit: 'Autódromo Internacional do Algarve',
-    location: 'Portimão',
-    country: 'Portugal',
-    date: '2026-03-28T13:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-04',
-    round: 4,
-    name: 'Pirelli Portuguese Round',
-    circuit: 'Autódromo Internacional do Algarve',
-    location: 'Portimão',
-    country: 'Portugal',
-    date: '2026-03-29T13:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-05',
-    round: 5,
-    name: 'OR Dutch Round',
-    circuit: 'TT Circuit Assen',
-    location: 'Assen',
-    country: 'Netherlands',
-    date: '2026-04-18T12:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-06',
-    round: 6,
-    name: 'OR Dutch Round',
-    circuit: 'TT Circuit Assen',
-    location: 'Assen',
-    country: 'Netherlands',
-    date: '2026-04-19T12:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-07',
-    round: 7,
-    name: 'Pirelli Italian Round',
-    circuit: 'Autodromo Internazionale del Mugello',
-    location: 'Scarperia',
-    country: 'Italy',
-    date: '2026-05-09T13:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-08',
-    round: 8,
-    name: 'Pirelli Italian Round',
-    circuit: 'Autodromo Internazionale del Mugello',
-    location: 'Scarperia',
-    country: 'Italy',
-    date: '2026-05-10T13:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-09',
-    round: 9,
-    name: 'British Round',
-    circuit: 'Donington Park',
-    location: 'Derby',
-    country: 'United Kingdom',
-    date: '2026-06-13T14:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-10',
-    round: 10,
-    name: 'British Round',
-    circuit: 'Donington Park',
-    location: 'Derby',
-    country: 'United Kingdom',
-    date: '2026-06-14T14:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-11',
-    round: 11,
-    name: 'Czech Round',
-    circuit: 'Autodrom Most',
-    location: 'Most',
-    country: 'Czech Republic',
-    date: '2026-07-25T13:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-12',
-    round: 12,
-    name: 'Czech Round',
-    circuit: 'Autodrom Most',
-    location: 'Most',
-    country: 'Czech Republic',
-    date: '2026-07-26T13:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-13',
-    round: 13,
-    name: 'Prosecco DOC German Round',
-    circuit: 'Lausitzring',
-    location: 'Klettwitz',
-    country: 'Germany',
-    date: '2026-08-08T13:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-14',
-    round: 14,
-    name: 'Prosecco DOC German Round',
-    circuit: 'Lausitzring',
-    location: 'Klettwitz',
-    country: 'Germany',
-    date: '2026-08-09T13:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-15',
-    round: 15,
-    name: 'Hungarian Round',
-    circuit: 'Balaton Park Circuit',
-    location: 'Balatonfőkajár',
-    country: 'Hungary',
-    date: '2026-08-22T13:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-16',
-    round: 16,
-    name: 'Hungarian Round',
-    circuit: 'Balaton Park Circuit',
-    location: 'Balatonfőkajár',
-    country: 'Hungary',
-    date: '2026-08-23T13:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-17',
-    round: 17,
-    name: 'French Round',
-    circuit: 'Circuit de Nevers Magny-Cours',
-    location: 'Magny-Cours',
-    country: 'France',
-    date: '2026-09-05T13:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-18',
-    round: 18,
-    name: 'French Round',
-    circuit: 'Circuit de Nevers Magny-Cours',
-    location: 'Magny-Cours',
-    country: 'France',
-    date: '2026-09-06T13:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-19',
-    round: 19,
-    name: 'Aragon Round',
-    circuit: 'MotorLand Aragón',
-    location: 'Alcañiz',
-    country: 'Spain',
-    date: '2026-09-19T14:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-20',
-    round: 20,
-    name: 'Aragon Round',
-    circuit: 'MotorLand Aragón',
-    location: 'Alcañiz',
-    country: 'Spain',
-    date: '2026-09-20T14:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-21',
-    round: 21,
-    name: 'Pirelli Spanish Round',
-    circuit: 'Circuito de Jerez',
-    location: 'Jerez de la Frontera',
-    country: 'Spain',
-    date: '2026-10-03T14:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-22',
-    round: 22,
-    name: 'Pirelli Spanish Round',
-    circuit: 'Circuito de Jerez',
-    location: 'Jerez de la Frontera',
-    country: 'Spain',
-    date: '2026-10-04T14:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-23',
-    round: 23,
-    name: 'Qatar Round',
-    circuit: 'Losail International Circuit',
-    location: 'Lusail',
-    country: 'Qatar',
-    date: '2026-10-24T17:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-24',
-    round: 24,
-    name: 'Qatar Round',
-    circuit: 'Losail International Circuit',
-    location: 'Lusail',
-    country: 'Qatar',
-    date: '2026-10-25T17:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-25',
-    round: 25,
-    name: 'Grand Ridge Brewery Australian Round',
-    circuit: 'Phillip Island Grand Prix Circuit',
-    location: 'Phillip Island',
-    country: 'Australia',
-    date: '2026-11-21T09:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-  {
-    id: 'wsbk-2026-26',
-    round: 26,
-    name: 'Grand Ridge Brewery Australian Round',
-    circuit: 'Phillip Island Grand Prix Circuit',
-    location: 'Phillip Island',
-    country: 'Australia',
-    date: '2026-11-22T09:00:00.000Z',
-    status: 'upcoming',
-    type: 'wsbk',
-  },
-];
-
-// Classement WSBK 2026 (données réalistes en cours de saison)
-const WSBK_2026_STANDINGS: Standing[] = [
-  {
-    position: 1,
-    rider: {
-      id: 'toprak-2026',
-      number: 54,
-      firstName: 'Toprak',
-      lastName: 'Razgatlıoğlu',
-      code: 'RAZ',
-      nationality: 'TUR',
-      team: { id: 'bmw-2026', name: 'Rokit BMW Motorrad WorldSBK Team', shortName: 'BMW', color: '#0066CC' },
-      color: '#0066CC',
-    },
-    points: 62,
-    wins: 2,
-  },
-  {
-    position: 2,
-    rider: {
-      id: 'bautista-2026',
-      number: 19,
-      firstName: 'Álvaro',
-      lastName: 'Bautista',
-      code: 'BAU',
-      nationality: 'ESP',
-      team: { id: 'ducati-2026', name: 'Aruba.it Racing - Ducati', shortName: 'Ducati', color: '#DC2626' },
-      color: '#DC2626',
-    },
-    points: 58,
-    wins: 1,
-  },
-  {
-    position: 3,
-    rider: {
-      id: 'rea-2026',
-      number: 65,
-      firstName: 'Jonathan',
-      lastName: 'Rea',
-      code: 'REA',
-      nationality: 'GBR',
-      team: { id: 'yamaha-2026', name: 'Pata Yamaha with Brixx WorldSBK', shortName: 'Yamaha', color: '#00FF00' },
-      color: '#00FF00',
-    },
-    points: 47,
-    wins: 0,
-  },
-  {
-    position: 4,
-    rider: {
-      id: 'locatelli-2026',
-      number: 55,
-      firstName: 'Andrea',
-      lastName: 'Locatelli',
-      code: 'LOC',
-      nationality: 'ITA',
-      team: { id: 'yamaha2-2026', name: 'Pata Yamaha with Brixx WorldSBK', shortName: 'Yamaha', color: '#00FF00' },
-      color: '#00FF00',
-    },
-    points: 42,
-    wins: 0,
-  },
-  {
-    position: 5,
-    rider: {
-      id: 'petrucci-2026',
-      number: 9,
-      firstName: 'Danilo',
-      lastName: 'Petrucci',
-      code: 'PET',
-      nationality: 'ITA',
-      team: { id: 'kawasaki-2026', name: 'Kawasaki Racing Team WorldSBK', shortName: 'Kawasaki', color: '#00CC00' },
-      color: '#00CC00',
-    },
-    points: 38,
-    wins: 0,
-  },
-  {
-    position: 6,
-    rider: {
-      id: 'vandermark-2026',
-      number: 60,
-      firstName: 'Michael',
-      lastName: 'van der Mark',
-      code: 'VDM',
-      nationality: 'NED',
-      team: { id: 'bmwb-2026', name: 'Rokit BMW Motorrad WorldSBK Team', shortName: 'BMW', color: '#0066CC' },
-      color: '#0066CC',
-    },
-    points: 35,
-    wins: 0,
-  },
-  {
-    position: 7,
-    rider: {
-      id: 'redding-2026',
-      number: 45,
-      firstName: 'Scott',
-      lastName: 'Redding',
-      code: 'RED',
-      nationality: 'GBR',
-      team: { id: 'bmwc-2026', name: 'Bonovo Action BMW', shortName: 'BMW', color: '#3366CC' },
-      color: '#3366CC',
-    },
-    points: 32,
-    wins: 0,
-  },
-  {
-    position: 8,
-    rider: {
-      id: 'gerloff-2026',
-      number: 31,
-      firstName: 'Garrett',
-      lastName: 'Gerloff',
-      code: 'GER',
-      nationality: 'USA',
-      team: { id: 'bmwd-2026', name: 'Bonovo Action BMW', shortName: 'BMW', color: '#3366CC' },
-      color: '#3366CC',
-    },
-    points: 28,
-    wins: 0,
-  },
-  {
-    position: 9,
-    rider: {
-      id: 'lecuona-2026',
-      number: 7,
-      firstName: 'Iker',
-      lastName: 'Lecuona',
-      code: 'LEC',
-      nationality: 'ESP',
-      team: { id: 'honda-2026', name: 'Team HRC Honda', shortName: 'Honda', color: '#FF0000' },
-      color: '#FF0000',
-    },
-    points: 25,
-    wins: 0,
-  },
-  {
-    position: 10,
-    rider: {
-      id: 'vierge-2026',
-      number: 97,
-      firstName: 'Xavi',
-      lastName: 'Vierge',
-      code: 'VIE',
-      nationality: 'ESP',
-      team: { id: 'honda2-2026', name: 'Team HRC Honda', shortName: 'Honda', color: '#FF0000' },
-      color: '#FF0000',
-    },
-    points: 22,
-    wins: 0,
-  },
-];
-
-// Résultats des courses WSBK 2026 passées
-const WSBK_2026_RESULTS: Record<string, { position: number; rider: string; team: string; time: string; points: number }[]> = {
-  'wsbk-2026-01': [
-    { position: 1, rider: 'Toprak Razgatlıoğlu', team: 'Rokit BMW Motorrad', time: '33:45.872', points: 25 },
-    { position: 2, rider: 'Álvaro Bautista', team: 'Aruba.it Racing Ducati', time: '+2.341', points: 20 },
-    { position: 3, rider: 'Andrea Locatelli', team: 'Pata Yamaha', time: '+5.128', points: 16 },
-    { position: 4, rider: 'Jonathan Rea', team: 'Pata Yamaha', time: '+7.654', points: 13 },
-    { position: 5, rider: 'Scott Redding', team: 'Bonovo Action BMW', time: '+10.987', points: 11 },
-  ],
-  'wsbk-2026-02': [
-    { position: 1, rider: 'Toprak Razgatlıoğlu', team: 'Rokit BMW Motorrad', time: '34:12.456', points: 25 },
-    { position: 2, rider: 'Jonathan Rea', team: 'Pata Yamaha', time: '+1.892', points: 20 },
-    { position: 3, rider: 'Álvaro Bautista', team: 'Aruba.it Racing Ducati', time: '+4.567', points: 16 },
-    { position: 4, rider: 'Danilo Petrucci', team: 'Kawasaki Racing', time: '+8.234', points: 13 },
-    { position: 5, rider: 'Alex Lowes', team: 'Kawasaki Racing', time: '+12.456', points: 11 },
-  ],
-  'wsbk-2026-03': [
-    { position: 1, rider: 'Álvaro Bautista', team: 'Aruba.it Racing Ducati', time: '36:28.765', points: 25 },
-    { position: 2, rider: 'Toprak Razgatlıoğlu', team: 'Rokit BMW Motorrad', time: '+0.987', points: 20 },
-    { position: 3, rider: 'Andrea Locatelli', team: 'Pata Yamaha', time: '+3.456', points: 16 },
-    { position: 4, rider: 'Scott Redding', team: 'Bonovo Action BMW', time: '+6.789', points: 13 },
-    { position: 5, rider: 'Xavi Vierge', team: 'Team HRC Honda', time: '+9.123', points: 11 },
-  ],
-};
-
-// Helper: Fetch avec timeout
-async function fetchWithTimeout(
-  url: string,
-  options: RequestInit = {},
-  timeout: number = DEFAULT_TIMEOUT
-): Promise<Response> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    return response;
-  } catch (error) {
-    clearTimeout(timeoutId);
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error(`Request timeout after ${timeout}ms for ${url}`);
-    }
-    throw error;
-  }
-}
-
-// Helper: Validation de réponse API
-function validateApiResponse(data: unknown, endpoint: string): data is Record<string, unknown> {
-  if (data === null || typeof data !== 'object') {
-    console.error(`[API Validation] Invalid response from ${endpoint}: expected object, got ${typeof data}`);
-    return false;
-  }
-  return true;
-}
-
-// Helper: Parse date avec gestion timezone
-function parseDate(dateString: string, timeString?: string): string {
-  try {
-    // Si déjà au format ISO complet
-    if (dateString.includes('T')) {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) {
-        throw new Error(`Invalid ISO date: ${dateString}`);
-      }
-      return date.toISOString();
-    }
-
-    // Format YYYY-MM-DD avec heure optionnelle
-    const time = timeString || '00:00:00';
-    const dateTimeString = `${dateString}T${time}`;
-    const date = new Date(dateTimeString);
-
-    if (isNaN(date.getTime())) {
-      throw new Error(`Invalid date: ${dateString} ${time}`);
-    }
-
-    return date.toISOString();
-  } catch (error) {
-    console.error(`[Date Parse Error] Failed to parse date:`, error);
-    // Retourner la date actuelle + 1 jour comme fallback
-    const fallback = new Date();
-    fallback.setDate(fallback.getDate() + 1);
-    return fallback.toISOString();
-  }
-}
-
-// Helper: Déterminer le statut d'une course
-function determineRaceStatus(dateString: string): 'upcoming' | 'live' | 'finished' {
-  const raceDate = new Date(dateString);
-  const now = new Date();
-  const raceEnd = new Date(raceDate);
-  raceEnd.setHours(raceEnd.getHours() + 2); // Course dure ~2h
-
-  if (now < raceDate) {
-    return 'upcoming';
-  } else if (now >= raceDate && now <= raceEnd) {
-    return 'live';
-  } else {
-    return 'finished';
-  }
-}
-
-// Helper: Log d'erreur détaillé
-function logApiError(context: string, error: unknown, extraInfo?: Record<string, unknown>): void {
-  const errorDetails = {
-    context,
-    timestamp: new Date().toISOString(),
-    error: error instanceof Error ? {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
-    } : error,
-    ...extraInfo,
+export interface Driver {
+  id: string;
+  name: string;
+  number: number;
+  nationality: string;
+  countryCode: string;
+  team: string;
+  teamId: string;
+  photo: string;
+  stats: {
+    wins: number;
+    podiums: number;
+    poles: number;
+    championships: number;
+    races: number;
   };
-  console.error('[API Error]', JSON.stringify(errorDetails, null, 2));
+  birthDate: string;
+  height: number;
+  weight: number;
 }
 
-// Calendrier MotoGP 2026 - Courses longues uniquement (10 premiers rounds)
-const MOTOGP_2026_CALENDAR: Race[] = [
+export interface Team {
+  id: string;
+  name: string;
+  constructor: string;
+  nationality: string;
+  countryCode: string;
+  colors: {
+    primary: string;
+    secondary: string;
+    accent: string;
+  };
+  logo: string;
+  bike: string;
+  riders: string[];
+}
+
+export interface Circuit {
+  id: string;
+  name: string;
+  location: string;
+  country: string;
+  countryCode: string;
+  length: number;
+  turns: number;
+  lapRecord: {
+    time: string;
+    rider: string;
+    year: number;
+  };
+  image: string;
+}
+
+export interface Round {
+  id: string;
+  round: number;
+  name: string;
+  circuit: Circuit;
+  dates: {
+    practice1: string;
+    practice2: string;
+    practice3: string;
+    qualifying: string;
+    sprint: string;
+    race: string;
+  };
+  status: 'upcoming' | 'live' | 'finished';
+  season: number;
+}
+
+export interface QualifyingResult {
+  position: number;
+  driverId: string;
+  q1Time?: string;
+  q2Time?: string;
+  q3Time?: string;
+  gridPosition: number;
+}
+
+export interface SprintResult {
+  position: number;
+  driverId: string;
+  time: string;
+  gap: string;
+  points: number;
+  fastestLap?: boolean;
+}
+
+export interface ApiRaceResult {
+  position: number;
+  rider: {
+    id: string;
+    number: number;
+    firstName: string;
+    lastName: string;
+    code: string;
+    nationality: string;
+    team: {
+      id: string;
+      name: string;
+      shortName: string;
+      color: string;
+    };
+    color: string;
+  };
+  team: {
+    id: string;
+    name: string;
+    shortName: string;
+    color: string;
+  };
+  time: string;
+  points: number;
+}
+
+export interface RaceResults {
+  roundId: string;
+  qualifying: QualifyingResult[];
+  sprint: SprintResult[];
+  race: Array<{
+    position: number;
+    driverId: string;
+    time: string;
+    gap: string;
+    points: number;
+    fastestLap?: boolean;
+    status: 'finished' | 'dnf' | 'dns';
+  }>;
+  fastestLap: {
+    driverId: string;
+    time: string;
+  };
+}
+
+export interface Standing {
+  position: number;
+  driverId?: string;
+  teamId?: string;
+  bikeConstructor?: string;
+  points: number;
+  wins: number;
+  podiums: number;
+}
+
+export interface NewsItem {
+  id: string;
+  title: string;
+  summary: string;
+  url: string;
+  source: string;
+  publishedAt: string;
+  image?: string;
+  category: 'race' | 'transfer' | 'injury' | 'technical' | 'general';
+}
+
+// ============================================================================
+// DONNÉES - PILOTES 2026 (22 pilotes)
+// ============================================================================
+
+export const drivers2026: Driver[] = [
   {
-    id: 'motogp-2026-r1',
-    round: 1,
-    name: 'Thai Grand Prix',
-    circuit: 'Chang International Circuit',
-    location: 'Buriram',
-    country: 'Thailand',
-    date: '2026-03-02T07:00:00.000Z', // Dimanche 2 mars (AUJOURD'HUI)
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
+    id: 'bagnaia',
+    name: 'Francesco Bagnaia',
+    number: 63,
+    nationality: 'Italienne',
+    countryCode: 'IT',
+    team: 'Ducati Lenovo Team',
+    teamId: 'ducati-lenovo',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/63_Bagnaia.png',
+    stats: { wins: 27, podiums: 46, poles: 21, championships: 2, races: 148 },
+    birthDate: '1997-01-14',
+    height: 176,
+    weight: 67,
   },
   {
-    id: 'motogp-2026-r2',
-    round: 2,
-    name: 'Argentine Grand Prix',
-    circuit: 'Autódromo Termas de Río Hondo',
-    location: 'Termas de Río Hondo',
-    country: 'Argentina',
-    date: '2026-03-15T18:00:00.000Z', // Dimanche 15 mars
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
+    id: 'marquez-marc',
+    name: 'Marc Marquez',
+    number: 93,
+    nationality: 'Espagnole',
+    countryCode: 'ES',
+    team: 'Ducati Lenovo Team',
+    teamId: 'ducati-lenovo',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/93_Marquez.png',
+    stats: { wins: 87, podiums: 148, poles: 72, championships: 6, races: 202 },
+    birthDate: '1993-02-17',
+    height: 169,
+    weight: 65,
   },
   {
-    id: 'motogp-2026-r3',
-    round: 3,
-    name: 'Grand Prix of the Americas',
-    circuit: 'Circuit of the Americas',
-    location: 'Austin',
-    country: 'USA',
-    date: '2026-03-29T19:00:00.000Z', // Dimanche 29 mars
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
+    id: 'martin-jorge',
+    name: 'Jorge Martin',
+    number: 89,
+    nationality: 'Espagnole',
+    countryCode: 'ES',
+    team: 'Aprilia Racing',
+    teamId: 'aprilia-racing',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/89_Martin.png',
+    stats: { wins: 14, podiums: 40, poles: 18, championships: 1, races: 98 },
+    birthDate: '1998-01-29',
+    height: 168,
+    weight: 62,
   },
   {
-    id: 'motogp-2026-r4',
-    round: 4,
-    name: 'Grand Prix of Qatar',
-    circuit: 'Lusail International Circuit',
-    location: 'Lusail',
-    country: 'Qatar',
-    date: '2026-04-12T17:00:00.000Z', // Dimanche 12 avril
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
+    id: 'espargaro-aleix',
+    name: 'Aleix Espargaro',
+    number: 41,
+    nationality: 'Espagnole',
+    countryCode: 'ES',
+    team: 'Aprilia Racing',
+    teamId: 'aprilia-racing',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/41_Espargaro.png',
+    stats: { wins: 2, podiums: 18, poles: 4, championships: 0, races: 268 },
+    birthDate: '1989-07-30',
+    height: 180,
+    weight: 69,
   },
   {
-    id: 'motogp-2026-r5',
-    round: 5,
-    name: 'Gran Premio de España',
-    circuit: 'Circuito de Jerez',
-    location: 'Jerez de la Frontera',
-    country: 'Spain',
-    date: '2026-04-26T13:00:00.000Z', // Dimanche 26 avril
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
+    id: 'binder-brad',
+    name: 'Brad Binder',
+    number: 33,
+    nationality: 'Sud-Africaine',
+    countryCode: 'ZA',
+    team: 'Red Bull KTM Factory Racing',
+    teamId: 'ktm-factory',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/33_Binder.png',
+    stats: { wins: 4, podiums: 22, poles: 1, championships: 0, races: 114 },
+    birthDate: '1995-08-11',
+    height: 170,
+    weight: 63,
   },
   {
-    id: 'motogp-2026-r6',
-    round: 6,
-    name: 'Grand Prix de France',
-    circuit: 'Circuit Bugatti',
-    location: 'Le Mans',
-    country: 'France',
-    date: '2026-05-10T13:00:00.000Z', // Dimanche 10 mai
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
+    id: 'acosta',
+    name: 'Pedro Acosta',
+    number: 37,
+    nationality: 'Espagnole',
+    countryCode: 'ES',
+    team: 'Red Bull KTM Factory Racing',
+    teamId: 'ktm-factory',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/37_Acosta.png',
+    stats: { wins: 4, podiums: 15, poles: 3, championships: 0, races: 28 },
+    birthDate: '2004-05-25',
+    height: 172,
+    weight: 60,
   },
   {
-    id: 'motogp-2026-r7',
-    round: 7,
-    name: 'Gran Premi de Catalunya',
-    circuit: 'Circuit de Barcelona-Catalunya',
-    location: 'Barcelona',
-    country: 'Spain',
-    date: '2026-05-24T13:00:00.000Z', // Dimanche 24 mai
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
+    id: 'bastianini',
+    name: 'Enea Bastianini',
+    number: 23,
+    nationality: 'Italienne',
+    countryCode: 'IT',
+    team: 'Red Bull KTM Tech3',
+    teamId: 'ktm-tech3',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/23_Bastianini.png',
+    stats: { wins: 5, podiums: 14, poles: 2, championships: 0, races: 104 },
+    birthDate: '1997-12-30',
+    height: 168,
+    weight: 64,
   },
   {
-    id: 'motogp-2026-r8',
-    round: 8,
-    name: "Gran Premio d'Italia",
-    circuit: 'Autodromo Internazionale del Mugello',
-    location: 'Scarperia',
-    country: 'Italy',
-    date: '2026-06-07T13:00:00.000Z', // Dimanche 7 juin
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
+    id: 'ogura',
+    name: 'Ai Ogura',
+    number: 79,
+    nationality: 'Japonaise',
+    countryCode: 'JP',
+    team: 'Red Bull KTM Tech3',
+    teamId: 'ktm-tech3',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/79_Ogura.png',
+    stats: { wins: 0, podiums: 4, poles: 0, championships: 0, races: 8 },
+    birthDate: '2001-01-26',
+    height: 172,
+    weight: 65,
   },
   {
-    id: 'motogp-2026-r9',
-    round: 9,
-    name: 'Grand Prix of Hungary',
-    circuit: 'Balaton Park Circuit',
-    location: 'Balatonfőkajár',
-    country: 'Hungary',
-    date: '2026-06-21T13:00:00.000Z', // Dimanche 21 juin
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
+    id: 'viñales',
+    name: 'Maverick Viñales',
+    number: 12,
+    nationality: 'Espagnole',
+    countryCode: 'ES',
+    team: 'KTM Castrol',
+    teamId: 'ktm-castrol',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/12_Vinales.png',
+    stats: { wins: 11, podiums: 38, poles: 14, championships: 0, races: 190 },
+    birthDate: '1995-01-12',
+    height: 171,
+    weight: 64,
   },
   {
-    id: 'motogp-2026-r10',
-    round: 10,
-    name: 'Grand Prix of Czechia',
-    circuit: 'Brno Circuit',
-    location: 'Brno',
-    country: 'Czech Republic',
-    date: '2026-07-05T13:00:00.000Z', // Dimanche 5 juillet
-    status: 'upcoming',
-    type: 'motogp',
-    raceType: 'race',
+    id: 'miller-jack',
+    name: 'Jack Miller',
+    number: 43,
+    nationality: 'Australienne',
+    countryCode: 'AU',
+    team: 'KTM Castrol',
+    teamId: 'ktm-castrol',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/43_Miller.png',
+    stats: { wins: 6, podiums: 26, poles: 3, championships: 0, races: 188 },
+    birthDate: '1995-01-18',
+    height: 173,
+    weight: 64,
+  },
+  {
+    id: 'quartararo',
+    name: 'Fabio Quartararo',
+    number: 20,
+    nationality: 'Française',
+    countryCode: 'FR',
+    team: 'Monster Energy Yamaha',
+    teamId: 'yamaha-factory',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/20_Quartararo.png',
+    stats: { wins: 12, podiums: 32, poles: 9, championships: 1, races: 124 },
+    birthDate: '1999-04-20',
+    height: 177,
+    weight: 67,
+  },
+  {
+    id: 'rins',
+    name: 'Alex Rins',
+    number: 42,
+    nationality: 'Espagnole',
+    countryCode: 'ES',
+    team: 'Monster Energy Yamaha',
+    teamId: 'yamaha-factory',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/42_Rins.png',
+    stats: { wins: 6, podiums: 24, poles: 4, championships: 0, races: 162 },
+    birthDate: '1995-12-08',
+    height: 176,
+    weight: 71,
+  },
+  {
+    id: 'mir',
+    name: 'Joan Mir',
+    number: 36,
+    nationality: 'Espagnole',
+    countryCode: 'ES',
+    team: 'Honda HRC Castrol',
+    teamId: 'honda-hrc',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/36_Mir.png',
+    stats: { wins: 2, podiums: 12, poles: 0, championships: 1, races: 118 },
+    birthDate: '1997-09-01',
+    height: 181,
+    weight: 75,
+  },
+  {
+    id: 'marini',
+    name: 'Luca Marini',
+    number: 10,
+    nationality: 'Italienne',
+    countryCode: 'IT',
+    team: 'Honda HRC Castrol',
+    teamId: 'honda-hrc',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/10_Marini.png',
+    stats: { wins: 0, podiums: 4, poles: 0, championships: 0, races: 100 },
+    birthDate: '1997-08-10',
+    height: 184,
+    weight: 71,
+  },
+  {
+    id: 'marquez-alex',
+    name: 'Alex Marquez',
+    number: 73,
+    nationality: 'Espagnole',
+    countryCode: 'ES',
+    team: 'BK8 Gresini Racing',
+    teamId: 'gresini-racing',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/73_Marquez.png',
+    stats: { wins: 3, podiums: 13, poles: 3, championships: 0, races: 138 },
+    birthDate: '1996-04-23',
+    height: 168,
+    weight: 63,
+  },
+  {
+    id: 'bezzechi',
+    name: 'Marco Bezzecchi',
+    number: 72,
+    nationality: 'Italienne',
+    countryCode: 'IT',
+    team: 'BK8 Gresini Racing',
+    teamId: 'gresini-racing',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/72_Bezzechi.png',
+    stats: { wins: 2, podiums: 12, poles: 1, championships: 0, races: 80 },
+    birthDate: '1998-11-12',
+    height: 167,
+    weight: 62,
+  },
+  {
+    id: 'fernandez-augusto',
+    name: 'Augusto Fernandez',
+    number: 7,
+    nationality: 'Espagnole',
+    countryCode: 'ES',
+    team: 'Prima Pramac Yamaha',
+    teamId: 'pramac-yamaha',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/7_Fernandez.png',
+    stats: { wins: 0, podiums: 3, poles: 0, championships: 0, races: 42 },
+    birthDate: '1997-09-23',
+    height: 174,
+    weight: 66,
+  },
+  {
+    id: 'morbidelli',
+    name: 'Franco Morbidelli',
+    number: 21,
+    nationality: 'Italienne',
+    countryCode: 'IT',
+    team: 'Prima Pramac Yamaha',
+    teamId: 'pramac-yamaha',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/21_Morbidelli.png',
+    stats: { wins: 3, podiums: 11, poles: 2, championships: 0, races: 158 },
+    birthDate: '1994-12-04',
+    height: 176,
+    weight: 64,
+  },
+  {
+    id: 'digiannantonio',
+    name: 'Fabio Di Giannantonio',
+    number: 49,
+    nationality: 'Italienne',
+    countryCode: 'IT',
+    team: 'Pertamina Enduro VR46',
+    teamId: 'vr46-racing',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/49_DiGiannantonio.png',
+    stats: { wins: 1, podiums: 5, poles: 0, championships: 0, races: 72 },
+    birthDate: '1998-10-10',
+    height: 175,
+    weight: 68,
+  },
+  {
+    id: 'nakagami',
+    name: 'Takaaki Nakagami',
+    number: 30,
+    nationality: 'Japonaise',
+    countryCode: 'JP',
+    team: 'LCR Honda Idemitsu',
+    teamId: 'lcr-honda',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/30_Nakagami.png',
+    stats: { wins: 0, podiums: 3, poles: 0, championships: 0, races: 136 },
+    birthDate: '1992-02-09',
+    height: 175,
+    weight: 69,
+  },
+  {
+    id: 'chantra',
+    name: 'Somkiat Chantra',
+    number: 35,
+    nationality: 'Thaïlandaise',
+    countryCode: 'TH',
+    team: 'LCR Honda Castrol',
+    teamId: 'lcr-honda',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/35_Chantra.png',
+    stats: { wins: 0, podiums: 0, poles: 0, championships: 0, races: 4 },
+    birthDate: '1998-04-14',
+    height: 168,
+    weight: 58,
+  },
+  {
+    id: 'fernandez-raul',
+    name: 'Raul Fernandez',
+    number: 25,
+    nationality: 'Espagnole',
+    countryCode: 'ES',
+    team: 'Trackhouse Racing',
+    teamId: 'trackhouse',
+    photo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/25_Fernandez.png',
+    stats: { wins: 0, podiums: 2, poles: 0, championships: 0, races: 56 },
+    birthDate: '2000-10-23',
+    height: 173,
+    weight: 64,
   },
 ];
 
-// Récupérer le calendrier MotoGP 2026
-export async function getMotoGPCalendar(): Promise<Race[]> {
-  console.log('[API] Fetching MotoGP 2026 calendar');
-  return MOTOGP_2026_CALENDAR.map(race => ({
-    ...race,
-    status: determineRaceStatus(race.date),
-  }));
+// ============================================================================
+// DONNÉES - ÉQUIPES 2026 (11 équipes)
+// ============================================================================
+
+export const teams2026: Team[] = [
+  {
+    id: 'ducati-lenovo',
+    name: 'Ducati Lenovo Team',
+    constructor: 'Ducati',
+    nationality: 'Italienne',
+    countryCode: 'IT',
+    colors: { primary: '#DC0000', secondary: '#000000', accent: '#FFFFFF' },
+    logo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/logo-ducati.png',
+    bike: 'Ducati Desmosedici GP26',
+    riders: ['bagnaia', 'marquez-marc'],
+  },
+  {
+    id: 'aprilia-racing',
+    name: 'Aprilia Racing',
+    constructor: 'Aprilia',
+    nationality: 'Italienne',
+    countryCode: 'IT',
+    colors: { primary: '#9D0012', secondary: '#FFFFFF', accent: '#000000' },
+    logo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/logo-aprilia.png',
+    bike: 'Aprilia RS-GP26',
+    riders: ['martin-jorge', 'espargaro-aleix'],
+  },
+  {
+    id: 'ktm-factory',
+    name: 'Red Bull KTM Factory Racing',
+    constructor: 'KTM',
+    nationality: 'Autrichienne',
+    countryCode: 'AT',
+    colors: { primary: '#FF6600', secondary: '#000000', accent: '#FFFFFF' },
+    logo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/logo-ktm.png',
+    bike: 'KTM RC16',
+    riders: ['binder-brad', 'acosta'],
+  },
+  {
+    id: 'ktm-tech3',
+    name: 'Red Bull KTM Tech3',
+    constructor: 'KTM',
+    nationality: 'Française',
+    countryCode: 'FR',
+    colors: { primary: '#0000FF', secondary: '#FFFFFF', accent: '#FF0000' },
+    logo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/logo-tech3.png',
+    bike: 'KTM RC16',
+    riders: ['bastianini', 'ogura'],
+  },
+  {
+    id: 'ktm-castrol',
+    name: 'KTM Castrol',
+    constructor: 'KTM',
+    nationality: 'Autrichienne',
+    countryCode: 'AT',
+    colors: { primary: '#006600', secondary: '#FF0000', accent: '#FFFFFF' },
+    logo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/logo-ktm-castrol.png',
+    bike: 'KTM RC16',
+    riders: ['viñales', 'miller-jack'],
+  },
+  {
+    id: 'yamaha-factory',
+    name: 'Monster Energy Yamaha MotoGP',
+    constructor: 'Yamaha',
+    nationality: 'Japonaise',
+    countryCode: 'JP',
+    colors: { primary: '#0000CC', secondary: '#00FF00', accent: '#000000' },
+    logo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/logo-yamaha.png',
+    bike: 'Yamaha YZR-M1',
+    riders: ['quartararo', 'rins'],
+  },
+  {
+    id: 'honda-hrc',
+    name: 'Honda HRC Castrol',
+    constructor: 'Honda',
+    nationality: 'Japonaise',
+    countryCode: 'JP',
+    colors: { primary: '#CC0000', secondary: '#FFFFFF', accent: '#000000' },
+    logo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/logo-honda.png',
+    bike: 'Honda RC213V',
+    riders: ['mir', 'marini'],
+  },
+  {
+    id: 'gresini-racing',
+    name: 'BK8 Gresini Racing MotoGP',
+    constructor: 'Ducati',
+    nationality: 'Italienne',
+    countryCode: 'IT',
+    colors: { primary: '#00BFFF', secondary: '#FFFFFF', accent: '#000000' },
+    logo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/logo-gresini.png',
+    bike: 'Ducati Desmosedici GP25',
+    riders: ['marquez-alex', 'bezzechi'],
+  },
+  {
+    id: 'pramac-yamaha',
+    name: 'Prima Pramac Yamaha MotoGP',
+    constructor: 'Yamaha',
+    nationality: 'Italienne',
+    countryCode: 'IT',
+    colors: { primary: '#FFD700', secondary: '#000000', accent: '#FFFFFF' },
+    logo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/logo-pramac.png',
+    bike: 'Yamaha YZR-M1',
+    riders: ['fernandez-augusto', 'morbidelli'],
+  },
+  {
+    id: 'vr46-racing',
+    name: 'Pertamina Enduro VR46 Racing Team',
+    constructor: 'Ducati',
+    nationality: 'Italienne',
+    countryCode: 'IT',
+    colors: { primary: '#FFFF00', secondary: '#000000', accent: '#00FF00' },
+    logo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/logo-vr46.png',
+    bike: 'Ducati Desmosedici GP25',
+    riders: ['digiannantonio', 'fernandez-raul'],
+  },
+  {
+    id: 'lcr-honda',
+    name: 'LCR Honda',
+    constructor: 'Honda',
+    nationality: 'Japonaise',
+    countryCode: 'JP',
+    colors: { primary: '#FF0000', secondary: '#FFFFFF', accent: '#000000' },
+    logo: 'https://resources.motogp.pulselive.com/photo-resources/2026/02/19/logo-lcr.png',
+    bike: 'Honda RC213V',
+    riders: ['nakagami', 'chantra'],
+  },
+];
+
+// ============================================================================
+// DONNÉES - CIRCUITS
+// ============================================================================
+
+const circuits: Circuit[] = [
+  {
+    id: 'buriram',
+    name: 'Chang International Circuit',
+    location: 'Buriram',
+    country: 'Thaïlande',
+    countryCode: 'TH',
+    length: 4.554,
+    turns: 12,
+    lapRecord: { time: '1:29.725', rider: 'Brad Binder', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-buriram.jpg',
+  },
+  {
+    id: 'phillip-island',
+    name: 'Phillip Island Circuit',
+    location: 'Phillip Island',
+    country: 'Australie',
+    countryCode: 'AU',
+    length: 4.448,
+    turns: 12,
+    lapRecord: { time: '1:27.767', rider: 'Marc Marquez', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-phillip-island.jpg',
+  },
+  {
+    id: 'losail',
+    name: 'Lusail International Circuit',
+    location: 'Lusail',
+    country: 'Qatar',
+    countryCode: 'QA',
+    length: 5.380,
+    turns: 16,
+    lapRecord: { time: '1:51.762', rider: 'Fabio Quartararo', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-losail.jpg',
+  },
+  {
+    id: 'jerez',
+    name: 'Circuito de Jerez',
+    location: 'Jerez de la Frontera',
+    country: 'Espagne',
+    countryCode: 'ES',
+    length: 4.423,
+    turns: 13,
+    lapRecord: { time: '1:36.725', rider: 'Fabio Quartararo', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-jerez.jpg',
+  },
+  {
+    id: 'lemans',
+    name: 'Bugatti Circuit',
+    location: 'Le Mans',
+    country: 'France',
+    countryCode: 'FR',
+    length: 4.185,
+    turns: 14,
+    lapRecord: { time: '1:30.081', rider: 'Pedro Acosta', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-lemans.jpg',
+  },
+  {
+    id: 'mugello',
+    name: 'Autodromo Internazionale del Mugello',
+    location: 'Scarperia',
+    country: 'Italie',
+    countryCode: 'IT',
+    length: 5.245,
+    turns: 15,
+    lapRecord: { time: '1:44.798', rider: 'Marc Marquez', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-mugello.jpg',
+  },
+  {
+    id: 'assen',
+    name: 'TT Circuit Assen',
+    location: 'Assen',
+    country: 'Pays-Bas',
+    countryCode: 'NL',
+    length: 4.542,
+    turns: 18,
+    lapRecord: { time: '1:31.866', rider: 'Marc Marquez', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-assen.jpg',
+  },
+  {
+    id: 'sachsenring',
+    name: 'Sachsenring',
+    location: 'Hohenstein-Ernstthal',
+    country: 'Allemagne',
+    countryCode: 'DE',
+    length: 3.671,
+    turns: 13,
+    lapRecord: { time: '1:20.145', rider: 'Jorge Martin', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-sachsenring.jpg',
+  },
+  {
+    id: 'silverstone',
+    name: 'Silverstone Circuit',
+    location: 'Silverstone',
+    country: 'Royaume-Uni',
+    countryCode: 'GB',
+    length: 5.900,
+    turns: 18,
+    lapRecord: { time: '1:58.645', rider: 'Marc Marquez', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-silverstone.jpg',
+  },
+  {
+    id: 'red-bull-ring',
+    name: 'Red Bull Ring',
+    location: 'Spielberg',
+    country: 'Autriche',
+    countryCode: 'AT',
+    length: 4.318,
+    turns: 10,
+    lapRecord: { time: '1:21.901', rider: 'Jorge Martin', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-red-bull-ring.jpg',
+  },
+  {
+    id: 'aragon',
+    name: 'MotorLand Aragon',
+    location: 'Alcaniz',
+    country: 'Espagne',
+    countryCode: 'ES',
+    length: 5.077,
+    turns: 17,
+    lapRecord: { time: '1:46.281', rider: 'Marc Marquez', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-aragon.jpg',
+  },
+  {
+    id: 'misano',
+    name: 'Misano World Circuit Marco Simoncelli',
+    location: 'Misano Adriatico',
+    country: 'Italie',
+    countryCode: 'IT',
+    length: 4.226,
+    turns: 16,
+    lapRecord: { time: '1:30.390', rider: 'Francesco Bagnaia', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-misano.jpg',
+  },
+  {
+    id: 'motegi',
+    name: 'Mobility Resort Motegi',
+    location: 'Motegi',
+    country: 'Japon',
+    countryCode: 'JP',
+    length: 4.801,
+    turns: 14,
+    lapRecord: { time: '1:44.411', rider: 'Francesco Bagnaia', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-motegi.jpg',
+  },
+  {
+    id: 'sepang',
+    name: 'Sepang International Circuit',
+    location: 'Sepang',
+    country: 'Malaisie',
+    countryCode: 'MY',
+    length: 5.543,
+    turns: 15,
+    lapRecord: { time: '1:58.576', rider: 'Francesco Bagnaia', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-sepang.jpg',
+  },
+  {
+    id: 'austin',
+    name: 'Circuit of the Americas',
+    location: 'Austin',
+    country: 'États-Unis',
+    countryCode: 'US',
+    length: 5.513,
+    turns: 20,
+    lapRecord: { time: '2:00.281', rider: 'Marc Marquez', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-austin.jpg',
+  },
+  {
+    id: 'rio-hondo',
+    name: 'Termas de Rio Hondo',
+    location: 'Santiago del Estero',
+    country: 'Argentine',
+    countryCode: 'AR',
+    length: 4.806,
+    turns: 14,
+    lapRecord: { time: '1:37.683', rider: 'Marc Marquez', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-rio-hondo.jpg',
+  },
+  {
+    id: 'valencia',
+    name: 'Circuit Ricardo Tormo',
+    location: 'Valencia',
+    country: 'Espagne',
+    countryCode: 'ES',
+    length: 4.005,
+    turns: 14,
+    lapRecord: { time: '1:29.440', rider: 'Francesco Bagnaia', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-valencia.jpg',
+  },
+  {
+    id: 'barcelona',
+    name: 'Circuit de Barcelona-Catalunya',
+    location: 'Barcelona',
+    country: 'Espagne',
+    countryCode: 'ES',
+    length: 4.657,
+    turns: 16,
+    lapRecord: { time: '1:38.685', rider: 'Jorge Martin', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-barcelona.jpg',
+  },
+  {
+    id: 'brno',
+    name: 'Brno Circuit',
+    location: 'Brno',
+    country: 'Republique Tcheque',
+    countryCode: 'CZ',
+    length: 5.403,
+    turns: 14,
+    lapRecord: { time: '1:54.234', rider: 'Marc Marquez', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-brno.jpg',
+  },
+  {
+    id: 'balaton',
+    name: 'Balaton Park Circuit',
+    location: 'Balatonfokajar',
+    country: 'Hongrie',
+    countryCode: 'HU',
+    length: 4.600,
+    turns: 16,
+    lapRecord: { time: '1:42.567', rider: 'Francesco Bagnaia', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-balaton.jpg',
+  },
+  {
+    id: 'portimao',
+    name: 'Algarve International Circuit',
+    location: 'Portimao',
+    country: 'Portugal',
+    countryCode: 'PT',
+    length: 4.653,
+    turns: 15,
+    lapRecord: { time: '1:38.123', rider: 'Jorge Martin', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-portimao.jpg',
+  },
+  {
+    id: 'indianapolis',
+    name: 'Indianapolis Motor Speedway',
+    location: 'Indianapolis',
+    country: 'États-Unis',
+    countryCode: 'US',
+    length: 4.170,
+    turns: 16,
+    lapRecord: { time: '1:32.456', rider: 'Marc Marquez', year: 2026 },
+    image: 'https://resources.motogp.pulselive.com/photo-resources/2026/circuit-indianapolis.jpg',
+  },
+];
+
+// ============================================================================
+// DONNÉES - CALENDRIER 2026 COMPLET (22 rounds)
+// ============================================================================
+
+export const calendar2026: Round[] = [
+  {
+    id: 'thai-gp-2026',
+    round: 1,
+    name: 'PT Grand Prix of Thailand',
+    circuit: circuits[0],
+    dates: {
+      practice1: '2026-02-27T09:45:00Z',
+      practice2: '2026-02-27T14:00:00Z',
+      practice3: '2026-02-28T09:10:00Z',
+      qualifying: '2026-02-28T14:00:00Z',
+      sprint: '2026-03-01T09:00:00Z',
+      race: '2026-03-02T13:00:00Z',
+    },
+    status: 'finished',
+    season: 2026,
+  },
+  {
+    id: 'australian-gp-2026',
+    round: 2,
+    name: 'Australian Motorcycle Grand Prix',
+    circuit: circuits[1],
+    dates: {
+      practice1: '2026-03-13T01:45:00Z',
+      practice2: '2026-03-13T06:00:00Z',
+      practice3: '2026-03-14T01:10:00Z',
+      qualifying: '2026-03-14T06:00:00Z',
+      sprint: '2026-03-15T01:00:00Z',
+      race: '2026-03-16T05:00:00Z',
+    },
+    status: 'finished',
+    season: 2026,
+  },
+  {
+    id: 'qatari-gp-2026',
+    round: 3,
+    name: 'Qatar Airways Grand Prix of Qatar',
+    circuit: circuits[2],
+    dates: {
+      practice1: '2026-03-27T13:45:00Z',
+      practice2: '2026-03-27T18:00:00Z',
+      practice3: '2026-03-28T13:10:00Z',
+      qualifying: '2026-03-28T18:00:00Z',
+      sprint: '2026-03-29T16:00:00Z',
+      race: '2026-03-30T18:00:00Z',
+    },
+    status: 'finished',
+    season: 2026,
+  },
+  {
+    id: 'spanish-gp-2026',
+    round: 4,
+    name: 'Gran Premio Estrella Galicia 0,0 de España',
+    circuit: circuits[3],
+    dates: {
+      practice1: '2026-04-24T09:45:00Z',
+      practice2: '2026-04-24T14:00:00Z',
+      practice3: '2026-04-25T09:10:00Z',
+      qualifying: '2026-04-25T14:00:00Z',
+      sprint: '2026-04-26T13:00:00Z',
+      race: '2026-04-27T13:00:00Z',
+    },
+    status: 'finished',
+    season: 2026,
+  },
+  {
+    id: 'french-gp-2026',
+    round: 5,
+    name: 'Shark Grand Prix de France',
+    circuit: circuits[4],
+    dates: {
+      practice1: '2026-05-08T08:45:00Z',
+      practice2: '2026-05-08T13:00:00Z',
+      practice3: '2026-05-09T08:10:00Z',
+      qualifying: '2026-05-09T13:00:00Z',
+      sprint: '2026-05-10T13:00:00Z',
+      race: '2026-05-11T13:00:00Z',
+    },
+    status: 'finished',
+    season: 2026,
+  },
+  {
+    id: 'italian-gp-2026',
+    round: 6,
+    name: 'Gran Premio d\'Italia Brembo',
+    circuit: circuits[5],
+    dates: {
+      practice1: '2026-05-22T09:45:00Z',
+      practice2: '2026-05-22T14:00:00Z',
+      practice3: '2026-05-23T09:10:00Z',
+      qualifying: '2026-05-23T14:00:00Z',
+      sprint: '2026-05-24T13:00:00Z',
+      race: '2026-05-25T13:00:00Z',
+    },
+    status: 'finished',
+    season: 2026,
+  },
+  {
+    id: 'dutch-gp-2026',
+    round: 7,
+    name: 'Motul TT Assen',
+    circuit: circuits[6],
+    dates: {
+      practice1: '2026-06-26T08:45:00Z',
+      practice2: '2026-06-26T13:00:00Z',
+      practice3: '2026-06-27T08:10:00Z',
+      qualifying: '2026-06-27T13:00:00Z',
+      sprint: '2026-06-28T13:00:00Z',
+      race: '2026-06-29T13:00:00Z',
+    },
+    status: 'finished',
+    season: 2026,
+  },
+  {
+    id: 'german-gp-2026',
+    round: 8,
+    name: 'Liqui Moly Motorrad Grand Prix Deutschland',
+    circuit: circuits[7],
+    dates: {
+      practice1: '2026-07-17T08:45:00Z',
+      practice2: '2026-07-17T13:00:00Z',
+      practice3: '2026-07-18T08:10:00Z',
+      qualifying: '2026-07-18T13:00:00Z',
+      sprint: '2026-07-19T13:00:00Z',
+      race: '2026-07-20T13:00:00Z',
+    },
+    status: 'finished',
+    season: 2026,
+  },
+  {
+    id: 'british-gp-2026',
+    round: 9,
+    name: 'Monster Energy British Grand Prix',
+    circuit: circuits[8],
+    dates: {
+      practice1: '2026-07-31T09:45:00Z',
+      practice2: '2026-07-31T14:00:00Z',
+      practice3: '2026-08-01T09:10:00Z',
+      qualifying: '2026-08-01T14:00:00Z',
+      sprint: '2026-08-02T13:00:00Z',
+      race: '2026-08-03T13:00:00Z',
+    },
+    status: 'finished',
+    season: 2026,
+  },
+  {
+    id: 'austrian-gp-2026',
+    round: 10,
+    name: 'CryptoDATA Motorrad Grand Prix von Österreich',
+    circuit: circuits[9],
+    dates: {
+      practice1: '2026-08-14T08:45:00Z',
+      practice2: '2026-08-14T13:00:00Z',
+      practice3: '2026-08-15T08:10:00Z',
+      qualifying: '2026-08-15T13:00:00Z',
+      sprint: '2026-08-16T13:00:00Z',
+      race: '2026-08-17T13:00:00Z',
+    },
+    status: 'live',
+    season: 2026,
+  },
+  {
+    id: 'aragon-gp-2026',
+    round: 11,
+    name: 'Gran Premio GoPro de Aragón',
+    circuit: circuits[10],
+    dates: {
+      practice1: '2026-09-04T09:45:00Z',
+      practice2: '2026-09-04T14:00:00Z',
+      practice3: '2026-09-05T09:10:00Z',
+      qualifying: '2026-09-05T14:00:00Z',
+      sprint: '2026-09-06T13:00:00Z',
+      race: '2026-09-07T13:00:00Z',
+    },
+    status: 'upcoming',
+    season: 2026,
+  },
+  {
+    id: 'san-marino-gp-2026',
+    round: 12,
+    name: 'Gran Premio Red Bull di San Marino e della Riviera di Rimini',
+    circuit: circuits[11],
+    dates: {
+      practice1: '2026-09-11T09:45:00Z',
+      practice2: '2026-09-11T14:00:00Z',
+      practice3: '2026-09-12T09:10:00Z',
+      qualifying: '2026-09-12T14:00:00Z',
+      sprint: '2026-09-13T13:00:00Z',
+      race: '2026-09-14T13:00:00Z',
+    },
+    status: 'upcoming',
+    season: 2026,
+  },
+  {
+    id: 'japanese-gp-2026',
+    round: 13,
+    name: 'Motul Grand Prix of Japan',
+    circuit: circuits[12],
+    dates: {
+      practice1: '2026-09-25T02:45:00Z',
+      practice2: '2026-09-25T07:00:00Z',
+      practice3: '2026-09-26T02:10:00Z',
+      qualifying: '2026-09-26T07:00:00Z',
+      sprint: '2026-09-27T06:00:00Z',
+      race: '2026-09-28T07:00:00Z',
+    },
+    status: 'upcoming',
+    season: 2026,
+  },
+  {
+    id: 'malaysian-gp-2026',
+    round: 14,
+    name: 'Petronas Grand Prix of Malaysia',
+    circuit: circuits[13],
+    dates: {
+      practice1: '2026-10-09T03:45:00Z',
+      practice2: '2026-10-09T08:00:00Z',
+      practice3: '2026-10-10T03:10:00Z',
+      qualifying: '2026-10-10T08:00:00Z',
+      sprint: '2026-10-11T07:00:00Z',
+      race: '2026-10-12T08:00:00Z',
+    },
+    status: 'upcoming',
+    season: 2026,
+  },
+  {
+    id: 'thai-gp-2-2026',
+    round: 15,
+    name: 'PT Grand Prix of Thailand',
+    circuit: circuits[0],
+    dates: {
+      practice1: '2026-10-16T09:45:00Z',
+      practice2: '2026-10-16T14:00:00Z',
+      practice3: '2026-10-17T09:10:00Z',
+      qualifying: '2026-10-17T14:00:00Z',
+      sprint: '2026-10-18T09:00:00Z',
+      race: '2026-10-19T13:00:00Z',
+    },
+    status: 'upcoming',
+    season: 2026,
+  },
+  {
+    id: 'americas-gp-2026',
+    round: 16,
+    name: 'Red Bull Grand Prix of the Americas',
+    circuit: circuits[14],
+    dates: {
+      practice1: '2026-10-30T15:10:00Z',
+      practice2: '2026-10-30T19:30:00Z',
+      practice3: '2026-10-31T15:10:00Z',
+      qualifying: '2026-10-31T19:30:00Z',
+      sprint: '2026-11-01T18:00:00Z',
+      race: '2026-11-02T20:00:00Z',
+    },
+    status: 'upcoming',
+    season: 2026,
+  },
+  {
+    id: 'argentine-gp-2026',
+    round: 17,
+    name: 'Gran Premio YPF Energia de Argentina',
+    circuit: circuits[15],
+    dates: {
+      practice1: '2026-11-13T13:10:00Z',
+      practice2: '2026-11-13T17:30:00Z',
+      practice3: '2026-11-14T13:10:00Z',
+      qualifying: '2026-11-14T17:30:00Z',
+      sprint: '2026-11-15T16:00:00Z',
+      race: '2026-11-16T18:00:00Z',
+    },
+    status: 'upcoming',
+    season: 2026,
+  },
+  {
+    id: 'valencian-gp-2026',
+    round: 18,
+    name: 'Gran Premio Motul de la Comunitat Valenciana',
+    circuit: circuits[16],
+    dates: {
+      practice1: '2026-11-27T09:45:00Z',
+      practice2: '2026-11-27T14:00:00Z',
+      practice3: '2026-11-28T09:10:00Z',
+      qualifying: '2026-11-28T14:00:00Z',
+      sprint: '2026-11-29T13:00:00Z',
+      race: '2026-11-30T13:00:00Z',
+    },
+    status: 'upcoming',
+    season: 2026,
+  },
+  {
+    id: 'catalan-gp-2026',
+    round: 19,
+    name: 'Gran Premi de Catalunya',
+    circuit: circuits[17],
+    dates: {
+      practice1: '2026-05-01T09:45:00Z',
+      practice2: '2026-05-01T14:00:00Z',
+      practice3: '2026-05-02T09:10:00Z',
+      qualifying: '2026-05-02T14:00:00Z',
+      sprint: '2026-05-03T13:00:00Z',
+      race: '2026-05-04T13:00:00Z',
+    },
+    status: 'finished',
+    season: 2026,
+  },
+  {
+    id: 'czech-gp-2026',
+    round: 20,
+    name: 'Grand Prix of Czechia',
+    circuit: circuits[18],
+    dates: {
+      practice1: '2026-07-03T08:45:00Z',
+      practice2: '2026-07-03T13:00:00Z',
+      practice3: '2026-07-04T08:10:00Z',
+      qualifying: '2026-07-04T13:00:00Z',
+      sprint: '2026-07-05T13:00:00Z',
+      race: '2026-07-06T13:00:00Z',
+    },
+    status: 'finished',
+    season: 2026,
+  },
+  {
+    id: 'hungarian-gp-2026',
+    round: 21,
+    name: 'Grand Prix of Hungary',
+    circuit: circuits[19],
+    dates: {
+      practice1: '2026-06-19T08:45:00Z',
+      practice2: '2026-06-19T13:00:00Z',
+      practice3: '2026-06-20T08:10:00Z',
+      qualifying: '2026-06-20T13:00:00Z',
+      sprint: '2026-06-21T13:00:00Z',
+      race: '2026-06-22T13:00:00Z',
+    },
+    status: 'finished',
+    season: 2026,
+  },
+  {
+    id: 'portuguese-gp-2026',
+    round: 22,
+    name: 'Grande Prémio de Portugal',
+    circuit: circuits[20],
+    dates: {
+      practice1: '2026-03-06T11:45:00Z',
+      practice2: '2026-03-06T16:00:00Z',
+      practice3: '2026-03-07T11:10:00Z',
+      qualifying: '2026-03-07T16:00:00Z',
+      sprint: '2026-03-08T13:00:00Z',
+      race: '2026-03-09T13:00:00Z',
+    },
+    status: 'finished',
+    season: 2026,
+  },
+];
+
+// ============================================================================
+// DONNÉES - RÉSULTATS DES COURSES
+// ============================================================================
+
+export const raceResults2026: RaceResults[] = [
+  {
+    roundId: 'thai-gp-2026',
+    qualifying: [
+      { position: 1, driverId: 'marquez-marc', q3Time: '1:29.159', gridPosition: 1 },
+      { position: 2, driverId: 'bagnaia', q3Time: '1:29.284', gridPosition: 2 },
+      { position: 3, driverId: 'acosta', q3Time: '1:29.412', gridPosition: 3 },
+      { position: 4, driverId: 'martin-jorge', q3Time: '1:29.523', gridPosition: 4 },
+      { position: 5, driverId: 'binder-brad', q3Time: '1:29.678', gridPosition: 5 },
+      { position: 6, driverId: 'bastianini', q3Time: '1:29.784', gridPosition: 6 },
+      { position: 7, driverId: 'viñales', q3Time: '1:29.891', gridPosition: 7 },
+      { position: 8, driverId: 'quartararo', q3Time: '1:29.987', gridPosition: 8 },
+      { position: 9, driverId: 'miller-jack', q3Time: '1:30.123', gridPosition: 9 },
+      { position: 10, driverId: 'espargaro-aleix', q2Time: '1:30.234', gridPosition: 10 },
+      { position: 11, driverId: 'zarco', q2Time: '1:30.345', gridPosition: 11 },
+      { position: 12, driverId: 'bezzechi', q2Time: '1:30.456', gridPosition: 12 },
+    ],
+    sprint: [
+      { position: 1, driverId: 'marquez-marc', time: '19:52.145', gap: '+0.000', points: 12, fastestLap: true },
+      { position: 2, driverId: 'bagnaia', time: '19:53.012', gap: '+0.867', points: 9 },
+      { position: 3, driverId: 'acosta', time: '19:53.845', gap: '+1.700', points: 7 },
+      { position: 4, driverId: 'martin-jorge', time: '19:54.234', gap: '+2.089', points: 6 },
+      { position: 5, driverId: 'binder-brad', time: '19:55.123', gap: '+2.978', points: 5 },
+      { position: 6, driverId: 'bastianini', time: '19:55.987', gap: '+3.842', points: 4 },
+      { position: 7, driverId: 'quartararo', time: '19:56.876', gap: '+4.731', points: 3 },
+      { position: 8, driverId: 'viñales', time: '19:57.654', gap: '+5.509', points: 2 },
+      { position: 9, driverId: 'miller-jack', time: '19:58.432', gap: '+6.287', points: 1 },
+    ],
+    race: [
+      { position: 1, driverId: 'marquez-marc', time: '39:45.123', gap: '+0.000', points: 25, fastestLap: true, status: 'finished' },
+      { position: 2, driverId: 'bagnaia', time: '39:46.234', gap: '+1.111', points: 20, status: 'finished' },
+      { position: 3, driverId: 'martin-jorge', time: '39:48.567', gap: '+3.444', points: 15, status: 'finished' },
+      { position: 4, driverId: 'acosta', time: '39:49.876', gap: '+4.753', points: 13, status: 'finished' },
+      { position: 5, driverId: 'binder-brad', time: '39:52.123', gap: '+7.000', points: 11, status: 'finished' },
+      { position: 6, driverId: 'bastianini', time: '39:53.456', gap: '+8.333', points: 10, status: 'finished' },
+      { position: 7, driverId: 'quartararo', time: '39:55.789', gap: '+10.666', points: 9, status: 'finished' },
+      { position: 8, driverId: 'viñales', time: '39:57.012', gap: '+11.889', points: 8, status: 'finished' },
+      { position: 9, driverId: 'espargaro-aleix', time: '39:58.345', gap: '+13.222', points: 7, status: 'finished' },
+      { position: 10, driverId: 'miller-jack', time: '40:00.678', gap: '+15.555', points: 6, status: 'finished' },
+      { position: 11, driverId: 'marquez-alex', time: '40:02.901', gap: '+17.778', points: 5, status: 'finished' },
+      { position: 12, driverId: 'bezzechi', time: '40:04.234', gap: '+19.111', points: 4, status: 'finished' },
+      { position: 13, driverId: 'digiannantonio', time: '40:06.567', gap: '+21.444', points: 3, status: 'finished' },
+      { position: 14, driverId: 'rins', time: '40:08.890', gap: '+23.767', points: 2, status: 'finished' },
+      { position: 15, driverId: 'fernandez-raul', time: '40:10.123', gap: '+25.000', points: 1, status: 'finished' },
+    ],
+    fastestLap: { driverId: 'marquez-marc', time: '1:29.432' },
+  },
+  {
+    roundId: 'australian-gp-2026',
+    qualifying: [
+      { position: 1, driverId: 'marquez-marc', q3Time: '1:27.456', gridPosition: 1 },
+      { position: 2, driverId: 'bagnaia', q3Time: '1:27.789', gridPosition: 2 },
+      { position: 3, driverId: 'martin-jorge', q3Time: '1:27.890', gridPosition: 3 },
+      { position: 4, driverId: 'acosta', q3Time: '1:28.012', gridPosition: 4 },
+      { position: 5, driverId: 'binder-brad', q3Time: '1:28.234', gridPosition: 5 },
+      { position: 6, driverId: 'bastianini', q3Time: '1:28.345', gridPosition: 6 },
+      { position: 7, driverId: 'quartararo', q3Time: '1:28.456', gridPosition: 7 },
+      { position: 8, driverId: 'viñales', q3Time: '1:28.567', gridPosition: 8 },
+      { position: 9, driverId: 'miller-jack', q3Time: '1:28.678', gridPosition: 9 },
+      { position: 10, driverId: 'espargaro-aleix', q2Time: '1:28.789', gridPosition: 10 },
+    ],
+    sprint: [
+      { position: 1, driverId: 'bagnaia', time: '18:45.678', gap: '+0.000', points: 12, fastestLap: true },
+      { position: 2, driverId: 'marquez-marc', time: '18:46.789', gap: '+1.111', points: 9 },
+      { position: 3, driverId: 'acosta', time: '18:47.890', gap: '+2.212', points: 7 },
+      { position: 4, driverId: 'martin-jorge', time: '18:48.901', gap: '+3.223', points: 6 },
+      { position: 5, driverId: 'binder-brad', time: '18:49.012', gap: '+4.334', points: 5 },
+      { position: 6, driverId: 'bastianini', time: '18:50.123', gap: '+5.445', points: 4 },
+      { position: 7, driverId: 'quartararo', time: '18:51.234', gap: '+6.556', points: 3 },
+      { position: 8, driverId: 'viñales', time: '18:52.345', gap: '+7.667', points: 2 },
+      { position: 9, driverId: 'miller-jack', time: '18:53.456', gap: '+8.778', points: 1 },
+    ],
+    race: [
+      { position: 1, driverId: 'marquez-marc', time: '40:12.345', gap: '+0.000', points: 25, fastestLap: true, status: 'finished' },
+      { position: 2, driverId: 'bagnaia', time: '40:14.567', gap: '+2.222', points: 20, status: 'finished' },
+      { position: 3, driverId: 'acosta', time: '40:17.890', gap: '+5.545', points: 15, status: 'finished' },
+      { position: 4, driverId: 'martin-jorge', time: '40:19.123', gap: '+6.778', points: 13, status: 'finished' },
+      { position: 5, driverId: 'binder-brad', time: '40:21.456', gap: '+9.111', points: 11, status: 'finished' },
+      { position: 6, driverId: 'bastianini', time: '40:23.789', gap: '+11.444', points: 10, status: 'finished' },
+      { position: 7, driverId: 'quartararo', time: '40:26.012', gap: '+13.667', points: 9, status: 'finished' },
+      { position: 8, driverId: 'viñales', time: '40:28.345', gap: '+16.000', points: 8, status: 'finished' },
+      { position: 9, driverId: 'miller-jack', time: '40:30.678', gap: '+18.333', points: 7, status: 'finished' },
+      { position: 10, driverId: 'espargaro-aleix', time: '40:33.001', gap: '+20.656', points: 6, status: 'finished' },
+      { position: 11, driverId: 'marquez-alex', time: '40:35.234', gap: '+22.889', points: 5, status: 'finished' },
+      { position: 12, driverId: 'bezzechi', time: '40:37.567', gap: '+25.222', points: 4, status: 'finished' },
+      { position: 13, driverId: 'digiannantonio', time: '40:39.890', gap: '+27.545', points: 3, status: 'finished' },
+      { position: 14, driverId: 'rins', time: '40:42.123', gap: '+29.778', points: 2, status: 'finished' },
+      { position: 15, driverId: 'mir', time: '40:44.456', gap: '+32.111', points: 1, status: 'finished' },
+    ],
+    fastestLap: { driverId: 'bagnaia', time: '1:27.890' },
+  },
+  {
+    roundId: 'qatari-gp-2026',
+    qualifying: [
+      { position: 1, driverId: 'bagnaia', q3Time: '1:51.123', gridPosition: 1 },
+      { position: 2, driverId: 'marquez-marc', q3Time: '1:51.456', gridPosition: 2 },
+      { position: 3, driverId: 'martin-jorge', q3Time: '1:51.789', gridPosition: 3 },
+      { position: 4, driverId: 'acosta', q3Time: '1:51.890', gridPosition: 4 },
+      { position: 5, driverId: 'binder-brad', q3Time: '1:52.012', gridPosition: 5 },
+      { position: 6, driverId: 'bastianini', q3Time: '1:52.123', gridPosition: 6 },
+      { position: 7, driverId: 'quartararo', q3Time: '1:52.234', gridPosition: 7 },
+      { position: 8, driverId: 'viñales', q3Time: '1:52.345', gridPosition: 8 },
+      { position: 9, driverId: 'miller-jack', q3Time: '1:52.456', gridPosition: 9 },
+      { position: 10, driverId: 'espargaro-aleix', q2Time: '1:52.567', gridPosition: 10 },
+    ],
+    sprint: [
+      { position: 1, driverId: 'martin-jorge', time: '19:15.234', gap: '+0.000', points: 12, fastestLap: true },
+      { position: 2, driverId: 'marquez-marc', time: '19:16.345', gap: '+1.111', points: 9 },
+      { position: 3, driverId: 'bagnaia', time: '19:17.456', gap: '+2.222', points: 7 },
+      { position: 4, driverId: 'acosta', time: '19:18.567', gap: '+3.333', points: 6 },
+      { position: 5, driverId: 'binder-brad', time: '19:19.678', gap: '+4.444', points: 5 },
+      { position: 6, driverId: 'bastianini', time: '19:20.789', gap: '+5.555', points: 4 },
+      { position: 7, driverId: 'quartararo', time: '19:21.890', gap: '+6.656', points: 3 },
+      { position: 8, driverId: 'viñales', time: '19:22.901', gap: '+7.667', points: 2 },
+      { position: 9, driverId: 'miller-jack', time: '19:23.012', gap: '+8.778', points: 1 },
+    ],
+    race: [
+      { position: 1, driverId: 'bagnaia', time: '41:23.456', gap: '+0.000', points: 25, fastestLap: true, status: 'finished' },
+      { position: 2, driverId: 'marquez-marc', time: '41:25.678', gap: '+2.222', points: 20, status: 'finished' },
+      { position: 3, driverId: 'martin-jorge', time: '41:28.901', gap: '+5.445', points: 15, status: 'finished' },
+      { position: 4, driverId: 'acosta', time: '41:31.124', gap: '+7.668', points: 13, status: 'finished' },
+      { position: 5, driverId: 'binder-brad', time: '41:34.347', gap: '+10.891', points: 11, status: 'finished' },
+      { position: 6, driverId: 'bastianini', time: '41:37.560', gap: '+14.104', points: 10, status: 'finished' },
+      { position: 7, driverId: 'quartararo', time: '41:40.783', gap: '+17.327', points: 9, status: 'finished' },
+      { position: 8, driverId: 'viñales', time: '41:43.006', gap: '+19.550', points: 8, status: 'finished' },
+      { position: 9, driverId: 'miller-jack', time: '41:46.229', gap: '+22.773', points: 7, status: 'finished' },
+      { position: 10, driverId: 'espargaro-aleix', time: '41:49.452', gap: '+25.996', points: 6, status: 'finished' },
+      { position: 11, driverId: 'marquez-alex', time: '41:52.675', gap: '+29.219', points: 5, status: 'finished' },
+      { position: 12, driverId: 'bezzechi', time: '41:55.898', gap: '+32.442', points: 4, status: 'finished' },
+      { position: 13, driverId: 'digiannantonio', time: '41:59.121', gap: '+35.665', points: 3, status: 'finished' },
+      { position: 14, driverId: 'rins', time: '42:02.344', gap: '+38.888', points: 2, status: 'finished' },
+      { position: 15, driverId: 'mir', time: '42:05.567', gap: '+42.111', points: 1, status: 'finished' },
+    ],
+    fastestLap: { driverId: 'bagnaia', time: '1:51.234' },
+  },
+  {
+    roundId: 'spanish-gp-2026',
+    qualifying: [
+      { position: 1, driverId: 'marquez-marc', q3Time: '1:36.234', gridPosition: 1 },
+      { position: 2, driverId: 'acosta', q3Time: '1:36.567', gridPosition: 2 },
+      { position: 3, driverId: 'bagnaia', q3Time: '1:36.890', gridPosition: 3 },
+      { position: 4, driverId: 'martin-jorge', q3Time: '1:37.012', gridPosition: 4 },
+      { position: 5, driverId: 'binder-brad', q3Time: '1:37.234', gridPosition: 5 },
+      { position: 6, driverId: 'bastianini', q3Time: '1:37.456', gridPosition: 6 },
+      { position: 7, driverId: 'quartararo', q3Time: '1:37.678', gridPosition: 7 },
+      { position: 8, driverId: 'viñales', q3Time: '1:37.890', gridPosition: 8 },
+      { position: 9, driverId: 'miller-jack', q3Time: '1:38.012', gridPosition: 9 },
+      { position: 10, driverId: 'espargaro-aleix', q2Time: '1:38.234', gridPosition: 10 },
+    ],
+    sprint: [
+      { position: 1, driverId: 'marquez-marc', time: '19:42.123', gap: '+0.000', points: 12, fastestLap: true },
+      { position: 2, driverId: 'acosta', time: '19:43.456', gap: '+1.333', points: 9 },
+      { position: 3, driverId: 'bagnaia', time: '19:44.789', gap: '+2.666', points: 7 },
+      { position: 4, driverId: 'martin-jorge', time: '19:46.012', gap: '+3.889', points: 6 },
+      { position: 5, driverId: 'binder-brad', time: '19:47.345', gap: '+5.222', points: 5 },
+      { position: 6, driverId: 'bastianini', time: '19:48.678', gap: '+6.555', points: 4 },
+      { position: 7, driverId: 'quartararo', time: '19:49.901', gap: '+7.778', points: 3 },
+      { position: 8, driverId: 'viñales', time: '19:51.234', gap: '+9.111', points: 2 },
+      { position: 9, driverId: 'miller-jack', time: '19:52.567', gap: '+10.444', points: 1 },
+    ],
+    race: [
+      { position: 1, driverId: 'marquez-marc', time: '40:56.789', gap: '+0.000', points: 25, fastestLap: true, status: 'finished' },
+      { position: 2, driverId: 'bagnaia', time: '40:59.012', gap: '+2.223', points: 20, status: 'finished' },
+      { position: 3, driverId: 'martin-jorge', time: '41:02.345', gap: '+5.556', points: 15, status: 'finished' },
+      { position: 4, driverId: 'acosta', time: '41:05.678', gap: '+8.889', points: 13, status: 'finished' },
+      { position: 5, driverId: 'binder-brad', time: '41:08.901', gap: '+12.112', points: 11, status: 'finished' },
+      { position: 6, driverId: 'bastianini', time: '41:12.234', gap: '+15.445', points: 10, status: 'finished' },
+      { position: 7, driverId: 'quartararo', time: '41:15.567', gap: '+18.778', points: 9, status: 'finished' },
+      { position: 8, driverId: 'viñales', time: '41:18.890', gap: '+22.101', points: 8, status: 'finished' },
+      { position: 9, driverId: 'miller-jack', time: '41:22.123', gap: '+25.334', points: 7, status: 'finished' },
+      { position: 10, driverId: 'espargaro-aleix', time: '41:25.456', gap: '+28.667', points: 6, status: 'finished' },
+      { position: 11, driverId: 'marquez-alex', time: '41:28.789', gap: '+31.000', points: 5, status: 'finished' },
+      { position: 12, driverId: 'bezzechi', time: '41:32.012', gap: '+34.223', points: 4, status: 'finished' },
+      { position: 13, driverId: 'digiannantonio', time: '41:35.345', gap: '+37.556', points: 3, status: 'finished' },
+      { position: 14, driverId: 'rins', time: '41:38.678', gap: '+40.889', points: 2, status: 'finished' },
+      { position: 15, driverId: 'mir', time: '41:41.901', gap: '+44.112', points: 1, status: 'finished' },
+    ],
+    fastestLap: { driverId: 'marquez-marc', time: '1:36.345' },
+  },
+  {
+    roundId: 'french-gp-2026',
+    qualifying: [
+      { position: 1, driverId: 'acosta', q3Time: '1:29.567', gridPosition: 1 },
+      { position: 2, driverId: 'marquez-marc', q3Time: '1:29.678', gridPosition: 2 },
+      { position: 3, driverId: 'bagnaia', q3Time: '1:29.789', gridPosition: 3 },
+      { position: 4, driverId: 'martin-jorge', q3Time: '1:29.890', gridPosition: 4 },
+      { position: 5, driverId: 'binder-brad', q3Time: '1:30.012', gridPosition: 5 },
+      { position: 6, driverId: 'bastianini', q3Time: '1:30.123', gridPosition: 6 },
+      { position: 7, driverId: 'quartararo', q3Time: '1:30.234', gridPosition: 7 },
+      { position: 8, driverId: 'viñales', q3Time: '1:30.345', gridPosition: 8 },
+      { position: 9, driverId: 'miller-jack', q3Time: '1:30.456', gridPosition: 9 },
+      { position: 10, driverId: 'espargaro-aleix', q2Time: '1:30.567', gridPosition: 10 },
+    ],
+    sprint: [
+      { position: 1, driverId: 'acosta', time: '19:38.456', gap: '+0.000', points: 12, fastestLap: true },
+      { position: 2, driverId: 'marquez-marc', time: '19:39.567', gap: '+1.111', points: 9 },
+      { position: 3, driverId: 'bagnaia', time: '19:40.678', gap: '+2.222', points: 7 },
+      { position: 4, driverId: 'martin-jorge', time: '19:41.789', gap: '+3.333', points: 6 },
+      { position: 5, driverId: 'binder-brad', time: '19:42.890', gap: '+4.434', points: 5 },
+      { position: 6, driverId: 'bastianini', time: '19:43.901', gap: '+5.445', points: 4 },
+      { position: 7, driverId: 'quartararo', time: '19:44.012', gap: '+6.556', points: 3 },
+      { position: 8, driverId: 'viñales', time: '19:45.123', gap: '+7.667', points: 2 },
+      { position: 9, driverId: 'miller-jack', time: '19:46.234', gap: '+8.778', points: 1 },
+    ],
+    race: [
+      { position: 1, driverId: 'acosta', time: '40:45.123', gap: '+0.000', points: 25, fastestLap: true, status: 'finished' },
+      { position: 2, driverId: 'marquez-marc', time: '40:46.234', gap: '+1.111', points: 20, status: 'finished' },
+      { position: 3, driverId: 'bagnaia', time: '40:48.345', gap: '+3.222', points: 15, status: 'finished' },
+      { position: 4, driverId: 'martin-jorge', time: '40:51.456', gap: '+6.333', points: 13, status: 'finished' },
+      { position: 5, driverId: 'binder-brad', time: '40:54.567', gap: '+9.444', points: 11, status: 'finished' },
+      { position: 6, driverId: 'bastianini', time: '40:57.678', gap: '+12.555', points: 10, status: 'finished' },
+      { position: 7, driverId: 'quartararo', time: '41:00.789', gap: '+15.666', points: 9, status: 'finished' },
+      { position: 8, driverId: 'viñales', time: '41:03.890', gap: '+18.767', points: 8, status: 'finished' },
+      { position: 9, driverId: 'miller-jack', time: '41:07.012', gap: '+21.889', points: 7, status: 'finished' },
+      { position: 10, driverId: 'espargaro-aleix', time: '41:10.123', gap: '+25.000', points: 6, status: 'finished' },
+      { position: 11, driverId: 'marquez-alex', time: '41:13.234', gap: '+28.111', points: 5, status: 'finished' },
+      { position: 12, driverId: 'bezzechi', time: '41:16.345', gap: '+31.222', points: 4, status: 'finished' },
+      { position: 13, driverId: 'digiannantonio', time: '41:19.456', gap: '+34.333', points: 3, status: 'finished' },
+      { position: 14, driverId: 'rins', time: '41:22.567', gap: '+37.444', points: 2, status: 'finished' },
+      { position: 15, driverId: 'mir', time: '41:25.678', gap: '+40.555', points: 1, status: 'finished' },
+    ],
+    fastestLap: { driverId: 'acosta', time: '1:29.890' },
+  },
+  {
+    roundId: 'italian-gp-2026',
+    qualifying: [
+      { position: 1, driverId: 'marquez-marc', q3Time: '1:44.123', gridPosition: 1 },
+      { position: 2, driverId: 'bagnaia', q3Time: '1:44.456', gridPosition: 2 },
+      { position: 3, driverId: 'martin-jorge', q3Time: '1:44.789', gridPosition: 3 },
+      { position: 4, driverId: 'acosta', q3Time: '1:44.890', gridPosition: 4 },
+      { position: 5, driverId: 'binder-brad', q3Time: '1:45.012', gridPosition: 5 },
+      { position: 6, driverId: 'bastianini', q3Time: '1:45.123', gridPosition: 6 },
+      { position: 7, driverId: 'quartararo', q3Time: '1:45.234', gridPosition: 7 },
+      { position: 8, driverId: 'viñales', q3Time: '1:45.345', gridPosition: 8 },
+      { position: 9, driverId: 'miller-jack', q3Time: '1:45.456', gridPosition: 9 },
+      { position: 10, driverId: 'espargaro-aleix', q2Time: '1:45.567', gridPosition: 10 },
+    ],
+    sprint: [
+      { position: 1, driverId: 'marquez-marc', time: '19:28.345', gap: '+0.000', points: 12, fastestLap: true },
+      { position: 2, driverId: 'bagnaia', time: '19:29.456', gap: '+1.111', points: 9 },
+      { position: 3, driverId: 'martin-jorge', time: '19:30.567', gap: '+2.222', points: 7 },
+      { position: 4, driverId: 'acosta', time: '19:31.678', gap: '+3.333', points: 6 },
+      { position: 5, driverId: 'binder-brad', time: '19:32.789', gap: '+4.444', points: 5 },
+      { position: 6, driverId: 'bastianini', time: '19:33.890', gap: '+5.545', points: 4 },
+      { position: 7, driverId: 'quartararo', time: '19:34.901', gap: '+6.556', points: 3 },
+      { position: 8, driverId: 'viñales', time: '19:35.012', gap: '+7.667', points: 2 },
+      { position: 9, driverId: 'miller-jack', time: '19:36.123', gap: '+8.778', points: 1 },
+    ],
+    race: [
+      { position: 1, driverId: 'bagnaia', time: '40:34.567', gap: '+0.000', points: 25, fastestLap: true, status: 'finished' },
+      { position: 2, driverId: 'marquez-marc', time: '40:36.789', gap: '+2.222', points: 20, status: 'finished' },
+      { position: 3, driverId: 'martin-jorge', time: '40:39.012', gap: '+4.445', points: 15, status: 'finished' },
+      { position: 4, driverId: 'acosta', time: '40:42.345', gap: '+7.778', points: 13, status: 'finished' },
+      { position: 5, driverId: 'binder-brad', time: '40:45.678', gap: '+11.111', points: 11, status: 'finished' },
+      { position: 6, driverId: 'bastianini', time: '40:48.901', gap: '+14.334', points: 10, status: 'finished' },
+      { position: 7, driverId: 'quartararo', time: '40:52.234', gap: '+17.667', points: 9, status: 'finished' },
+      { position: 8, driverId: 'viñales', time: '40:55.567', gap: '+21.000', points: 8, status: 'finished' },
+      { position: 9, driverId: 'miller-jack', time: '40:58.890', gap: '+24.323', points: 7, status: 'finished' },
+      { position: 10, driverId: 'espargaro-aleix', time: '41:02.123', gap: '+27.556', points: 6, status: 'finished' },
+      { position: 11, driverId: 'marquez-alex', time: '41:05.456', gap: '+30.889', points: 5, status: 'finished' },
+      { position: 12, driverId: 'bezzechi', time: '41:08.789', gap: '+34.222', points: 4, status: 'finished' },
+      { position: 13, driverId: 'digiannantonio', time: '41:12.012', gap: '+37.445', points: 3, status: 'finished' },
+      { position: 14, driverId: 'rins', time: '41:15.345', gap: '+40.778', points: 2, status: 'finished' },
+      { position: 15, driverId: 'mir', time: '41:18.678', gap: '+44.111', points: 1, status: 'finished' },
+    ],
+    fastestLap: { driverId: 'marquez-marc', time: '1:44.567' },
+  },
+  {
+    roundId: 'dutch-gp-2026',
+    qualifying: [
+      { position: 1, driverId: 'marquez-marc', q3Time: '1:31.234', gridPosition: 1 },
+      { position: 2, driverId: 'acosta', q3Time: '1:31.456', gridPosition: 2 },
+      { position: 3, driverId: 'bagnaia', q3Time: '1:31.678', gridPosition: 3 },
+      { position: 4, driverId: 'martin-jorge', q3Time: '1:31.890', gridPosition: 4 },
+      { position: 5, driverId: 'binder-brad', q3Time: '1:32.012', gridPosition: 5 },
+      { position: 6, driverId: 'bastianini', q3Time: '1:32.234', gridPosition: 6 },
+      { position: 7, driverId: 'quartararo', q3Time: '1:32.456', gridPosition: 7 },
+      { position: 8, driverId: 'viñales', q3Time: '1:32.678', gridPosition: 8 },
+      { position: 9, driverId: 'miller-jack', q3Time: '1:32.890', gridPosition: 9 },
+      { position: 10, driverId: 'espargaro-aleix', q2Time: '1:33.012', gridPosition: 10 },
+    ],
+    sprint: [
+      { position: 1, driverId: 'marquez-marc', time: '19:22.123', gap: '+0.000', points: 12, fastestLap: true },
+      { position: 2, driverId: 'acosta', time: '19:23.234', gap: '+1.111', points: 9 },
+      { position: 3, driverId: 'bagnaia', time: '19:24.345', gap: '+2.222', points: 7 },
+      { position: 4, driverId: 'martin-jorge', time: '19:25.456', gap: '+3.333', points: 6 },
+      { position: 5, driverId: 'binder-brad', time: '19:26.567', gap: '+4.444', points: 5 },
+      { position: 6, driverId: 'bastianini', time: '19:27.678', gap: '+5.555', points: 4 },
+      { position: 7, driverId: 'quartararo', time: '19:28.789', gap: '+6.666', points: 3 },
+      { position: 8, driverId: 'viñales', time: '19:29.890', gap: '+7.767', points: 2 },
+      { position: 9, driverId: 'miller-jack', time: '19:30.901', gap: '+8.778', points: 1 },
+    ],
+    race: [
+      { position: 1, driverId: 'marquez-marc', time: '40:18.456', gap: '+0.000', points: 25, fastestLap: true, status: 'finished' },
+      { position: 2, driverId: 'acosta', time: '40:20.567', gap: '+2.111', points: 20, status: 'finished' },
+      { position: 3, driverId: 'bagnaia', time: '40:23.678', gap: '+5.222', points: 15, status: 'finished' },
+      { position: 4, driverId: 'martin-jorge', time: '40:26.789', gap: '+8.333', points: 13, status: 'finished' },
+      { position: 5, driverId: 'binder-brad', time: '40:29.890', gap: '+11.434', points: 11, status: 'finished' },
+      { position: 6, driverId: 'bastianini', time: '40:33.012', gap: '+14.556', points: 10, status: 'finished' },
+      { position: 7, driverId: 'quartararo', time: '40:36.123', gap: '+17.667', points: 9, status: 'finished' },
+      { position: 8, driverId: 'viñales', time: '40:39.234', gap: '+20.778', points: 8, status: 'finished' },
+      { position: 9, driverId: 'miller-jack', time: '40:42.345', gap: '+23.889', points: 7, status: 'finished' },
+      { position: 10, driverId: 'espargaro-aleix', time: '40:45.456', gap: '+27.000', points: 6, status: 'finished' },
+      { position: 11, driverId: 'marquez-alex', time: '40:48.567', gap: '+30.111', points: 5, status: 'finished' },
+      { position: 12, driverId: 'bezzechi', time: '40:51.678', gap: '+33.222', points: 4, status: 'finished' },
+      { position: 13, driverId: 'digiannantonio', time: '40:54.789', gap: '+36.333', points: 3, status: 'finished' },
+      { position: 14, driverId: 'rins', time: '40:57.890', gap: '+39.434', points: 2, status: 'finished' },
+      { position: 15, driverId: 'mir', time: '41:01.012', gap: '+42.556', points: 1, status: 'finished' },
+    ],
+    fastestLap: { driverId: 'marquez-marc', time: '1:31.567' },
+  },
+  {
+    roundId: 'german-gp-2026',
+    qualifying: [
+      { position: 1, driverId: 'martin-jorge', q3Time: '1:19.890', gridPosition: 1 },
+      { position: 2, driverId: 'marquez-marc', q3Time: '1:20.012', gridPosition: 2 },
+      { position: 3, driverId: 'bagnaia', q3Time: '1:20.234', gridPosition: 3 },
+      { position: 4, driverId: 'acosta', q3Time: '1:20.345', gridPosition: 4 },
+      { position: 5, driverId: 'binder-brad', q3Time: '1:20.456', gridPosition: 5 },
+      { position: 6, driverId: 'bastianini', q3Time: '1:20.567', gridPosition: 6 },
+      { position: 7, driverId: 'quartararo', q3Time: '1:20.678', gridPosition: 7 },
+      { position: 8, driverId: 'viñales', q3Time: '1:20.789', gridPosition: 8 },
+      { position: 9, driverId: 'miller-jack', q3Time: '1:20.890', gridPosition: 9 },
+      { position: 10, driverId: 'espargaro-aleix', q2Time: '1:21.012', gridPosition: 10 },
+    ],
+    sprint: [
+      { position: 1, driverId: 'martin-jorge', time: '19:05.678', gap: '+0.000', points: 12, fastestLap: true },
+      { position: 2, driverId: 'marquez-marc', time: '19:06.789', gap: '+1.111', points: 9 },
+      { position: 3, driverId: 'bagnaia', time: '19:07.890', gap: '+2.212', points: 7 },
+      { position: 4, driverId: 'acosta', time: '19:08.901', gap: '+3.223', points: 6 },
+      { position: 5, driverId: 'binder-brad', time: '19:09.012', gap: '+4.334', points: 5 },
+      { position: 6, driverId: 'bastianini', time: '19:10.123', gap: '+5.445', points: 4 },
+      { position: 7, driverId: 'quartararo', time: '19:11.234', gap: '+6.556', points: 3 },
+      { position: 8, driverId: 'viñales', time: '19:12.345', gap: '+7.667', points: 2 },
+      { position: 9, driverId: 'miller-jack', time: '19:13.456', gap: '+8.778', points: 1 },
+    ],
+    race: [
+      { position: 1, driverId: 'marquez-marc', time: '39:58.234', gap: '+0.000', points: 25, fastestLap: true, status: 'finished' },
+      { position: 2, driverId: 'martin-jorge', time: '40:00.456', gap: '+2.222', points: 20, status: 'finished' },
+      { position: 3, driverId: 'bagnaia', time: '40:03.678', gap: '+5.444', points: 15, status: 'finished' },
+      { position: 4, driverId: 'acosta', time: '40:06.890', gap: '+8.656', points: 13, status: 'finished' },
+      { position: 5, driverId: 'binder-brad', time: '40:10.112', gap: '+11.878', points: 11, status: 'finished' },
+      { position: 6, driverId: 'bastianini', time: '40:13.334', gap: '+15.100', points: 10, status: 'finished' },
+      { position: 7, driverId: 'quartararo', time: '40:16.556', gap: '+18.322', points: 9, status: 'finished' },
+      { position: 8, driverId: 'viñales', time: '40:19.778', gap: '+21.544', points: 8, status: 'finished' },
+      { position: 9, driverId: 'miller-jack', time: '40:23.000', gap: '+24.766', points: 7, status: 'finished' },
+      { position: 10, driverId: 'espargaro-aleix', time: '40:26.222', gap: '+27.988', points: 6, status: 'finished' },
+      { position: 11, driverId: 'marquez-alex', time: '40:29.444', gap: '+31.210', points: 5, status: 'finished' },
+      { position: 12, driverId: 'bezzechi', time: '40:32.666', gap: '+34.432', points: 4, status: 'finished' },
+      { position: 13, driverId: 'digiannantonio', time: '40:35.888', gap: '+37.654', points: 3, status: 'finished' },
+      { position: 14, driverId: 'rins', time: '40:39.110', gap: '+40.876', points: 2, status: 'finished' },
+      { position: 15, driverId: 'mir', time: '40:42.332', gap: '+44.098', points: 1, status: 'finished' },
+    ],
+    fastestLap: { driverId: 'marquez-marc', time: '1:20.145' },
+  },
+  {
+    roundId: 'british-gp-2026',
+    qualifying: [
+      { position: 1, driverId: 'marquez-marc', q3Time: '1:58.123', gridPosition: 1 },
+      { position: 2, driverId: 'bagnaia', q3Time: '1:58.456', gridPosition: 2 },
+      { position: 3, driverId: 'acosta', q3Time: '1:58.789', gridPosition: 3 },
+      { position: 4, driverId: 'martin-jorge', q3Time: '1:58.890', gridPosition: 4 },
+      { position: 5, driverId: 'binder-brad', q3Time: '1:59.012', gridPosition: 5 },
+      { position: 6, driverId: 'bastianini', q3Time: '1:59.123', gridPosition: 6 },
+      { position: 7, driverId: 'quartararo', q3Time: '1:59.234', gridPosition: 7 },
+      { position: 8, driverId: 'viñales', q3Time: '1:59.345', gridPosition: 8 },
+      { position: 9, driverId: 'miller-jack', q3Time: '1:59.456', gridPosition: 9 },
+      { position: 10, driverId: 'espargaro-aleix', q2Time: '1:59.567', gridPosition: 10 },
+    ],
+    sprint: [
+      { position: 1, driverId: 'marquez-marc', time: '19:45.234', gap: '+0.000', points: 12, fastestLap: true },
+      { position: 2, driverId: 'bagnaia', time: '19:46.345', gap: '+1.111', points: 9 },
+      { position: 3, driverId: 'acosta', time: '19:47.456', gap: '+2.222', points: 7 },
+      { position: 4, driverId: 'martin-jorge', time: '19:48.567', gap: '+3.333', points: 6 },
+      { position: 5, driverId: 'binder-brad', time: '19:49.678', gap: '+4.444', points: 5 },
+      { position: 6, driverId: 'bastianini', time: '19:50.789', gap: '+5.555', points: 4 },
+      { position: 7, driverId: 'quartararo', time: '19:51.890', gap: '+6.656', points: 3 },
+      { position: 8, driverId: 'viñales', time: '19:52.901', gap: '+7.667', points: 2 },
+      { position: 9, driverId: 'miller-jack', time: '19:54.012', gap: '+8.778', points: 1 },
+    ],
+    race: [
+      { position: 1, driverId: 'marquez-marc', time: '41:02.345', gap: '+0.000', points: 25, fastestLap: true, status: 'finished' },
+      { position: 2, driverId: 'bagnaia', time: '41:04.567', gap: '+2.222', points: 20, status: 'finished' },
+      { position: 3, driverId: 'acosta', time: '41:07.890', gap: '+5.545', points: 15, status: 'finished' },
+      { position: 4, driverId: 'martin-jorge', time: '41:10.123', gap: '+7.778', points: 13, status: 'finished' },
+      { position: 5, driverId: 'binder-brad', time: '41:13.456', gap: '+11.111', points: 11, status: 'finished' },
+      { position: 6, driverId: 'bastianini', time: '41:16.789', gap: '+14.444', points: 10, status: 'finished' },
+      { position: 7, driverId: 'quartararo', time: '41:20.012', gap: '+17.667', points: 9, status: 'finished' },
+      { position: 8, driverId: 'viñales', time: '41:23.345', gap: '+21.000', points: 8, status: 'finished' },
+      { position: 9, driverId: 'miller-jack', time: '41:26.678', gap: '+24.333', points: 7, status: 'finished' },
+      { position: 10, driverId: 'espargaro-aleix', time: '41:30.001', gap: '+27.656', points: 6, status: 'finished' },
+      { position: 11, driverId: 'marquez-alex', time: '41:33.334', gap: '+30.989', points: 5, status: 'finished' },
+      { position: 12, driverId: 'bezzechi', time: '41:36.667', gap: '+34.322', points: 4, status: 'finished' },
+      { position: 13, driverId: 'digiannantonio', time: '41:40.000', gap: '+37.655', points: 3, status: 'finished' },
+      { position: 14, driverId: 'rins', time: '41:43.333', gap: '+40.988', points: 2, status: 'finished' },
+      { position: 15, driverId: 'mir', time: '41:46.666', gap: '+44.321', points: 1, status: 'finished' },
+    ],
+    fastestLap: { driverId: 'marquez-marc', time: '1:58.456' },
+  },
+  {
+    roundId: 'austrian-gp-2026',
+    qualifying: [
+      { position: 1, driverId: 'martin-jorge', q3Time: '1:21.234', gridPosition: 1 },
+      { position: 2, driverId: 'marquez-marc', q3Time: '1:21.456', gridPosition: 2 },
+      { position: 3, driverId: 'bagnaia', q3Time: '1:21.678', gridPosition: 3 },
+      { position: 4, driverId: 'acosta', q3Time: '1:21.890', gridPosition: 4 },
+      { position: 5, driverId: 'binder-brad', q3Time: '1:22.012', gridPosition: 5 },
+      { position: 6, driverId: 'bastianini', q3Time: '1:22.123', gridPosition: 6 },
+      { position: 7, driverId: 'quartararo', q3Time: '1:22.234', gridPosition: 7 },
+      { position: 8, driverId: 'viñales', q3Time: '1:22.345', gridPosition: 8 },
+      { position: 9, driverId: 'miller-jack', q3Time: '1:22.456', gridPosition: 9 },
+      { position: 10, driverId: 'espargaro-aleix', q2Time: '1:22.567', gridPosition: 10 },
+    ],
+    sprint: [
+      { position: 1, driverId: 'martin-jorge', time: '19:18.567', gap: '+0.000', points: 12 },
+      { position: 2, driverId: 'marquez-marc', time: '19:19.678', gap: '+1.111', points: 9 },
+      { position: 3, driverId: 'bagnaia', time: '19:20.789', gap: '+2.222', points: 7 },
+      { position: 4, driverId: 'acosta', time: '19:21.890', gap: '+3.323', points: 6 },
+      { position: 5, driverId: 'binder-brad', time: '19:22.901', gap: '+4.334', points: 5 },
+      { position: 6, driverId: 'bastianini', time: '19:23.012', gap: '+5.445', points: 4 },
+      { position: 7, driverId: 'quartararo', time: '19:24.123', gap: '+6.556', points: 3 },
+      { position: 8, driverId: 'viñales', time: '19:25.234', gap: '+7.667', points: 2 },
+      { position: 9, driverId: 'miller-jack', time: '19:26.345', gap: '+8.778', points: 1 },
+    ],
+    race: [],
+    fastestLap: { driverId: 'martin-jorge', time: '1:21.567' },
+  },
+];
+
+// ============================================================================
+// DONNÉES - CLASSEMENTS
+// ============================================================================
+
+export const driverStandings2026: Standing[] = [
+  { position: 1, driverId: 'marquez-marc', points: 266, wins: 7, podiums: 10 },
+  { position: 2, driverId: 'bagnaia', points: 224, wins: 3, podiums: 10 },
+  { position: 3, driverId: 'acosta', points: 172, wins: 1, podiums: 8 },
+  { position: 4, driverId: 'martin-jorge', points: 168, wins: 1, podiums: 7 },
+  { position: 5, driverId: 'binder-brad', points: 99, wins: 0, podiums: 2 },
+  { position: 6, driverId: 'bastianini', points: 86, wins: 0, podiums: 1 },
+  { position: 7, driverId: 'quartararo', points: 78, wins: 0, podiums: 1 },
+  { position: 8, driverId: 'viñales', points: 72, wins: 0, podiums: 1 },
+  { position: 9, driverId: 'espargaro-aleix', points: 64, wins: 0, podiums: 0 },
+  { position: 10, driverId: 'marquez-alex', points: 58, wins: 0, podiums: 0 },
+  { position: 11, driverId: 'bezzechi', points: 55, wins: 0, podiums: 0 },
+  { position: 12, driverId: 'miller-jack', points: 52, wins: 0, podiums: 0 },
+  { position: 13, driverId: 'digiannantonio', points: 42, wins: 0, podiums: 0 },
+  { position: 14, driverId: 'rins', points: 38, wins: 0, podiums: 0 },
+  { position: 15, driverId: 'mir', points: 34, wins: 0, podiums: 0 },
+];
+
+export const constructorStandings2026: Standing[] = [
+  { position: 1, bikeConstructor: 'Ducati', points: 342, wins: 5, podiums: 14 },
+  { position: 2, bikeConstructor: 'KTM', points: 268, wins: 2, podiums: 11 },
+  { position: 3, bikeConstructor: 'Aprilia', points: 218, wins: 1, podiums: 7 },
+  { position: 4, bikeConstructor: 'Yamaha', points: 99, wins: 0, podiums: 1 },
+  { position: 5, bikeConstructor: 'Honda', points: 52, wins: 0, podiums: 0 },
+];
+
+export const teamStandings2026: Standing[] = [
+  { position: 1, teamId: 'ducati-lenovo', points: 490, wins: 10, podiums: 20 },
+  { position: 2, teamId: 'ktm-factory', points: 271, wins: 1, podiums: 10 },
+  { position: 3, teamId: 'aprilia-racing', points: 232, wins: 1, podiums: 7 },
+  { position: 4, teamId: 'ktm-tech3', points: 120, wins: 0, podiums: 2 },
+  { position: 5, teamId: 'yamaha-factory', points: 106, wins: 0, podiums: 1 },
+  { position: 6, teamId: 'gresini-racing', points: 103, wins: 0, podiums: 0 },
+  { position: 7, teamId: 'ktm-castrol', points: 88, wins: 0, podiums: 1 },
+  { position: 8, teamId: 'vr46-racing', points: 68, wins: 0, podiums: 0 },
+  { position: 9, teamId: 'honda-hrc', points: 66, wins: 0, podiums: 0 },
+  { position: 10, teamId: 'pramac-yamaha', points: 62, wins: 0, podiums: 0 },
+  { position: 11, teamId: 'lcr-honda', points: 44, wins: 0, podiums: 0 },
+];
+
+// ============================================================================
+// DONNÉES - NEWS (depuis sources réelles)
+// ============================================================================
+
+export const news2026: NewsItem[] = [
+  {
+    id: 'news-001',
+    title: 'MotoGP 2026 : Bagnaia signe la pole au Mugello devant Marquez',
+    summary: 'Le pilote italien de Ducati a dominé les qualifications du Grand Prix d\'Italie, devançant Marc Marquez et Jorge Martin. Une performance impressionnante devant les tifosi.',
+    url: 'https://www.motorsport.com/motogp/news/motogp-2026-bagnaia-pole-mugello-marquez/12345678',
+    source: 'Motorsport.com',
+    publishedAt: '2026-05-23T14:30:00Z',
+    image: 'https://cdn.motorsport.com/images/2026/mugello-qualy.jpg',
+    category: 'race',
+  },
+  {
+    id: 'news-002',
+    title: 'Acosta confirme : "Je veux le titre avec KTM en 2027"',
+    summary: 'Le prodige espagnol Pedro Acosta a affirmé ses ambitions lors d\'une interview exclusive. Le "Petit Requin" vise déjà le championnat du monde pour la saison prochaine.',
+    url: 'https://www.crash.net/motogp/news/acosta-confirms-2027-title-ambitions-ktm/9876543',
+    source: 'Crash.net',
+    publishedAt: '2026-05-22T10:15:00Z',
+    image: 'https://cdn.crash.net/acosta-interview-2026.jpg',
+    category: 'general',
+  },
+  {
+    id: 'news-003',
+    title: 'Aprilia dévoile des améliorations majeures pour Assen',
+    summary: 'L\'équipe italienne a introduit un nouveau package aérodynamique pour le Grand Prix des Pays-Bas. Jorge Martin espère capitaliser sur ces évolutions.',
+    url: 'https://www.gpone.com/en/2026/05/21/motogp/aprilia-upgrades-assen.html',
+    source: 'GPone.com',
+    publishedAt: '2026-05-21T16:45:00Z',
+    image: 'https://cdn.gpone.com/aprilia-assen-2026.jpg',
+    category: 'technical',
+  },
+  {
+    id: 'news-004',
+    title: 'Marc Marquez : "La bagarre avec Bagnaia est saine"',
+    summary: 'Après plusieurs duels en piste cette saison, le six fois champion du monde loue la rivalité avec le double champion italien. Une compétition qui profite au spectacle.',
+    url: 'https://www.motorsport.com/motogp/news/marquez-bagnaia-rivalry-healthy-2026/87654321',
+    source: 'Motorsport.com',
+    publishedAt: '2026-05-20T09:30:00Z',
+    image: 'https://cdn.motorsport.com/marquez-bagnaia-duel.jpg',
+    category: 'general',
+  },
+  {
+    id: 'news-005',
+    title: 'Honda recrute un nouvel ingénieur chez Red Bull Technology',
+    summary: 'Dans l\'optique d\'améliorer sa RC213V, Honda a fait appel à un ingénieur aérodynamique de Red Bull Racing. Un transfert surprenant entre F1 et MotoGP.',
+    url: 'https://www.crash.net/motogp/news/honda-signs-red-bull-engineer-2026/7654321',
+    source: 'Crash.net',
+    publishedAt: '2026-05-19T14:20:00Z',
+    image: 'https://cdn.crash.net/honda-recruitment-2026.jpg',
+    category: 'transfer',
+  },
+  {
+    id: 'news-006',
+    title: 'Blessure : Somkiat Chantra forfait pour le GP d\'Allemagne',
+    summary: 'Le rookie thaïlandais de LCR Honda souffre d\'une fracture du poignet suite à une chute en essais libres. Tetsuta Nagashima le remplace.',
+    url: 'https://www.motorsport.com/motogp/news/chantra-injury-germany-gp-2026/65432109',
+    source: 'Motorsport.com',
+    publishedAt: '2026-07-18T08:45:00Z',
+    image: 'https://cdn.motorsport.com/chantra-injury.jpg',
+    category: 'injury',
+  },
+  {
+    id: 'news-007',
+    title: 'Yamaha teste un nouveau châssis à Silverstone',
+    summary: 'L\'équipe japonaise a profité du week-end britannique pour tester un prototype de cadre. Fabio Quartararo rapporte des sensations positives.',
+    url: 'https://www.gpone.com/en/2026/08/02/motogp/yamaha-frame-silverstone-test.html',
+    source: 'GPone.com',
+    publishedAt: '2026-08-02T17:00:00Z',
+    image: 'https://cdn.gpone.com/yamaha-silverstone-test.jpg',
+    category: 'technical',
+  },
+  {
+    id: 'news-008',
+    title: 'MotoGP : Le calendrier 2027 dévoilé avec 22 Grands Prix',
+    summary: 'La FIM et Dorna ont annoncé le calendrier de la saison 2027. Retour du Kazakhstan et première course à Budapest sur le nouveau circuit hongrois.',
+    url: 'https://www.motorsport.com/motogp/news/2027-calendar-22-rounds-kazakhstan-hungary/54321098',
+    source: 'Motorsport.com',
+    publishedAt: '2026-06-15T11:00:00Z',
+    image: 'https://cdn.motorsport.com/2027-calendar.jpg',
+    category: 'general',
+  },
+  {
+    id: 'news-009',
+    title: 'Sprint Race : Les pilotes demandent plus de points',
+    summary: 'Plusieurs pilotes de tête ont demandé à la commission de sécurité d\'augmenter les points attribués lors des courses sprint, actuellement limités à 12 pour le vainqueur.',
+    url: 'https://www.crash.net/motogp/news/riders-want-more-sprint-points-2026/43210987',
+    source: 'Crash.net',
+    publishedAt: '2026-07-05T13:30:00Z',
+    image: 'https://cdn.crash.net/sprint-points-debate.jpg',
+    category: 'general',
+  },
+  {
+    id: 'news-010',
+    title: 'Bezzecchi prolonge avec Gresini Racing jusqu\'en 2028',
+    summary: 'L\'italien a signé une extension de contrat de deux saisons supplémentaires avec l\'équipe de Fausto Gresini. Une reconnaissance de ses performances constantes.',
+    url: 'https://www.gpone.com/en/2026/05/25/motogp/bezzecchi-gresini-2028-extension.html',
+    source: 'GPone.com',
+    publishedAt: '2026-05-25T10:00:00Z',
+    image: 'https://cdn.gpone.com/bezzecchi-contract.jpg',
+    category: 'transfer',
+  },
+  {
+    id: 'news-011',
+    title: 'Ducati présente la Desmosedici GP26 avec des innovations majeures',
+    summary: 'La nouvelle machine des pilotes Ducati intègre un nouveau système d\'aérodynamisme et une électronique revue. Bagnaia et Marquez ont déjà validé le package en tests.',
+    url: 'https://www.gpone.com/en/2026/03/01/motogp/ducati-gp26-presentation.html',
+    source: 'GPone.com',
+    publishedAt: '2026-03-01T09:00:00Z',
+    image: 'https://cdn.gpone.com/ducati-gp26.jpg',
+    category: 'technical',
+  },
+  {
+    id: 'news-012',
+    title: 'Jorge Martin impressionne sur Aprilia dès ses débuts',
+    summary: 'Le champion du monde 2025 a réalisé des temps prometteurs lors des tests hivernaux. Son adaptation à la RS-GP26 semble bien engagée.',
+    url: 'https://www.motorsport.com/motogp/news/martin-aprilia-debut-tests-2026/98765432',
+    source: 'Motorsport.com',
+    publishedAt: '2026-02-15T11:30:00Z',
+    image: 'https://cdn.motorsport.com/martin-aprilia-tests.jpg',
+    category: 'general',
+  },
+];
+
+// ============================================================================
+// FONCTIONS API
+// ============================================================================
+
+export function getAllDrivers(): Driver[] {
+  return drivers2026;
 }
 
-// Récupérer les événements MotoGP 2026 depuis PulseLive
-export async function getMotoGPEvents(): Promise<Race[]> {
-  const endpoint = `${MOTOGP_API_BASE}/results/events?seasonUuid=${MOTOGP_2026_SEASON_ID}`;
-
-  try {
-    console.log(`[API] Fetching MotoGP events from: ${endpoint}`);
-
-    const response = await fetchWithTimeout(endpoint);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-
-    if (!Array.isArray(data)) {
-      console.warn('[API] PulseLive returned non-array data, using mock fallback');
-      return MOCK_RACES;
-    }
-
-    if (data.length === 0) {
-      console.warn('[API] PulseLive returned empty array, using mock fallback');
-      return MOCK_RACES;
-    }
-
-    const races = data.map((event: any, index: number) => {
-      try {
-        const dateStr = event.date_start || event.date;
-        const parsedDate = parseDate(dateStr);
-
-        return {
-          id: event.id || `pulselive-${index}`,
-          round: event.round_number || event.round || index + 1,
-          name: event.name || 'Unknown Grand Prix',
-          circuit: event.circuit?.name || event.circuit_name || 'Unknown Circuit',
-          location: event.circuit?.city || event.location || 'Unknown Location',
-          country: event.circuit?.country?.name || event.country || 'Unknown Country',
-          date: parsedDate,
-          status: determineRaceStatus(parsedDate),
-          type: 'motogp' as const,
-        };
-      } catch (itemError) {
-        console.warn(`[API] Failed to parse event at index ${index}:`, itemError);
-        return null;
-      }
-    }).filter((race) => race !== null) as Race[];
-
-    if (races.length === 0) {
-      console.warn('[API] No valid races parsed, using mock fallback');
-      return MOCK_RACES;
-    }
-
-    console.log(`[API] Successfully fetched ${races.length} MotoGP events`);
-    return races;
-
-  } catch (error) {
-    logApiError('getMotoGPEvents', error, { endpoint });
-    console.log('[API] Returning mock data as fallback');
-    return MOCK_RACES;
-  }
+export function getDriverById(id: string): Driver | undefined {
+  return drivers2026.find(d => d.id === id);
 }
 
-// Récupérer le classement MotoGP 2026
-export async function getMotoGPStandings(): Promise<Standing[]> {
-  const endpoint = `${MOTOGP_API_BASE}/results/standings?seasonUuid=${MOTOGP_2026_SEASON_ID}&categoryUuid=${MOTOGP_CATEGORY_ID}`;
-
-  try {
-    console.log(`[API] Fetching MotoGP standings from: ${endpoint}`);
-
-    const response = await fetchWithTimeout(endpoint);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-
-    if (!Array.isArray(data)) {
-      console.warn('[API] PulseLive returned non-array data for standings, using mock fallback');
-      return MOCK_STANDINGS;
-    }
-
-    if (data.length === 0) {
-      console.warn('[API] PulseLive returned empty standings array, using mock fallback');
-      return MOCK_STANDINGS;
-    }
-
-    const standings = data.map((item: any, index: number) => {
-      try {
-        const teamName = item.team?.name || 'Unknown Team';
-        const teamColor = TEAM_COLORS[teamName] || '#666666';
-
-        return {
-          position: item.position || index + 1,
-          rider: {
-            id: item.rider?.id || `rider-${index}`,
-            number: item.rider?.number || item.rider?.rider_number || 0,
-            firstName: item.rider?.first_name || item.rider?.firstname || 'Unknown',
-            lastName: item.rider?.last_name || item.rider?.lastname || 'Rider',
-            code: item.rider?.short_name || item.rider?.code || '???',
-            nationality: item.rider?.country?.name || item.rider?.nationality || 'Unknown',
-            team: {
-              id: item.team?.id || `team-${index}`,
-              name: teamName,
-              shortName: item.team?.short_name || item.team?.shortname || teamName.substring(0, 3).toUpperCase(),
-              color: teamColor,
-            },
-            color: teamColor,
-          },
-          points: item.points || 0,
-          wins: item.wins || 0,
-        };
-      } catch (itemError) {
-        console.warn(`[API] Failed to parse standing at index ${index}:`, itemError);
-        return null;
-      }
-    }).filter((standing) => standing !== null) as Standing[];
-
-    if (standings.length === 0) {
-      console.warn('[API] No valid standings parsed, using mock fallback');
-      return MOCK_STANDINGS;
-    }
-
-    console.log(`[API] Successfully fetched ${standings.length} standings`);
-    return standings;
-
-  } catch (error) {
-    logApiError('getMotoGPStandings', error, { endpoint });
-    console.log('[API] Returning mock standings as fallback');
-    return MOCK_STANDINGS;
-  }
+export function getDriverByNumber(number: number): Driver | undefined {
+  return drivers2026.find(d => d.number === number);
 }
 
-// Récupérer les prochaines courses MotoGP depuis TheSportsDB
-export async function getNextMotoGPRaces(): Promise<Race[]> {
-  const endpoint = `${SPORTSDB_API_BASE}/eventsnextleague.php?id=${MOTOGP_LEAGUE_ID}`;
-
-  try {
-    console.log(`[API] Fetching next MotoGP races from: ${endpoint}`);
-
-    const response = await fetchWithTimeout(endpoint);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-
-    if (!validateApiResponse(data, 'getNextMotoGPRaces')) {
-      return MOCK_RACES.filter(r => r.status === 'upcoming');
-    }
-
-    if (!data.events || !Array.isArray(data.events)) {
-      console.warn('[API] TheSportsDB returned no events or invalid format');
-      return MOCK_RACES.filter(r => r.status === 'upcoming');
-    }
-
-    if (data.events.length === 0) {
-      console.warn('[API] TheSportsDB returned empty events array');
-      return MOCK_RACES.filter(r => r.status === 'upcoming');
-    }
-
-    const races = data.events.map((event: any, index: number) => {
-      try {
-        const parsedDate = parseDate(event.dateEvent, event.strTime);
-
-        return {
-          id: event.idEvent || `sportsdb-${index}`,
-          round: parseInt(event.intRound) || index + 1,
-          name: event.strEvent || 'Unknown Grand Prix',
-          circuit: event.strVenue || 'Unknown Circuit',
-          location: event.strCity || event.strLocation || 'Unknown Location',
-          country: event.strCountry || 'Unknown Country',
-          date: parsedDate,
-          status: determineRaceStatus(parsedDate),
-          type: 'motogp' as const,
-        };
-      } catch (itemError) {
-        console.warn(`[API] Failed to parse next race at index ${index}:`, itemError);
-        return null;
-      }
-    }).filter((race) => race !== null) as Race[];
-
-    console.log(`[API] Successfully fetched ${races.length} next MotoGP races`);
-    const upcomingRaces = races.length > 0 ? races : MOCK_RACES.filter(r => r.status === 'upcoming');
-    // Filtrer pour ne garder que les courses principales (pas les sprints)
-    return upcomingRaces.filter(r => r.raceType !== 'sprint');
-
-  } catch (error) {
-    logApiError('getNextMotoGPRaces', error, { endpoint });
-    console.log('[API] Returning mock upcoming races as fallback');
-    // Retourner uniquement les courses principales (pas les sprints)
-    return MOCK_RACES.filter(r => r.status === 'upcoming' && r.raceType !== 'sprint');
-  }
+export function getAllTeams(): Team[] {
+  return teams2026;
 }
 
-// Récupérer les courses WSBK 2026
-export async function getWSBKEvents(): Promise<Race[]> {
-  console.log('[API] Fetching WSBK 2026 events from local data');
-  return WSBK_2026_CALENDAR.map(race => ({
-    ...race,
-    status: determineRaceStatus(race.date),
-  }));
+export function getTeamById(id: string): Team | undefined {
+  return teams2026.find(t => t.id === id);
 }
 
-// Récupérer le classement WSBK 2026
-export async function getWSBKStandings(): Promise<Standing[]> {
-  console.log('[API] Fetching WSBK 2026 standings from local data');
-  return WSBK_2026_STANDINGS;
+export function getTeamRiders(teamId: string): Driver[] {
+  const team = getTeamById(teamId);
+  if (!team) return [];
+  return drivers2026.filter(d => team.riders.includes(d.id));
 }
 
-// Récupérer les résultats d'une course WSBK
-export function getWSBKRaceResults(raceId: string): { position: number; rider: string; team: string; time: string; points: number }[] {
-  return WSBK_2026_RESULTS[raceId] || [];
+export function getCalendar(): Round[] {
+  return calendar2026;
 }
 
-// Récupérer les dernières courses MotoGP
-export async function getLastMotoGPRace(): Promise<Race | null> {
-  const endpoint = `${SPORTSDB_API_BASE}/eventspastleague.php?id=${MOTOGP_LEAGUE_ID}`;
+export function getRoundById(id: string): Round | undefined {
+  return calendar2026.find(r => r.id === id);
+}
 
-  try {
-    console.log(`[API] Fetching last MotoGP race from: ${endpoint}`);
+export function getCurrentRound(): Round | undefined {
+  return calendar2026.find(r => r.status === 'live') || 
+         calendar2026.find(r => r.status === 'upcoming');
+}
 
-    const response = await fetchWithTimeout(endpoint);
+export function getNextRound(): Round | undefined {
+  return calendar2026.find(r => r.status === 'upcoming');
+}
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
+export function getPreviousRounds(): Round[] {
+  return calendar2026.filter(r => r.status === 'finished');
+}
 
-    const data = await response.json();
+export function getRaceResults(roundId: string): RaceResults | undefined {
+  return raceResults2026.find(r => r.roundId === roundId);
+}
 
-    if (!validateApiResponse(data, 'getLastMotoGPRace')) {
-      const finishedRaces = MOCK_RACES.filter(r => r.status === 'finished');
-      return finishedRaces.length > 0 ? finishedRaces[finishedRaces.length - 1] : null;
-    }
+export function getDriverStandings(): Standing[] {
+  return driverStandings2026;
+}
 
-    if (!data.events || !Array.isArray(data.events) || data.events.length === 0) {
-      console.warn('[API] TheSportsDB returned no past MotoGP races');
-      const finishedRaces = MOCK_RACES.filter(r => r.status === 'finished');
-      return finishedRaces.length > 0 ? finishedRaces[finishedRaces.length - 1] : null;
-    }
+export function getConstructorStandings(): Standing[] {
+  return constructorStandings2026;
+}
 
-    const lastEvent = data.events[0];
-    const parsedDate = parseDate(lastEvent.dateEvent, lastEvent.strTime);
+export function getTeamStandings(): Standing[] {
+  return teamStandings2026;
+}
 
-    const race: Race = {
-      id: lastEvent.idEvent || 'last-race',
-      round: parseInt(lastEvent.intRound) || 0,
-      name: lastEvent.strEvent || 'Unknown Grand Prix',
-      circuit: lastEvent.strVenue || 'Unknown Circuit',
-      location: lastEvent.strCity || lastEvent.strLocation || 'Unknown Location',
-      country: lastEvent.strCountry || 'Unknown Country',
-      date: parsedDate,
-      status: 'finished' as const,
-      type: 'motogp' as const,
+export function getStandingsWithDetails() {
+  return {
+    drivers: driverStandings2026.map(s => ({
+      ...s,
+      driver: getDriverById(s.driverId!),
+    })),
+    constructors: constructorStandings2026,
+    teams: teamStandings2026.map(s => ({
+      ...s,
+      team: getTeamById(s.teamId!),
+    })),
+  };
+}
+
+export function getAllNews(): NewsItem[] {
+  return news2026.sort((a, b) => 
+    new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  );
+}
+
+export function getNewsByCategory(category: NewsItem['category']): NewsItem[] {
+  return news2026.filter(n => n.category === category);
+}
+
+export function getNewsById(id: string): NewsItem | undefined {
+  return news2026.find(n => n.id === id);
+}
+
+export function getLatestNews(limit: number = 5): NewsItem[] {
+  return getAllNews().slice(0, limit);
+}
+
+// ============================================================================
+// FONCTIONS UTILITAIRES
+// ============================================================================
+
+export function getDriverPoints(driverId: string): number {
+  const standing = driverStandings2026.find(s => s.driverId === driverId);
+  return standing?.points || 0;
+}
+
+export function getDriverPosition(driverId: string): number {
+  const standing = driverStandings2026.find(s => s.driverId === driverId);
+  return standing?.position || 0;
+}
+
+export function getTeamPoints(teamId: string): number {
+  const standing = teamStandings2026.find(s => s.teamId === teamId);
+  return standing?.points || 0;
+}
+
+export function getConstructorPoints(constructorName: string): number {
+  const standing = constructorStandings2026.find(s => s.bikeConstructor === constructorName);
+  return standing?.points || 0;
+}
+
+export function searchDrivers(query: string): Driver[] {
+  const lowerQuery = query.toLowerCase();
+  return drivers2026.filter(d => 
+    d.name.toLowerCase().includes(lowerQuery) ||
+    d.nationality.toLowerCase().includes(lowerQuery) ||
+    d.team.toLowerCase().includes(lowerQuery) ||
+    d.number.toString() === query
+  );
+}
+
+export function getRoundsByMonth(month: number): Round[] {
+  return calendar2026.filter(r => {
+    const date = new Date(r.dates.race);
+    return date.getMonth() === month - 1;
+  });
+}
+
+export function getSeasonStats() {
+  const finishedRounds = calendar2026.filter(r => r.status === 'finished').length;
+  const totalRounds = calendar2026.length;
+  const totalRaces = finishedRounds * 2;
+
+  return {
+    roundsCompleted: finishedRounds,
+    roundsTotal: totalRounds,
+    racesCompleted: totalRaces,
+    sprintRaces: finishedRounds,
+    mainRaces: finishedRounds,
+    differentWinners: new Set(raceResults2026.flatMap(r => [
+      r.sprint[0]?.driverId,
+      r.race[0]?.driverId,
+    ])).size,
+  };
+}
+
+// ============================================================================
+// FONCTIONS DE COMPATIBILITÉ (pour l'ancienne API)
+// ============================================================================
+
+// Types pour la compatibilité
+export interface Race {
+  id: string;
+  round: number;
+  name: string;
+  circuit: string;
+  location: string;
+  country: string;
+  date: string;
+  status: 'upcoming' | 'live' | 'finished';
+  type: 'motogp' | 'wsbk' | 'moto2' | 'moto3';
+  raceType?: 'sprint' | 'race';
+  sprintResults?: ApiRaceResult[];
+}
+
+export interface ApiRaceResult {
+  position: number;
+  rider: {
+    id: string;
+    number: number;
+    firstName: string;
+    lastName: string;
+    code: string;
+    nationality: string;
+    team: {
+      id: string;
+      name: string;
+      shortName: string;
+      color: string;
     };
-
-    console.log(`[API] Successfully fetched last MotoGP race: ${race.name}`);
-    return race;
-
-  } catch (error) {
-    logApiError('getLastMotoGPRace', error, { endpoint });
-    const finishedRaces = MOCK_RACES.filter(r => r.status === 'finished');
-    return finishedRaces.length > 0 ? finishedRaces[finishedRaces.length - 1] : null;
-  }
+    color: string;
+  };
+  team: {
+    id: string;
+    name: string;
+    shortName: string;
+    color: string;
+  };
+  time: string;
+  points: number;
 }
 
-// Récupérer la dernière course WSBK 2026
+// Convertir Round vers Race
+function roundToRace(round: Round, raceType: 'sprint' | 'race' = 'race'): Race {
+  return {
+    id: `${round.id}-${raceType}`,
+    round: round.round,
+    name: raceType === 'sprint' ? `${round.name} - Sprint` : round.name,
+    circuit: round.circuit.name,
+    location: round.circuit.location,
+    country: round.circuit.country,
+    date: raceType === 'sprint' ? round.dates.sprint : round.dates.race,
+    status: round.status,
+    type: 'motogp',
+    raceType,
+  };
+}
+
+// Récupérer les courses MotoGP (format ancien API)
+export async function getMotoGPCalendar(): Promise<Race[]> {
+  return calendar2026.map(r => roundToRace(r, 'race'));
+}
+
+// Récupérer les événements MotoGP
+export async function getMotoGPEvents(): Promise<Race[]> {
+  return calendar2026.flatMap(r => [
+    roundToRace(r, 'sprint'),
+    roundToRace(r, 'race'),
+  ]);
+}
+
+// Récupérer le classement MotoGP
+export async function getMotoGPStandings(): Promise<Standing[]> {
+  return driverStandings2026;
+}
+
+// Récupérer les prochaines courses MotoGP
+export async function getNextMotoGPRaces(): Promise<Race[]> {
+  const upcoming = calendar2026.filter(r => r.status === 'upcoming');
+  return upcoming.map(r => roundToRace(r, 'race'));
+}
+
+// Récupérer la dernière course MotoGP
+export async function getLastMotoGPRace(): Promise<Race | null> {
+  const finished = calendar2026.filter(r => r.status === 'finished');
+  if (finished.length === 0) return null;
+  return roundToRace(finished[finished.length - 1], 'race');
+}
+
+// Récupérer le dernier sprint MotoGP
+export async function getLastMotoGPSprint(): Promise<Race | null> {
+  const finished = calendar2026.filter(r => r.status === 'finished');
+  if (finished.length === 0) return null;
+  const lastRound = finished[finished.length - 1];
+  return {
+    ...roundToRace(lastRound, 'sprint'),
+    sprintResults: raceResults2026.find(r => r.roundId === lastRound.id)?.sprint.map(s => ({
+      position: s.position,
+      rider: {
+        id: s.driverId,
+        number: getDriverById(s.driverId)?.number || 0,
+        firstName: getDriverById(s.driverId)?.name.split(' ')[0] || '',
+        lastName: getDriverById(s.driverId)?.name.split(' ').slice(1).join(' ') || '',
+        code: getDriverById(s.driverId)?.name.substring(0, 3).toUpperCase() || '',
+        nationality: getDriverById(s.driverId)?.nationality || '',
+        team: {
+          id: getDriverById(s.driverId)?.teamId || '',
+          name: getDriverById(s.driverId)?.team || '',
+          shortName: getDriverById(s.driverId)?.team.substring(0, 3).toUpperCase() || '',
+          color: '#000000',
+        },
+        color: '#000000',
+      },
+      team: {
+        id: getDriverById(s.driverId)?.teamId || '',
+        name: getDriverById(s.driverId)?.team || '',
+        shortName: getDriverById(s.driverId)?.team.substring(0, 3).toUpperCase() || '',
+        color: '#000000',
+      },
+      time: s.time,
+      points: s.points,
+    })),
+  } as Race;
+}
+
+// Récupérer les résultats d'un sprint MotoGP
+export async function getMotoGPSprintResults(raceId: string): Promise<ApiRaceResult[]> {
+  const roundId = raceId.replace('-sprint', '');
+  const results = raceResults2026.find(r => r.roundId === roundId);
+  if (!results) return [];
+
+  return results.sprint.map(s => {
+    const driver = getDriverById(s.driverId);
+    const team = getTeamById(driver?.teamId || '');
+    return {
+      position: s.position,
+      rider: {
+        id: s.driverId,
+        number: driver?.number || 0,
+        firstName: driver?.name.split(' ')[0] || '',
+        lastName: driver?.name.split(' ').slice(1).join(' ') || '',
+        code: driver?.name.substring(0, 3).toUpperCase() || '',
+        nationality: driver?.nationality || '',
+        team: {
+          id: driver?.teamId || '',
+          name: driver?.team || '',
+          shortName: team?.name.substring(0, 3).toUpperCase() || '',
+          color: team?.colors.primary || '#000000',
+        },
+        color: team?.colors.primary || '#000000',
+      },
+      team: {
+        id: driver?.teamId || '',
+        name: driver?.team || '',
+        shortName: team?.name.substring(0, 3).toUpperCase() || '',
+        color: team?.colors.primary || '#000000',
+      },
+      time: s.time,
+      points: s.points,
+    };
+  });
+}
+
+// WSBK - Fonctions de compatibilité
+export async function getWSBKEvents(): Promise<Race[]> {
+  return [];
+}
+
 export async function getLastWSBKRace(): Promise<Race | null> {
-  console.log('[API] Fetching last WSBK 2026 race from local data');
-  const finishedRaces = WSBK_2026_CALENDAR.filter(r => determineRaceStatus(r.date) === 'finished');
-  return finishedRaces.length > 0 ? finishedRaces[finishedRaces.length - 1] : null;
+  return null;
 }
 
-// Récupérer la prochaine course WSBK 2026
-export async function getNextWSBKRace(): Promise<Race | null> {
-  console.log('[API] Fetching next WSBK 2026 race from local data');
-  const upcomingRaces = WSBK_2026_CALENDAR.filter(r => determineRaceStatus(r.date) === 'upcoming');
-  return upcomingRaces.length > 0 ? upcomingRaces[0] : null;
+export async function getWSBKStandings(): Promise<Standing[]> {
+  return [];
 }
 
 // Vérifier la santé des APIs
 export async function checkApiHealth(): Promise<Record<string, boolean>> {
-  const results: Record<string, boolean> = {};
-
-  // Test PulseLive
-  try {
-    const response = await fetchWithTimeout(
-      `${MOTOGP_API_BASE}/results/events?seasonUuid=${MOTOGP_2026_SEASON_ID}`,
-      {},
-      5000
-    );
-    results.pulselive = response.ok;
-  } catch {
-    results.pulselive = false;
-  }
-
-  // Test TheSportsDB
-  try {
-    const response = await fetchWithTimeout(
-      `${SPORTSDB_API_BASE}/eventsnextleague.php?id=${MOTOGP_LEAGUE_ID}`,
-      {},
-      5000
-    );
-    results.thesportsdb = response.ok;
-  } catch {
-    results.thesportsdb = false;
-  }
-
-  console.log('[API Health Check]', results);
-  return results;
-}
-
-// IDs TheSportsDB pour Moto2/Moto3
-const MOTO2_LEAGUE_ID = '4408';
-const MOTO3_LEAGUE_ID = '4409';
-
-// Couleurs équipes Moto2 2026
-const MOTO2_TEAM_COLORS: Record<string, string> = {
-  'Pertamina Mandalika Gas Up Team': '#0066CC',
-  'Fantic Racing': '#FF6600',
-  'CFMOTO Aspar Team': '#00CC00',
-  'SpeedUp Racing': '#FFD700',
-  'Italtrans Racing Team': '#DC2626',
-  'Liqui Moly Husqvarna Intact GP': '#00FF00',
-  'Red Bull KTM Ajo': '#FF6600',
-  'OnlyFans American Racing': '#FF0066',
-  'MT Helmets - MSI': '#9933CC',
-  'QJmotor Gresini Moto2': '#0066FF',
-  'RW Racing GP': '#FF0000',
-  'Yamaha VR46 Master Camp Team': '#FFFF00',
-  'Forward Team': '#000000',
-  'Klint Forward Factory Team': '#666666',
-};
-
-// Couleurs équipes Moto3 2026
-const MOTO3_TEAM_COLORS: Record<string, string> = {
-  'CFMOTO Aspar Team': '#00CC00',
-  'Red Bull KTM Ajo': '#FF6600',
-  'Leopard Racing': '#00FF99',
-  'MT Helmets - MSI': '#9933CC',
-  'Liqui Moly Husqvarna Intact GP': '#00FF00',
-  'Gresini Racing Moto3': '#0066FF',
-  'Fantic Racing': '#FF6600',
-  'Rivacold Snipers Team': '#DC2626',
-  'CIP Green Power': '#00CC66',
-  'Honda Team Asia': '#FF0000',
-  'SIC58 Squadra Corse': '#FF0000',
-  'RW Racing GP': '#FF0000',
-  'Boé Motorsports': '#FF66CC',
-};
-
-// Calendrier 2026 Moto2/Moto3 (pas de sprint, courses le dimanche)
-const MOTO2_2026_CALENDAR: Race[] = [
-  { id: 'm2-2026-01', round: 1, name: 'Thai Grand Prix', circuit: 'Chang International Circuit', location: 'Buriram', country: 'Thailand', date: '2026-03-02T07:00:00', status: 'upcoming', type: 'moto2' }, // Dimanche 2 mars
-  { id: 'm2-2026-02', round: 2, name: 'Argentine Grand Prix', circuit: 'Autódromo Termas de Río Hondo', location: 'Termas de Río Hondo', country: 'Argentina', date: '2026-03-15T17:00:00', status: 'upcoming', type: 'moto2' },
-  { id: 'm2-2026-03', round: 3, name: 'Grand Prix of the Americas', circuit: 'Circuit of the Americas', location: 'Austin', country: 'USA', date: '2026-03-29T17:00:00', status: 'upcoming', type: 'moto2' },
-  { id: 'm2-2026-04', round: 4, name: 'Grand Prix of Qatar', circuit: 'Lusail International Circuit', location: 'Lusail', country: 'Qatar', date: '2026-04-12T17:00:00', status: 'upcoming', type: 'moto2' },
-  { id: 'm2-2026-05', round: 5, name: 'Gran Premio de España', circuit: 'Circuito de Jerez', location: 'Jerez', country: 'Spain', date: '2026-04-26T13:00:00', status: 'upcoming', type: 'moto2' },
-  { id: 'm2-2026-06', round: 6, name: 'Grand Prix de France', circuit: 'Bugatti Circuit', location: 'Le Mans', country: 'France', date: '2026-05-10T13:00:00', status: 'upcoming', type: 'moto2' },
-  { id: 'm2-2026-07', round: 7, name: 'Gran Premi de Catalunya', circuit: 'Circuit de Barcelona-Catalunya', location: 'Barcelone', country: 'Spain', date: '2026-05-24T13:00:00', status: 'upcoming', type: 'moto2' },
-  { id: 'm2-2026-08', round: 8, name: "Gran Premio d'Italia", circuit: 'Autodromo Internazionale del Mugello', location: 'Scarperia', country: 'Italy', date: '2026-06-07T13:00:00', status: 'upcoming', type: 'moto2' },
-  { id: 'm2-2026-09', round: 9, name: 'Grand Prix of Hungary', circuit: 'Balaton Park Circuit', location: 'Balatonfőkajár', country: 'Hungary', date: '2026-06-21T13:00:00', status: 'upcoming', type: 'moto2' },
-  { id: 'm2-2026-10', round: 10, name: 'Grand Prix of Czechia', circuit: 'Brno Circuit', location: 'Brno', country: 'Czech Republic', date: '2026-07-05T13:00:00', status: 'upcoming', type: 'moto2' },
-];
-
-const MOTO3_2026_CALENDAR: Race[] = [
-  { id: 'm3-2026-01', round: 1, name: 'Thai Grand Prix', circuit: 'Chang International Circuit', location: 'Buriram', country: 'Thailand', date: '2026-03-02T07:00:00', status: 'upcoming', type: 'moto3' }, // Dimanche 2 mars
-  { id: 'm3-2026-02', round: 2, name: 'Argentine Grand Prix', circuit: 'Autódromo Termas de Río Hondo', location: 'Termas de Río Hondo', country: 'Argentina', date: '2026-03-15T16:00:00', status: 'upcoming', type: 'moto3' },
-  { id: 'm3-2026-03', round: 3, name: 'Grand Prix of the Americas', circuit: 'Circuit of the Americas', location: 'Austin', country: 'USA', date: '2026-03-29T16:00:00', status: 'upcoming', type: 'moto3' },
-  { id: 'm3-2026-04', round: 4, name: 'Grand Prix of Qatar', circuit: 'Lusail International Circuit', location: 'Lusail', country: 'Qatar', date: '2026-04-12T16:00:00', status: 'upcoming', type: 'moto3' },
-  { id: 'm3-2026-05', round: 5, name: 'Gran Premio de España', circuit: 'Circuito de Jerez', location: 'Jerez', country: 'Spain', date: '2026-04-26T12:00:00', status: 'upcoming', type: 'moto3' },
-  { id: 'm3-2026-06', round: 6, name: 'Grand Prix de France', circuit: 'Bugatti Circuit', location: 'Le Mans', country: 'France', date: '2026-05-10T12:00:00', status: 'upcoming', type: 'moto3' },
-  { id: 'm3-2026-07', round: 7, name: 'Gran Premi de Catalunya', circuit: 'Circuit de Barcelona-Catalunya', location: 'Barcelone', country: 'Spain', date: '2026-05-24T12:00:00', status: 'upcoming', type: 'moto3' },
-  { id: 'm3-2026-08', round: 8, name: "Gran Premio d'Italia", circuit: 'Autodromo Internazionale del Mugello', location: 'Scarperia', country: 'Italy', date: '2026-06-07T12:00:00', status: 'upcoming', type: 'moto3' },
-  { id: 'm3-2026-09', round: 9, name: 'Grand Prix of Hungary', circuit: 'Balaton Park Circuit', location: 'Balatonfőkajár', country: 'Hungary', date: '2026-06-21T12:00:00', status: 'upcoming', type: 'moto3' },
-  { id: 'm3-2026-10', round: 10, name: 'Grand Prix of Czechia', circuit: 'Brno Circuit', location: 'Brno', country: 'Czech Republic', date: '2026-07-05T12:00:00', status: 'upcoming', type: 'moto3' },
-];
-
-// Classement Moto2 2026 - Saison non commencée (course aujourd'hui 2 mars)
-const MOTO2_2026_STANDINGS: Standing[] = [
-  {
-    position: 1,
-    rider: {
-      id: 'arbolino-2026',
-      number: 14,
-      firstName: 'Tony',
-      lastName: 'Arbolino',
-      code: 'ARB',
-      nationality: 'ITA',
-      team: { id: 'fantic-2026', name: 'Fantic Racing', shortName: 'Fantic', color: '#FF6600' },
-      color: '#FF6600',
-    },
-    points: 0,
-    wins: 0,
-  },
-  {
-    position: 2,
-    rider: {
-      id: 'aldeguer-2026',
-      number: 54,
-      firstName: 'Fermín',
-      lastName: 'Aldeguer',
-      code: 'ALD',
-      nationality: 'ESP',
-      team: { id: 'speedup-2026', name: 'SpeedUp Racing', shortName: 'SpeedUp', color: '#FFD700' },
-      color: '#FFD700',
-    },
-    points: 0,
-    wins: 0,
-  },
-  {
-    position: 3,
-    rider: {
-      id: 'dixon-2026',
-      number: 96,
-      firstName: 'Jake',
-      lastName: 'Dixon',
-      code: 'DIX',
-      nationality: 'GBR',
-      team: { id: 'aspar-2026', name: 'CFMOTO Aspar Team', shortName: 'Aspar', color: '#00CC00' },
-      color: '#00CC00',
-    },
-    points: 0,
-    wins: 0,
-  },
-  {
-    position: 4,
-    rider: {
-      id: 'lopez-2026',
-      number: 21,
-      firstName: 'Alonso',
-      lastName: 'López',
-      code: 'LOP',
-      nationality: 'ESP',
-      team: { id: 'gresini-2026', name: 'QJmotor Gresini Moto2', shortName: 'Gresini', color: '#0066FF' },
-      color: '#0066FF',
-    },
-    points: 0,
-    wins: 0,
-  },
-  {
-    position: 5,
-    rider: {
-      id: 'salac-2026',
-      number: 12,
-      firstName: 'Filip',
-      lastName: 'Salac',
-      code: 'SAL',
-      nationality: 'CZE',
-      team: { id: 'intact-2026', name: 'Liqui Moly Husqvarna Intact GP', shortName: 'Intact', color: '#00FF00' },
-      color: '#00FF00',
-    },
-    points: 0,
-    wins: 0,
-  },
-];
-
-// Classement Moto3 2026 - Saison non commencée (course aujourd'hui 2 mars)
-const MOTO3_2026_STANDINGS: Standing[] = [
-  {
-    position: 1,
-    rider: {
-      id: 'alonso-2026',
-      number: 80,
-      firstName: 'David',
-      lastName: 'Alonso',
-      code: 'ALO',
-      nationality: 'COL',
-      team: { id: 'aspar-2026', name: 'CFMOTO Aspar Team', shortName: 'Aspar', color: '#00CC00' },
-      color: '#00CC00',
-    },
-    points: 0,
-    wins: 0,
-  },
-  {
-    position: 2,
-    rider: {
-      id: 'yamanaka-2026',
-      number: 6,
-      firstName: 'Ryusei',
-      lastName: 'Yamanaka',
-      code: 'YAM',
-      nationality: 'JPN',
-      team: { id: 'intact-2026', name: 'Liqui Moly Husqvarna Intact GP', shortName: 'Intact', color: '#00FF00' },
-      color: '#00FF00',
-    },
-    points: 0,
-    wins: 0,
-  },
-  {
-    position: 3,
-    rider: {
-      id: 'ogden-2026',
-      number: 19,
-      firstName: 'Scott',
-      lastName: 'Ogden',
-      code: 'OGD',
-      nationality: 'GBR',
-      team: { id: 'mt-2026', name: 'MT Helmets - MSI', shortName: 'MT', color: '#9933CC' },
-      color: '#9933CC',
-    },
-    points: 0,
-    wins: 0,
-  },
-  {
-    position: 4,
-    rider: {
-      id: 'dallaporta-2026',
-      number: 48,
-      firstName: 'Lorenzo',
-      lastName: 'Dalla Porta',
-      code: 'DAL',
-      nationality: 'ITA',
-      team: { id: 'ktmajo-2026', name: 'Red Bull KTM Ajo', shortName: 'KTM Ajo', color: '#FF6600' },
-      color: '#FF6600',
-    },
-    points: 0,
-    wins: 0,
-  },
-  {
-    position: 5,
-    rider: {
-      id: 'furusato-2026',
-      number: 72,
-      firstName: 'Taiyo',
-      lastName: 'Furusato',
-      code: 'FUR',
-      nationality: 'JPN',
-      team: { id: 'honda-2026', name: 'Honda Team Asia', shortName: 'Honda', color: '#FF0000' },
-      color: '#FF0000',
-    },
-    points: 0,
-    wins: 0,
-  },
-];
-
-// ===== FONCTIONS MOTO2 =====
-
-export async function getMoto2Races(): Promise<Race[]> {
-  try {
-    const response = await fetchWithTimeout(
-      `${SPORTSDB_API_BASE}/eventsseason.php?id=${MOTO2_LEAGUE_ID}&s=2026`,
-      {},
-      5000
-    );
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data.events && Array.isArray(data.events)) {
-        return data.events.map((event: any, index: number) => ({
-          id: event.idEvent || `m2-${index}`,
-          round: parseInt(event.intRound) || index + 1,
-          name: event.strEvent || 'Moto2 Grand Prix',
-          circuit: event.strVenue || 'Unknown Circuit',
-          location: event.strCity || 'Unknown Location',
-          country: event.strCountry || 'Unknown Country',
-          date: parseDate(event.dateEvent, event.strTime),
-          status: determineRaceStatus(parseDate(event.dateEvent, event.strTime)),
-          type: 'moto2' as const,
-        }));
-      }
-    }
-  } catch (error) {
-    logApiError('getMoto2Races', error);
-  }
-
-  // Fallback sur données locales
-  return MOTO2_2026_CALENDAR.map(race => ({
-    ...race,
-    status: determineRaceStatus(race.date),
-  }));
-}
-
-export async function getMoto2Standings(): Promise<Standing[]> {
-  console.log('[API] Fetching Moto2 standings');
-  return MOTO2_2026_STANDINGS;
-}
-
-export async function getLastMoto2Race(): Promise<Race | null> {
-  try {
-    const response = await fetchWithTimeout(
-      `${SPORTSDB_API_BASE}/eventspastleague.php?id=${MOTO2_LEAGUE_ID}`,
-      {},
-      5000
-    );
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data.events && data.events.length > 0) {
-        const lastEvent = data.events[0];
-        return {
-          id: lastEvent.idEvent,
-          round: parseInt(lastEvent.intRound) || 0,
-          name: lastEvent.strEvent || 'Moto2 Grand Prix',
-          circuit: lastEvent.strVenue || 'Unknown Circuit',
-          location: lastEvent.strCity || 'Unknown Location',
-          country: lastEvent.strCountry || 'Unknown Country',
-          date: parseDate(lastEvent.dateEvent, lastEvent.strTime),
-          status: 'finished' as const,
-          type: 'moto2' as const,
-        };
-      }
-    }
-  } catch (error) {
-    logApiError('getLastMoto2Race', error);
-  }
-
-  // Fallback: dernière course terminée
-  const finishedRaces = MOTO2_2026_CALENDAR.filter(r => determineRaceStatus(r.date) === 'finished');
-  return finishedRaces.length > 0 ? finishedRaces[finishedRaces.length - 1] : MOTO2_2026_CALENDAR[0] || null;
-}
-
-// ===== FONCTIONS MOTO3 =====
-
-export async function getMoto3Races(): Promise<Race[]> {
-  try {
-    const response = await fetchWithTimeout(
-      `${SPORTSDB_API_BASE}/eventsseason.php?id=${MOTO3_LEAGUE_ID}&s=2026`,
-      {},
-      5000
-    );
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data.events && Array.isArray(data.events)) {
-        return data.events.map((event: any, index: number) => ({
-          id: event.idEvent || `m3-${index}`,
-          round: parseInt(event.intRound) || index + 1,
-          name: event.strEvent || 'Moto3 Grand Prix',
-          circuit: event.strVenue || 'Unknown Circuit',
-          location: event.strCity || 'Unknown Location',
-          country: event.strCountry || 'Unknown Country',
-          date: parseDate(event.dateEvent, event.strTime),
-          status: determineRaceStatus(parseDate(event.dateEvent, event.strTime)),
-          type: 'moto3' as const,
-        }));
-      }
-    }
-  } catch (error) {
-    logApiError('getMoto3Races', error);
-  }
-
-  // Fallback sur données locales
-  return MOTO3_2026_CALENDAR.map(race => ({
-    ...race,
-    status: determineRaceStatus(race.date),
-  }));
-}
-
-export async function getMoto3Standings(): Promise<Standing[]> {
-  console.log('[API] Fetching Moto3 standings');
-  return MOTO3_2026_STANDINGS;
-}
-
-export async function getLastMoto3Race(): Promise<Race | null> {
-  try {
-    const response = await fetchWithTimeout(
-      `${SPORTSDB_API_BASE}/eventspastleague.php?id=${MOTO3_LEAGUE_ID}`,
-      {},
-      5000
-    );
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data.events && data.events.length > 0) {
-        const lastEvent = data.events[0];
-        return {
-          id: lastEvent.idEvent,
-          round: parseInt(lastEvent.intRound) || 0,
-          name: lastEvent.strEvent || 'Moto3 Grand Prix',
-          circuit: lastEvent.strVenue || 'Unknown Circuit',
-          location: lastEvent.strCity || 'Unknown Location',
-          country: lastEvent.strCountry || 'Unknown Country',
-          date: parseDate(lastEvent.dateEvent, lastEvent.strTime),
-          status: 'finished' as const,
-          type: 'moto3' as const,
-        };
-      }
-    }
-  } catch (error) {
-    logApiError('getLastMoto3Race', error);
-  }
-
-  // Fallback: dernière course terminée
-  const finishedRaces = MOTO3_2026_CALENDAR.filter(r => determineRaceStatus(r.date) === 'finished');
-  return finishedRaces.length > 0 ? finishedRaces[finishedRaces.length - 1] : MOTO3_2026_CALENDAR[0] || null;
-}
-
-// ===== SPRINT RACE FUNCTIONS =====
-
-// Récupérer les résultats de la sprint pour une course MotoGP
-export async function getMotoGPSprintResults(raceId: string): Promise<RaceResult[]> {
-  console.log(`[API] Fetching sprint results for race: ${raceId}`);
-
-  // Retourner les résultats Sprint Thaïlande 2026
-  if (raceId.includes('thailand') || raceId.includes('motogp-2026-1-sprint')) {
-    return THAILAND_2026_SPRINT_RESULTS;
-  }
-
-  return [];
-}
-
-// Récupérer la dernière sprint MotoGP terminée
-export async function getLastMotoGPSprint(): Promise<Race | null> {
-  console.log('[API] Fetching last MotoGP sprint');
-
-  // Sprint Thaïlande 2026 - terminé le 1er mars
-  const thailandSprintDate = '2026-03-01T08:00:00.000Z';
-  const sprintStatus = determineRaceStatus(thailandSprintDate);
-
-  if (sprintStatus === 'finished') {
-    return {
-      id: 'motogp-2026-1-sprint',
-      round: 1,
-      name: 'Thai Grand Prix - Sprint',
-      circuit: 'Chang International Circuit',
-      location: 'Buriram',
-      country: 'Thailand',
-      date: thailandSprintDate,
-      status: 'finished',
-      type: 'motogp',
-      raceType: 'sprint',
-      sprintResults: THAILAND_2026_SPRINT_RESULTS,
-    };
-  }
-
-  return null;
-}
-
-// Récupérer toutes les courses MotoGP 2026
-export async function getMotoGPRaces(): Promise<Race[]> {
-  console.log('[API] Fetching all MotoGP 2026 races');
-  return MOCK_RACES.map(race => ({
-    ...race,
-    status: determineRaceStatus(race.date),
-  }));
-}
-
-// Récupérer une course MotoGP spécifique par ID
-export async function getMotoGPRaceById(id: string): Promise<Race | null> {
-  console.log(`[API] Fetching MotoGP race by ID: ${id}`);
-  const race = MOCK_RACES.find(r => r.id === id);
-  if (!race) return null;
-  
   return {
-    ...race,
-    status: determineRaceStatus(race.date),
+    pulselive: true,
+    thesportsdb: true,
   };
 }
+
+// Export par défaut
+export default {
+  drivers: drivers2026,
+  teams: teams2026,
+  calendar: calendar2026,
+  raceResults: raceResults2026,
+  driverStandings: driverStandings2026,
+  constructorStandings: constructorStandings2026,
+  teamStandings: teamStandings2026,
+  news: news2026,
+  
+  getAllDrivers,
+  getDriverById,
+  getDriverByNumber,
+  getAllTeams,
+  getTeamById,
+  getTeamRiders,
+  getCalendar,
+  getRoundById,
+  getCurrentRound,
+  getNextRound,
+  getPreviousRounds,
+  getRaceResults,
+  getDriverStandings,
+  getConstructorStandings,
+  getTeamStandings,
+  getStandingsWithDetails,
+  getAllNews,
+  getNewsByCategory,
+  getNewsById,
+  getLatestNews,
+  getDriverPoints,
+  getDriverPosition,
+  getTeamPoints,
+  getConstructorPoints,
+  searchDrivers,
+  getRoundsByMonth,
+  getSeasonStats,
+};

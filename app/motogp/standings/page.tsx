@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Header } from '@/components/Header';
-import { getMotoGPStandings, getMotoGPRaces } from '@/data/api';
+import { getMotoGPStandings, getMotoGPRaces } from '@/data/api-compat';
 import { Standing, Race } from '@/types';
 
 export const revalidate = 60;

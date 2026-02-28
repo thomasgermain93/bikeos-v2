@@ -6,7 +6,7 @@ import { SprintCard } from '@/components/SprintCard';
 import { StandingsCard } from '@/components/StandingsCard';
 import { NewsCard } from '@/components/NewsCard';
 import { CalendarCard } from '@/components/CalendarCard';
-import { getNextMotoGPRaces, getLastMotoGPRace, getMotoGPStandings, getLastMotoGPSprint, getMotoGPSprintResults, getMotoGPCalendar } from '@/data/api';
+import { getNextMotoGPRaces, getLastMotoGPRace, getMotoGPStandings, getLastMotoGPSprint, getMotoGPSprintResults, getMotoGPCalendar } from '@/data/api-compat';
 import { NewsItem } from '@/types';
 
 export const revalidate = 60;
