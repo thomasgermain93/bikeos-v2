@@ -33,9 +33,250 @@ const TEAM_COLORS: Record<string, string> = {
   'Yamaha Factory Racing': '#00FF00',
 };
 
+// ===== SPRINT RACE RESULTS =====
+// Système de points Sprint: 12-9-7-6-5-4-3-2-1 (Top 9)
+
+// Résultats Sprint Thaïlande 2026 (1er mars 2026)
+const THAILAND_2026_SPRINT_RESULTS: RaceResult[] = [
+  {
+    position: 1,
+    rider: {
+      id: 'rider-acosta',
+      number: 37,
+      firstName: 'Pedro',
+      lastName: 'Acosta',
+      code: 'ACO',
+      nationality: 'Spain',
+      team: {
+        id: 'team-ktm3',
+        name: 'Red Bull KTM Factory Racing',
+        shortName: 'KTM',
+        color: '#FF6600',
+      },
+      color: '#FF6600',
+    },
+    team: {
+      id: 'team-ktm3',
+      name: 'Red Bull KTM Factory Racing',
+      shortName: 'KTM',
+      color: '#FF6600',
+    },
+    time: '19:39.155',
+    points: 12,
+  },
+  {
+    position: 2,
+    rider: {
+      id: 'rider-bagnaia',
+      number: 1,
+      firstName: 'Francesco',
+      lastName: 'Bagnaia',
+      code: 'BAG',
+      nationality: 'Italy',
+      team: {
+        id: 'team-ducati',
+        name: 'Ducati Lenovo Team',
+        shortName: 'Ducati',
+        color: '#DC2626',
+      },
+      color: '#DC2626',
+    },
+    team: {
+      id: 'team-ducati',
+      name: 'Ducati Lenovo Team',
+      shortName: 'Ducati',
+      color: '#DC2626',
+    },
+    time: '+0.108',
+    points: 9,
+  },
+  {
+    position: 3,
+    rider: {
+      id: 'rider-marquez',
+      number: 93,
+      firstName: 'Marc',
+      lastName: 'Márquez',
+      code: 'MAR',
+      nationality: 'Spain',
+      team: {
+        id: 'team-ducati2',
+        name: 'Ducati Lenovo Team',
+        shortName: 'Ducati',
+        color: '#DC2626',
+      },
+      color: '#DC2626',
+    },
+    team: {
+      id: 'team-ducati2',
+      name: 'Ducati Lenovo Team',
+      shortName: 'Ducati',
+      color: '#DC2626',
+    },
+    time: '+0.540',
+    points: 7,
+  },
+  {
+    position: 4,
+    rider: {
+      id: 'rider-binder',
+      number: 33,
+      firstName: 'Brad',
+      lastName: 'Binder',
+      code: 'BIN',
+      nationality: 'South Africa',
+      team: {
+        id: 'team-ktm',
+        name: 'Red Bull KTM Factory Racing',
+        shortName: 'KTM',
+        color: '#FF6600',
+      },
+      color: '#FF6600',
+    },
+    team: {
+      id: 'team-ktm',
+      name: 'Red Bull KTM Factory Racing',
+      shortName: 'KTM',
+      color: '#FF6600',
+    },
+    time: '+3.892',
+    points: 6,
+  },
+  {
+    position: 5,
+    rider: {
+      id: 'rider-vinales',
+      number: 12,
+      firstName: 'Maverick',
+      lastName: 'Viñales',
+      code: 'VIN',
+      nationality: 'Spain',
+      team: {
+        id: 'team-ktm2',
+        name: 'Red Bull KTM Factory Racing',
+        shortName: 'KTM',
+        color: '#FF6600',
+      },
+      color: '#FF6600',
+    },
+    team: {
+      id: 'team-ktm2',
+      name: 'Red Bull KTM Factory Racing',
+      shortName: 'KTM',
+      color: '#FF6600',
+    },
+    time: '+5.421',
+    points: 5,
+  },
+  {
+    position: 6,
+    rider: {
+      id: 'rider-acosta',
+      number: 37,
+      firstName: 'Pedro',
+      lastName: 'Acosta',
+      code: 'ACO',
+      nationality: 'Spain',
+      team: {
+        id: 'team-ktm3',
+        name: 'Red Bull KTM Factory Racing',
+        shortName: 'KTM',
+        color: '#FF6600',
+      },
+      color: '#FF6600',
+    },
+    team: {
+      id: 'team-ktm3',
+      name: 'Red Bull KTM Factory Racing',
+      shortName: 'KTM',
+      color: '#FF6600',
+    },
+    time: '+6.854',
+    points: 4,
+  },
+  {
+    position: 7,
+    rider: {
+      id: 'rider-digiannantonio',
+      number: 49,
+      firstName: 'Fabio',
+      lastName: 'Di Giannantonio',
+      code: 'DIG',
+      nationality: 'Italy',
+      team: {
+        id: 'team-vr46',
+        name: 'Pertamina Enduro VR46 Racing Team',
+        shortName: 'VR46',
+        color: '#FFFF00',
+      },
+      color: '#FFFF00',
+    },
+    team: {
+      id: 'team-vr46',
+      name: 'Pertamina Enduro VR46 Racing Team',
+      shortName: 'VR46',
+      color: '#FFFF00',
+    },
+    time: '+8.123',
+    points: 3,
+  },
+  {
+    position: 8,
+    rider: {
+      id: 'rider-fernandez',
+      number: 25,
+      firstName: 'Raúl',
+      lastName: 'Fernández',
+      code: 'FER',
+      nationality: 'Spain',
+      team: {
+        id: 'team-trackhouse',
+        name: 'Trackhouse Racing',
+        shortName: 'Trackhouse',
+        color: '#000000',
+      },
+      color: '#000000',
+    },
+    team: {
+      id: 'team-trackhouse',
+      name: 'Trackhouse Racing',
+      shortName: 'Trackhouse',
+      color: '#000000',
+    },
+    time: '+9.567',
+    points: 2,
+  },
+  {
+    position: 9,
+    rider: {
+      id: 'rider-mir',
+      number: 36,
+      firstName: 'Joan',
+      lastName: 'Mir',
+      code: 'MIR',
+      nationality: 'Spain',
+      team: {
+        id: 'team-honda',
+        name: 'Honda HRC Castrol',
+        shortName: 'Honda',
+        color: '#FF0000',
+      },
+      color: '#FF0000',
+    },
+    team: {
+      id: 'team-honda',
+      name: 'Honda HRC Castrol',
+      shortName: 'Honda',
+      color: '#FF0000',
+    },
+    time: '+11.234',
+    points: 1,
+  },
+];
+
 // Données mock pour fallback - Saison 2026 (calendrier réel avec sprints)
 const MOCK_RACES: Race[] = [
-  // Round 1: Thaïlande
+  // Round 1: Thaïlande - Sprint (samedi 1er mars) + Course (dimanche 2 mars)
   {
     id: 'motogp-2026-1-sprint',
     round: 1,
@@ -43,10 +284,11 @@ const MOCK_RACES: Race[] = [
     circuit: 'Chang International Circuit',
     location: 'Buriram',
     country: 'Thailand',
-    date: '2026-02-28T08:00:00.000Z',
+    date: '2026-03-01T08:00:00.000Z', // Samedi 1er mars - Sprint
     status: 'finished',
     type: 'motogp',
     raceType: 'sprint',
+    sprintResults: THAILAND_2026_SPRINT_RESULTS,
   },
   {
     id: 'motogp-2026-1-race',
@@ -55,12 +297,12 @@ const MOCK_RACES: Race[] = [
     circuit: 'Chang International Circuit',
     location: 'Buriram',
     country: 'Thailand',
-    date: '2026-03-01T07:00:00.000Z',
+    date: '2026-03-02T07:00:00.000Z', // Dimanche 2 mars - Course longue (AUJOURD'HUI)
     status: 'upcoming',
     type: 'motogp',
     raceType: 'race',
   },
-  // Round 2: Argentine
+  // Round 2: Argentine - Sprint (samedi 14 mars) + Course (dimanche 15 mars)
   {
     id: 'motogp-2026-2-sprint',
     round: 2,
@@ -68,7 +310,7 @@ const MOCK_RACES: Race[] = [
     circuit: 'Autódromo Termas de Río Hondo',
     location: 'Termas de Río Hondo',
     country: 'Argentina',
-    date: '2026-03-15T18:00:00.000Z',
+    date: '2026-03-14T18:00:00.000Z', // Samedi 14 mars
     status: 'upcoming',
     type: 'motogp',
     raceType: 'sprint',
@@ -80,12 +322,12 @@ const MOCK_RACES: Race[] = [
     circuit: 'Autódromo Termas de Río Hondo',
     location: 'Termas de Río Hondo',
     country: 'Argentina',
-    date: '2026-03-16T18:00:00.000Z',
+    date: '2026-03-15T18:00:00.000Z', // Dimanche 15 mars
     status: 'upcoming',
     type: 'motogp',
     raceType: 'race',
   },
-  // Round 3: Americas
+  // Round 3: Americas - Sprint (samedi 28 mars) + Course (dimanche 29 mars)
   {
     id: 'motogp-2026-3-sprint',
     round: 3,
@@ -93,7 +335,7 @@ const MOCK_RACES: Race[] = [
     circuit: 'Circuit of the Americas',
     location: 'Austin',
     country: 'USA',
-    date: '2026-03-29T19:00:00.000Z',
+    date: '2026-03-28T19:00:00.000Z', // Samedi 28 mars
     status: 'upcoming',
     type: 'motogp',
     raceType: 'sprint',
@@ -105,12 +347,12 @@ const MOCK_RACES: Race[] = [
     circuit: 'Circuit of the Americas',
     location: 'Austin',
     country: 'USA',
-    date: '2026-03-30T19:00:00.000Z',
+    date: '2026-03-29T19:00:00.000Z', // Dimanche 29 mars
     status: 'upcoming',
     type: 'motogp',
     raceType: 'race',
   },
-  // Round 4: Qatar
+  // Round 4: Qatar - Sprint (samedi 11 avril) + Course (dimanche 12 avril)
   {
     id: 'motogp-2026-4-sprint',
     round: 4,
@@ -118,7 +360,7 @@ const MOCK_RACES: Race[] = [
     circuit: 'Lusail International Circuit',
     location: 'Lusail',
     country: 'Qatar',
-    date: '2026-04-12T17:00:00.000Z',
+    date: '2026-04-11T17:00:00.000Z', // Samedi 11 avril
     status: 'upcoming',
     type: 'motogp',
     raceType: 'sprint',
@@ -130,12 +372,12 @@ const MOCK_RACES: Race[] = [
     circuit: 'Lusail International Circuit',
     location: 'Lusail',
     country: 'Qatar',
-    date: '2026-04-13T17:00:00.000Z',
+    date: '2026-04-12T17:00:00.000Z', // Dimanche 12 avril
     status: 'upcoming',
     type: 'motogp',
     raceType: 'race',
   },
-  // Round 5: Espagne
+  // Round 5: Espagne - Sprint (samedi 25 avril) + Course (dimanche 26 avril)
   {
     id: 'motogp-2026-5-sprint',
     round: 5,
@@ -143,7 +385,7 @@ const MOCK_RACES: Race[] = [
     circuit: 'Circuito de Jerez',
     location: 'Jerez de la Frontera',
     country: 'Spain',
-    date: '2026-04-26T13:00:00.000Z',
+    date: '2026-04-25T13:00:00.000Z', // Samedi 25 avril
     status: 'upcoming',
     type: 'motogp',
     raceType: 'sprint',
@@ -155,12 +397,12 @@ const MOCK_RACES: Race[] = [
     circuit: 'Circuito de Jerez',
     location: 'Jerez de la Frontera',
     country: 'Spain',
-    date: '2026-04-27T13:00:00.000Z',
+    date: '2026-04-26T13:00:00.000Z', // Dimanche 26 avril
     status: 'upcoming',
     type: 'motogp',
     raceType: 'race',
   },
-  // Round 6: France
+  // Round 6: France - Sprint (samedi 9 mai) + Course (dimanche 10 mai)
   {
     id: 'motogp-2026-6-sprint',
     round: 6,
@@ -168,7 +410,7 @@ const MOCK_RACES: Race[] = [
     circuit: 'Circuit Bugatti',
     location: 'Le Mans',
     country: 'France',
-    date: '2026-05-10T13:00:00.000Z',
+    date: '2026-05-09T13:00:00.000Z', // Samedi 9 mai
     status: 'upcoming',
     type: 'motogp',
     raceType: 'sprint',
@@ -180,12 +422,12 @@ const MOCK_RACES: Race[] = [
     circuit: 'Circuit Bugatti',
     location: 'Le Mans',
     country: 'France',
-    date: '2026-05-11T13:00:00.000Z',
+    date: '2026-05-10T13:00:00.000Z', // Dimanche 10 mai
     status: 'upcoming',
     type: 'motogp',
     raceType: 'race',
   },
-  // Round 7: Catalogne
+  // Round 7: Catalogne - Sprint (samedi 23 mai) + Course (dimanche 24 mai)
   {
     id: 'motogp-2026-7-sprint',
     round: 7,
@@ -193,7 +435,7 @@ const MOCK_RACES: Race[] = [
     circuit: 'Circuit de Barcelona-Catalunya',
     location: 'Barcelona',
     country: 'Spain',
-    date: '2026-05-24T13:00:00.000Z',
+    date: '2026-05-23T13:00:00.000Z', // Samedi 23 mai
     status: 'upcoming',
     type: 'motogp',
     raceType: 'sprint',
@@ -205,12 +447,12 @@ const MOCK_RACES: Race[] = [
     circuit: 'Circuit de Barcelona-Catalunya',
     location: 'Barcelona',
     country: 'Spain',
-    date: '2026-05-25T13:00:00.000Z',
+    date: '2026-05-24T13:00:00.000Z', // Dimanche 24 mai
     status: 'upcoming',
     type: 'motogp',
     raceType: 'race',
   },
-  // Round 8: Italie
+  // Round 8: Italie - Sprint (samedi 6 juin) + Course (dimanche 7 juin)
   {
     id: 'motogp-2026-8-sprint',
     round: 8,
@@ -218,7 +460,7 @@ const MOCK_RACES: Race[] = [
     circuit: 'Autodromo Internazionale del Mugello',
     location: 'Scarperia',
     country: 'Italy',
-    date: '2026-06-07T13:00:00.000Z',
+    date: '2026-06-06T13:00:00.000Z', // Samedi 6 juin
     status: 'upcoming',
     type: 'motogp',
     raceType: 'sprint',
@@ -230,12 +472,12 @@ const MOCK_RACES: Race[] = [
     circuit: 'Autodromo Internazionale del Mugello',
     location: 'Scarperia',
     country: 'Italy',
-    date: '2026-06-08T13:00:00.000Z',
+    date: '2026-06-07T13:00:00.000Z', // Dimanche 7 juin
     status: 'upcoming',
     type: 'motogp',
     raceType: 'race',
   },
-  // Round 9: Hongrie
+  // Round 9: Hongrie - Sprint (samedi 20 juin) + Course (dimanche 21 juin)
   {
     id: 'motogp-2026-9-sprint',
     round: 9,
@@ -243,7 +485,7 @@ const MOCK_RACES: Race[] = [
     circuit: 'Balaton Park Circuit',
     location: 'Balatonfőkajár',
     country: 'Hungary',
-    date: '2026-06-21T13:00:00.000Z',
+    date: '2026-06-20T13:00:00.000Z', // Samedi 20 juin
     status: 'upcoming',
     type: 'motogp',
     raceType: 'sprint',
@@ -255,12 +497,12 @@ const MOCK_RACES: Race[] = [
     circuit: 'Balaton Park Circuit',
     location: 'Balatonfőkajár',
     country: 'Hungary',
-    date: '2026-06-22T13:00:00.000Z',
+    date: '2026-06-21T13:00:00.000Z', // Dimanche 21 juin
     status: 'upcoming',
     type: 'motogp',
     raceType: 'race',
   },
-  // Round 10: Tchéquie
+  // Round 10: Tchéquie - Sprint (samedi 4 juillet) + Course (dimanche 5 juillet)
   {
     id: 'motogp-2026-10-sprint',
     round: 10,
@@ -268,7 +510,7 @@ const MOCK_RACES: Race[] = [
     circuit: 'Brno Circuit',
     location: 'Brno',
     country: 'Czech Republic',
-    date: '2026-07-05T13:00:00.000Z',
+    date: '2026-07-04T13:00:00.000Z', // Samedi 4 juillet
     status: 'upcoming',
     type: 'motogp',
     raceType: 'sprint',
@@ -280,14 +522,16 @@ const MOCK_RACES: Race[] = [
     circuit: 'Brno Circuit',
     location: 'Brno',
     country: 'Czech Republic',
-    date: '2026-07-06T13:00:00.000Z',
+    date: '2026-07-05T13:00:00.000Z', // Dimanche 5 juillet
     status: 'upcoming',
     type: 'motogp',
     raceType: 'race',
   },
 ];
 
-// Classement MotoGP 2026 après Thaïlande (Sprint + Course) - Données réelles
+// Classement MotoGP 2026 après Sprint Thaïlande uniquement
+// Système de points Sprint: 12-9-7-6-5-4-3-2-1 (Top 9 marquent)
+// La course longue du 2 mars n'est pas encore terminée (AUJOURD'HUI)
 const MOCK_STANDINGS: Standing[] = [
   {
     position: 1,
@@ -299,38 +543,18 @@ const MOCK_STANDINGS: Standing[] = [
       code: 'ACO',
       nationality: 'Spain',
       team: {
-        id: 'team-ktm',
+        id: 'team-ktm3',
         name: 'Red Bull KTM Factory Racing',
         shortName: 'KTM',
         color: '#FF6600',
       },
       color: '#FF6600',
     },
-    points: 37,
+    points: 12, // Vainqueur sprint
     wins: 1,
   },
   {
     position: 2,
-    rider: {
-      id: 'rider-marquez',
-      number: 93,
-      firstName: 'Marc',
-      lastName: 'Márquez',
-      code: 'MAR',
-      nationality: 'Spain',
-      team: {
-        id: 'team-ducati',
-        name: 'Ducati Lenovo Team',
-        shortName: 'Ducati',
-        color: '#DC2626',
-      },
-      color: '#DC2626',
-    },
-    points: 31,
-    wins: 0,
-  },
-  {
-    position: 3,
     rider: {
       id: 'rider-bagnaia',
       number: 1,
@@ -339,6 +563,26 @@ const MOCK_STANDINGS: Standing[] = [
       code: 'BAG',
       nationality: 'Italy',
       team: {
+        id: 'team-ducati',
+        name: 'Ducati Lenovo Team',
+        shortName: 'Ducati',
+        color: '#DC2626',
+      },
+      color: '#DC2626',
+    },
+    points: 9, // 2ème sprint
+    wins: 0,
+  },
+  {
+    position: 3,
+    rider: {
+      id: 'rider-marquez',
+      number: 93,
+      firstName: 'Marc',
+      lastName: 'Márquez',
+      code: 'MAR',
+      nationality: 'Spain',
+      team: {
         id: 'team-ducati2',
         name: 'Ducati Lenovo Team',
         shortName: 'Ducati',
@@ -346,27 +590,27 @@ const MOCK_STANDINGS: Standing[] = [
       },
       color: '#DC2626',
     },
-    points: 28,
+    points: 7, // 3ème sprint
     wins: 0,
   },
   {
     position: 4,
     rider: {
-      id: 'rider-martin',
-      number: 89,
-      firstName: 'Jorge',
-      lastName: 'Martín',
-      code: 'MAR',
-      nationality: 'Spain',
+      id: 'rider-binder',
+      number: 33,
+      firstName: 'Brad',
+      lastName: 'Binder',
+      code: 'BIN',
+      nationality: 'South Africa',
       team: {
-        id: 'team-aprilia',
-        name: 'Aprilia Racing',
-        shortName: 'Aprilia',
-        color: '#0066CC',
+        id: 'team-ktm',
+        name: 'Red Bull KTM Factory Racing',
+        shortName: 'KTM',
+        color: '#FF6600',
       },
-      color: '#0066CC',
+      color: '#FF6600',
     },
-    points: 24,
+    points: 6, // 4ème sprint
     wins: 0,
   },
   {
@@ -386,18 +630,18 @@ const MOCK_STANDINGS: Standing[] = [
       },
       color: '#FF6600',
     },
-    points: 20,
+    points: 5, // 5ème sprint
     wins: 0,
   },
   {
     position: 6,
     rider: {
-      id: 'rider-binder',
-      number: 33,
-      firstName: 'Brad',
-      lastName: 'Binder',
-      code: 'BIN',
-      nationality: 'South Africa',
+      id: 'rider-acosta',
+      number: 37,
+      firstName: 'Pedro',
+      lastName: 'Acosta',
+      code: 'ACO',
+      nationality: 'Spain',
       team: {
         id: 'team-ktm3',
         name: 'Red Bull KTM Factory Racing',
@@ -406,7 +650,7 @@ const MOCK_STANDINGS: Standing[] = [
       },
       color: '#FF6600',
     },
-    points: 18,
+    points: 4, // 6ème sprint
     wins: 0,
   },
   {
@@ -426,7 +670,7 @@ const MOCK_STANDINGS: Standing[] = [
       },
       color: '#FFFF00',
     },
-    points: 16,
+    points: 3, // 7ème sprint
     wins: 0,
   },
   {
@@ -446,7 +690,7 @@ const MOCK_STANDINGS: Standing[] = [
       },
       color: '#000000',
     },
-    points: 12,
+    points: 2, // 8ème sprint
     wins: 0,
   },
   {
@@ -466,27 +710,7 @@ const MOCK_STANDINGS: Standing[] = [
       },
       color: '#FF0000',
     },
-    points: 10,
-    wins: 0,
-  },
-  {
-    position: 10,
-    rider: {
-      id: 'rider-bezzecchi',
-      number: 72,
-      firstName: 'Marco',
-      lastName: 'Bezzecchi',
-      code: 'BEZ',
-      nationality: 'Italy',
-      team: {
-        id: 'team-aprilia2',
-        name: 'Aprilia Racing',
-        shortName: 'Aprilia',
-        color: '#0066CC',
-      },
-      color: '#0066CC',
-    },
-    points: 8,
+    points: 1, // 9ème sprint
     wins: 0,
   },
 ];
@@ -1074,7 +1298,7 @@ function logApiError(context: string, error: unknown, extraInfo?: Record<string,
   console.error('[API Error]', JSON.stringify(errorDetails, null, 2));
 }
 
-// Calendrier MotoGP 2026 - 10 premiers rounds
+// Calendrier MotoGP 2026 - Courses longues uniquement (10 premiers rounds)
 const MOTOGP_2026_CALENDAR: Race[] = [
   {
     id: 'motogp-2026-r1',
@@ -1083,9 +1307,10 @@ const MOTOGP_2026_CALENDAR: Race[] = [
     circuit: 'Chang International Circuit',
     location: 'Buriram',
     country: 'Thailand',
-    date: '2026-03-01T07:00:00.000Z',
-    status: 'finished',
+    date: '2026-03-02T07:00:00.000Z', // Dimanche 2 mars (AUJOURD'HUI)
+    status: 'upcoming',
     type: 'motogp',
+    raceType: 'race',
   },
   {
     id: 'motogp-2026-r2',
@@ -1094,9 +1319,10 @@ const MOTOGP_2026_CALENDAR: Race[] = [
     circuit: 'Autódromo Termas de Río Hondo',
     location: 'Termas de Río Hondo',
     country: 'Argentina',
-    date: '2026-03-16T18:00:00.000Z',
+    date: '2026-03-15T18:00:00.000Z', // Dimanche 15 mars
     status: 'upcoming',
     type: 'motogp',
+    raceType: 'race',
   },
   {
     id: 'motogp-2026-r3',
@@ -1105,9 +1331,10 @@ const MOTOGP_2026_CALENDAR: Race[] = [
     circuit: 'Circuit of the Americas',
     location: 'Austin',
     country: 'USA',
-    date: '2026-03-30T19:00:00.000Z',
+    date: '2026-03-29T19:00:00.000Z', // Dimanche 29 mars
     status: 'upcoming',
     type: 'motogp',
+    raceType: 'race',
   },
   {
     id: 'motogp-2026-r4',
@@ -1116,9 +1343,10 @@ const MOTOGP_2026_CALENDAR: Race[] = [
     circuit: 'Lusail International Circuit',
     location: 'Lusail',
     country: 'Qatar',
-    date: '2026-04-13T17:00:00.000Z',
+    date: '2026-04-12T17:00:00.000Z', // Dimanche 12 avril
     status: 'upcoming',
     type: 'motogp',
+    raceType: 'race',
   },
   {
     id: 'motogp-2026-r5',
@@ -1127,9 +1355,10 @@ const MOTOGP_2026_CALENDAR: Race[] = [
     circuit: 'Circuito de Jerez',
     location: 'Jerez de la Frontera',
     country: 'Spain',
-    date: '2026-04-27T13:00:00.000Z',
+    date: '2026-04-26T13:00:00.000Z', // Dimanche 26 avril
     status: 'upcoming',
     type: 'motogp',
+    raceType: 'race',
   },
   {
     id: 'motogp-2026-r6',
@@ -1138,9 +1367,10 @@ const MOTOGP_2026_CALENDAR: Race[] = [
     circuit: 'Circuit Bugatti',
     location: 'Le Mans',
     country: 'France',
-    date: '2026-05-11T13:00:00.000Z',
+    date: '2026-05-10T13:00:00.000Z', // Dimanche 10 mai
     status: 'upcoming',
     type: 'motogp',
+    raceType: 'race',
   },
   {
     id: 'motogp-2026-r7',
@@ -1149,9 +1379,10 @@ const MOTOGP_2026_CALENDAR: Race[] = [
     circuit: 'Circuit de Barcelona-Catalunya',
     location: 'Barcelona',
     country: 'Spain',
-    date: '2026-05-25T13:00:00.000Z',
+    date: '2026-05-24T13:00:00.000Z', // Dimanche 24 mai
     status: 'upcoming',
     type: 'motogp',
+    raceType: 'race',
   },
   {
     id: 'motogp-2026-r8',
@@ -1160,9 +1391,10 @@ const MOTOGP_2026_CALENDAR: Race[] = [
     circuit: 'Autodromo Internazionale del Mugello',
     location: 'Scarperia',
     country: 'Italy',
-    date: '2026-06-08T13:00:00.000Z',
+    date: '2026-06-07T13:00:00.000Z', // Dimanche 7 juin
     status: 'upcoming',
     type: 'motogp',
+    raceType: 'race',
   },
   {
     id: 'motogp-2026-r9',
@@ -1171,9 +1403,10 @@ const MOTOGP_2026_CALENDAR: Race[] = [
     circuit: 'Balaton Park Circuit',
     location: 'Balatonfőkajár',
     country: 'Hungary',
-    date: '2026-06-22T13:00:00.000Z',
+    date: '2026-06-21T13:00:00.000Z', // Dimanche 21 juin
     status: 'upcoming',
     type: 'motogp',
+    raceType: 'race',
   },
   {
     id: 'motogp-2026-r10',
@@ -1182,9 +1415,10 @@ const MOTOGP_2026_CALENDAR: Race[] = [
     circuit: 'Brno Circuit',
     location: 'Brno',
     country: 'Czech Republic',
-    date: '2026-07-06T13:00:00.000Z',
+    date: '2026-07-05T13:00:00.000Z', // Dimanche 5 juillet
     status: 'upcoming',
     type: 'motogp',
+    raceType: 'race',
   },
 ];
 
@@ -1549,34 +1783,34 @@ const MOTO3_TEAM_COLORS: Record<string, string> = {
   'Boé Motorsports': '#FF66CC',
 };
 
-// Calendrier 2026 Moto2/Moto3 (identique à MotoGP)
+// Calendrier 2026 Moto2/Moto3 (pas de sprint, courses le dimanche)
 const MOTO2_2026_CALENDAR: Race[] = [
-  { id: 'm2-2026-01', round: 1, name: 'Thai Grand Prix', circuit: 'Chang International Circuit', location: 'Buriram', country: 'Thailand', date: '2026-02-28T07:00:00', status: 'live', type: 'moto2' },
-  { id: 'm2-2026-02', round: 2, name: 'Grande Prêmio do Brasil', circuit: 'Autódromo Internacional Ayrton Senna', location: 'Rio de Janeiro', country: 'Brazil', date: '2026-03-01T18:00:00', status: 'upcoming', type: 'moto2' },
-  { id: 'm2-2026-03', round: 3, name: 'Grand Prix of the Americas', circuit: 'Circuit of the Americas', location: 'Austin', country: 'USA', date: '2026-03-15T17:00:00', status: 'upcoming', type: 'moto2' },
-  { id: 'm2-2026-04', round: 4, name: 'Grand Prix of Qatar', circuit: 'Lusail International Circuit', location: 'Lusail', country: 'Qatar', date: '2026-03-22T17:00:00', status: 'upcoming', type: 'moto2' },
-  { id: 'm2-2026-05', round: 5, name: 'Gran Premio de España', circuit: 'Circuito de Jerez', location: 'Jerez', country: 'Spain', date: '2026-04-05T13:00:00', status: 'upcoming', type: 'moto2' },
-  { id: 'm2-2026-06', round: 6, name: 'Grand Prix de France', circuit: 'Bugatti Circuit', location: 'Le Mans', country: 'France', date: '2026-04-19T13:00:00', status: 'upcoming', type: 'moto2' },
-  { id: 'm2-2026-07', round: 7, name: 'Gran Premi de Catalunya', circuit: 'Circuit de Barcelona-Catalunya', location: 'Barcelone', country: 'Spain', date: '2026-05-03T13:00:00', status: 'upcoming', type: 'moto2' },
-  { id: 'm2-2026-08', round: 8, name: "Gran Premio d'Italia", circuit: 'Autodromo Internazionale del Mugello', location: 'Scarperia', country: 'Italy', date: '2026-05-17T13:00:00', status: 'upcoming', type: 'moto2' },
-  { id: 'm2-2026-09', round: 9, name: 'Grand Prix of Hungary', circuit: 'Balaton Park Circuit', location: 'Balatonfőkajár', country: 'Hungary', date: '2026-05-31T13:00:00', status: 'upcoming', type: 'moto2' },
-  { id: 'm2-2026-10', round: 10, name: 'Grand Prix of Czechia', circuit: 'Brno Circuit', location: 'Brno', country: 'Czech Republic', date: '2026-06-14T13:00:00', status: 'upcoming', type: 'moto2' },
+  { id: 'm2-2026-01', round: 1, name: 'Thai Grand Prix', circuit: 'Chang International Circuit', location: 'Buriram', country: 'Thailand', date: '2026-03-02T07:00:00', status: 'upcoming', type: 'moto2' }, // Dimanche 2 mars
+  { id: 'm2-2026-02', round: 2, name: 'Argentine Grand Prix', circuit: 'Autódromo Termas de Río Hondo', location: 'Termas de Río Hondo', country: 'Argentina', date: '2026-03-15T17:00:00', status: 'upcoming', type: 'moto2' },
+  { id: 'm2-2026-03', round: 3, name: 'Grand Prix of the Americas', circuit: 'Circuit of the Americas', location: 'Austin', country: 'USA', date: '2026-03-29T17:00:00', status: 'upcoming', type: 'moto2' },
+  { id: 'm2-2026-04', round: 4, name: 'Grand Prix of Qatar', circuit: 'Lusail International Circuit', location: 'Lusail', country: 'Qatar', date: '2026-04-12T17:00:00', status: 'upcoming', type: 'moto2' },
+  { id: 'm2-2026-05', round: 5, name: 'Gran Premio de España', circuit: 'Circuito de Jerez', location: 'Jerez', country: 'Spain', date: '2026-04-26T13:00:00', status: 'upcoming', type: 'moto2' },
+  { id: 'm2-2026-06', round: 6, name: 'Grand Prix de France', circuit: 'Bugatti Circuit', location: 'Le Mans', country: 'France', date: '2026-05-10T13:00:00', status: 'upcoming', type: 'moto2' },
+  { id: 'm2-2026-07', round: 7, name: 'Gran Premi de Catalunya', circuit: 'Circuit de Barcelona-Catalunya', location: 'Barcelone', country: 'Spain', date: '2026-05-24T13:00:00', status: 'upcoming', type: 'moto2' },
+  { id: 'm2-2026-08', round: 8, name: "Gran Premio d'Italia", circuit: 'Autodromo Internazionale del Mugello', location: 'Scarperia', country: 'Italy', date: '2026-06-07T13:00:00', status: 'upcoming', type: 'moto2' },
+  { id: 'm2-2026-09', round: 9, name: 'Grand Prix of Hungary', circuit: 'Balaton Park Circuit', location: 'Balatonfőkajár', country: 'Hungary', date: '2026-06-21T13:00:00', status: 'upcoming', type: 'moto2' },
+  { id: 'm2-2026-10', round: 10, name: 'Grand Prix of Czechia', circuit: 'Brno Circuit', location: 'Brno', country: 'Czech Republic', date: '2026-07-05T13:00:00', status: 'upcoming', type: 'moto2' },
 ];
 
 const MOTO3_2026_CALENDAR: Race[] = [
-  { id: 'm3-2026-01', round: 1, name: 'Thai Grand Prix', circuit: 'Chang International Circuit', location: 'Buriram', country: 'Thailand', date: '2026-02-28T07:00:00', status: 'live', type: 'moto3' },
-  { id: 'm3-2026-02', round: 2, name: 'Grande Prêmio do Brasil', circuit: 'Autódromo Internacional Ayrton Senna', location: 'Rio de Janeiro', country: 'Brazil', date: '2026-03-01T18:00:00', status: 'upcoming', type: 'moto3' },
-  { id: 'm3-2026-03', round: 3, name: 'Grand Prix of the Americas', circuit: 'Circuit of the Americas', location: 'Austin', country: 'USA', date: '2026-03-15T16:00:00', status: 'upcoming', type: 'moto3' },
-  { id: 'm3-2026-04', round: 4, name: 'Grand Prix of Qatar', circuit: 'Lusail International Circuit', location: 'Lusail', country: 'Qatar', date: '2026-03-22T16:00:00', status: 'upcoming', type: 'moto3' },
-  { id: 'm3-2026-05', round: 5, name: 'Gran Premio de España', circuit: 'Circuito de Jerez', location: 'Jerez', country: 'Spain', date: '2026-04-05T12:00:00', status: 'upcoming', type: 'moto3' },
-  { id: 'm3-2026-06', round: 6, name: 'Grand Prix de France', circuit: 'Bugatti Circuit', location: 'Le Mans', country: 'France', date: '2026-04-19T12:00:00', status: 'upcoming', type: 'moto3' },
-  { id: 'm3-2026-07', round: 7, name: 'Gran Premi de Catalunya', circuit: 'Circuit de Barcelona-Catalunya', location: 'Barcelone', country: 'Spain', date: '2026-05-03T12:00:00', status: 'upcoming', type: 'moto3' },
-  { id: 'm3-2026-08', round: 8, name: "Gran Premio d'Italia", circuit: 'Autodromo Internazionale del Mugello', location: 'Scarperia', country: 'Italy', date: '2026-05-17T12:00:00', status: 'upcoming', type: 'moto3' },
-  { id: 'm3-2026-09', round: 9, name: 'Grand Prix of Hungary', circuit: 'Balaton Park Circuit', location: 'Balatonfőkajár', country: 'Hungary', date: '2026-05-31T12:00:00', status: 'upcoming', type: 'moto3' },
-  { id: 'm3-2026-10', round: 10, name: 'Grand Prix of Czechia', circuit: 'Brno Circuit', location: 'Brno', country: 'Czech Republic', date: '2026-06-14T12:00:00', status: 'upcoming', type: 'moto3' },
+  { id: 'm3-2026-01', round: 1, name: 'Thai Grand Prix', circuit: 'Chang International Circuit', location: 'Buriram', country: 'Thailand', date: '2026-03-02T07:00:00', status: 'upcoming', type: 'moto3' }, // Dimanche 2 mars
+  { id: 'm3-2026-02', round: 2, name: 'Argentine Grand Prix', circuit: 'Autódromo Termas de Río Hondo', location: 'Termas de Río Hondo', country: 'Argentina', date: '2026-03-15T16:00:00', status: 'upcoming', type: 'moto3' },
+  { id: 'm3-2026-03', round: 3, name: 'Grand Prix of the Americas', circuit: 'Circuit of the Americas', location: 'Austin', country: 'USA', date: '2026-03-29T16:00:00', status: 'upcoming', type: 'moto3' },
+  { id: 'm3-2026-04', round: 4, name: 'Grand Prix of Qatar', circuit: 'Lusail International Circuit', location: 'Lusail', country: 'Qatar', date: '2026-04-12T16:00:00', status: 'upcoming', type: 'moto3' },
+  { id: 'm3-2026-05', round: 5, name: 'Gran Premio de España', circuit: 'Circuito de Jerez', location: 'Jerez', country: 'Spain', date: '2026-04-26T12:00:00', status: 'upcoming', type: 'moto3' },
+  { id: 'm3-2026-06', round: 6, name: 'Grand Prix de France', circuit: 'Bugatti Circuit', location: 'Le Mans', country: 'France', date: '2026-05-10T12:00:00', status: 'upcoming', type: 'moto3' },
+  { id: 'm3-2026-07', round: 7, name: 'Gran Premi de Catalunya', circuit: 'Circuit de Barcelona-Catalunya', location: 'Barcelone', country: 'Spain', date: '2026-05-24T12:00:00', status: 'upcoming', type: 'moto3' },
+  { id: 'm3-2026-08', round: 8, name: "Gran Premio d'Italia", circuit: 'Autodromo Internazionale del Mugello', location: 'Scarperia', country: 'Italy', date: '2026-06-07T12:00:00', status: 'upcoming', type: 'moto3' },
+  { id: 'm3-2026-09', round: 9, name: 'Grand Prix of Hungary', circuit: 'Balaton Park Circuit', location: 'Balatonfőkajár', country: 'Hungary', date: '2026-06-21T12:00:00', status: 'upcoming', type: 'moto3' },
+  { id: 'm3-2026-10', round: 10, name: 'Grand Prix of Czechia', circuit: 'Brno Circuit', location: 'Brno', country: 'Czech Republic', date: '2026-07-05T12:00:00', status: 'upcoming', type: 'moto3' },
 ];
 
-// Classement Moto2 2026 (après Thaïlande)
+// Classement Moto2 2026 - Saison non commencée (course aujourd'hui 2 mars)
 const MOTO2_2026_STANDINGS: Standing[] = [
   {
     position: 1,
@@ -1590,8 +1824,8 @@ const MOTO2_2026_STANDINGS: Standing[] = [
       team: { id: 'fantic-2026', name: 'Fantic Racing', shortName: 'Fantic', color: '#FF6600' },
       color: '#FF6600',
     },
-    points: 25,
-    wins: 1,
+    points: 0,
+    wins: 0,
   },
   {
     position: 2,
@@ -1605,7 +1839,7 @@ const MOTO2_2026_STANDINGS: Standing[] = [
       team: { id: 'speedup-2026', name: 'SpeedUp Racing', shortName: 'SpeedUp', color: '#FFD700' },
       color: '#FFD700',
     },
-    points: 20,
+    points: 0,
     wins: 0,
   },
   {
@@ -1620,7 +1854,7 @@ const MOTO2_2026_STANDINGS: Standing[] = [
       team: { id: 'aspar-2026', name: 'CFMOTO Aspar Team', shortName: 'Aspar', color: '#00CC00' },
       color: '#00CC00',
     },
-    points: 16,
+    points: 0,
     wins: 0,
   },
   {
@@ -1635,7 +1869,7 @@ const MOTO2_2026_STANDINGS: Standing[] = [
       team: { id: 'gresini-2026', name: 'QJmotor Gresini Moto2', shortName: 'Gresini', color: '#0066FF' },
       color: '#0066FF',
     },
-    points: 13,
+    points: 0,
     wins: 0,
   },
   {
@@ -1650,12 +1884,12 @@ const MOTO2_2026_STANDINGS: Standing[] = [
       team: { id: 'intact-2026', name: 'Liqui Moly Husqvarna Intact GP', shortName: 'Intact', color: '#00FF00' },
       color: '#00FF00',
     },
-    points: 11,
+    points: 0,
     wins: 0,
   },
 ];
 
-// Classement Moto3 2026 (après Thaïlande)
+// Classement Moto3 2026 - Saison non commencée (course aujourd'hui 2 mars)
 const MOTO3_2026_STANDINGS: Standing[] = [
   {
     position: 1,
@@ -1669,8 +1903,8 @@ const MOTO3_2026_STANDINGS: Standing[] = [
       team: { id: 'aspar-2026', name: 'CFMOTO Aspar Team', shortName: 'Aspar', color: '#00CC00' },
       color: '#00CC00',
     },
-    points: 25,
-    wins: 1,
+    points: 0,
+    wins: 0,
   },
   {
     position: 2,
@@ -1684,7 +1918,7 @@ const MOTO3_2026_STANDINGS: Standing[] = [
       team: { id: 'intact-2026', name: 'Liqui Moly Husqvarna Intact GP', shortName: 'Intact', color: '#00FF00' },
       color: '#00FF00',
     },
-    points: 20,
+    points: 0,
     wins: 0,
   },
   {
@@ -1699,7 +1933,7 @@ const MOTO3_2026_STANDINGS: Standing[] = [
       team: { id: 'mt-2026', name: 'MT Helmets - MSI', shortName: 'MT', color: '#9933CC' },
       color: '#9933CC',
     },
-    points: 16,
+    points: 0,
     wins: 0,
   },
   {
@@ -1714,7 +1948,7 @@ const MOTO3_2026_STANDINGS: Standing[] = [
       team: { id: 'ktmajo-2026', name: 'Red Bull KTM Ajo', shortName: 'KTM Ajo', color: '#FF6600' },
       color: '#FF6600',
     },
-    points: 13,
+    points: 0,
     wins: 0,
   },
   {
@@ -1729,7 +1963,7 @@ const MOTO3_2026_STANDINGS: Standing[] = [
       team: { id: 'honda-2026', name: 'Honda Team Asia', shortName: 'Honda', color: '#FF0000' },
       color: '#FF0000',
     },
-    points: 11,
+    points: 0,
     wins: 0,
   },
 ];
@@ -1888,140 +2122,6 @@ export async function getLastMoto3Race(): Promise<Race | null> {
 
 // ===== SPRINT RACE FUNCTIONS =====
 
-// Résultats Sprint Thaïlande 2026 (28 février)
-const THAILAND_2026_SPRINT_RESULTS: RaceResult[] = [
-  {
-    position: 1,
-    rider: {
-      id: 'rider-bagnaia',
-      number: 1,
-      firstName: 'Francesco',
-      lastName: 'Bagnaia',
-      code: 'BAG',
-      nationality: 'Italy',
-      team: {
-        id: 'team-ducati',
-        name: 'Ducati Lenovo Team',
-        shortName: 'Ducati',
-        color: '#DC2626',
-      },
-      color: '#DC2626',
-    },
-    team: {
-      id: 'team-ducati',
-      name: 'Ducati Lenovo Team',
-      shortName: 'Ducati',
-      color: '#DC2626',
-    },
-    time: '19:42.183',
-    points: 12,
-  },
-  {
-    position: 2,
-    rider: {
-      id: 'rider-marquez',
-      number: 93,
-      firstName: 'Marc',
-      lastName: 'Márquez',
-      code: 'MAR',
-      nationality: 'Spain',
-      team: {
-        id: 'team-ducati2',
-        name: 'Ducati Lenovo Team',
-        shortName: 'Ducati',
-        color: '#DC2626',
-      },
-      color: '#DC2626',
-    },
-    team: {
-      id: 'team-ducati2',
-      name: 'Ducati Lenovo Team',
-      shortName: 'Ducati',
-      color: '#DC2626',
-    },
-    time: '+0.385',
-    points: 9,
-  },
-  {
-    position: 3,
-    rider: {
-      id: 'rider-martin',
-      number: 89,
-      firstName: 'Jorge',
-      lastName: 'Martín',
-      code: 'MAR',
-      nationality: 'Spain',
-      team: {
-        id: 'team-aprilia',
-        name: 'Aprilia Racing',
-        shortName: 'Aprilia',
-        color: '#0066CC',
-      },
-      color: '#0066CC',
-    },
-    team: {
-      id: 'team-aprilia',
-      name: 'Aprilia Racing',
-      shortName: 'Aprilia',
-      color: '#0066CC',
-    },
-    time: '+2.147',
-    points: 7,
-  },
-  {
-    position: 4,
-    rider: {
-      id: 'rider-binder',
-      number: 33,
-      firstName: 'Brad',
-      lastName: 'Binder',
-      code: 'BIN',
-      nationality: 'South Africa',
-      team: {
-        id: 'team-ktm',
-        name: 'Red Bull KTM Factory Racing',
-        shortName: 'KTM',
-        color: '#FF6600',
-      },
-      color: '#FF6600',
-    },
-    team: {
-      id: 'team-ktm',
-      name: 'Red Bull KTM Factory Racing',
-      shortName: 'KTM',
-      color: '#FF6600',
-    },
-    time: '+3.892',
-    points: 6,
-  },
-  {
-    position: 5,
-    rider: {
-      id: 'rider-vinales',
-      number: 12,
-      firstName: 'Maverick',
-      lastName: 'Viñales',
-      code: 'VIN',
-      nationality: 'Spain',
-      team: {
-        id: 'team-ktm2',
-        name: 'Red Bull KTM Factory Racing',
-        shortName: 'KTM',
-        color: '#FF6600',
-      },
-      color: '#FF6600',
-    },
-    team: {
-      id: 'team-ktm2',
-      name: 'Red Bull KTM Factory Racing',
-      shortName: 'KTM',
-      color: '#FF6600',
-    },
-    time: '+5.421',
-    points: 5,
-  },
-];
-
 // Récupérer les résultats de la sprint pour une course MotoGP
 export async function getMotoGPSprintResults(raceId: string): Promise<RaceResult[]> {
   console.log(`[API] Fetching sprint results for race: ${raceId}`);
@@ -2038,8 +2138,8 @@ export async function getMotoGPSprintResults(raceId: string): Promise<RaceResult
 export async function getLastMotoGPSprint(): Promise<Race | null> {
   console.log('[API] Fetching last MotoGP sprint');
 
-  // Sprint Thaïlande 2026 - terminé le 28 février
-  const thailandSprintDate = '2026-02-28T08:00:00.000Z';
+  // Sprint Thaïlande 2026 - terminé le 1er mars
+  const thailandSprintDate = '2026-03-01T08:00:00.000Z';
   const sprintStatus = determineRaceStatus(thailandSprintDate);
 
   if (sprintStatus === 'finished') {
