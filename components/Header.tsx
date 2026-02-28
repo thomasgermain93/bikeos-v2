@@ -9,7 +9,11 @@ export function Header() {
   const navItems = [
     { href: '/', label: 'Home', color: null },
     { href: '/motogp/', label: 'MotoGP', color: '#ef4444' },
+    { href: '/moto2/', label: 'Moto2', color: '#FF6600' },
+    { href: '/moto3/', label: 'Moto3', color: '#00CC00' },
     { href: '/wsbk/', label: 'WSBK', color: '#3b82f6' },
+    { href: '/mxgp/', label: 'MXGP', color: '#8B4513' },
+    { href: '/mx2/', label: 'MX2', color: '#228B22' },
   ];
 
   return (

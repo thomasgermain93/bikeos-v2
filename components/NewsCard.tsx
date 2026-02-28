@@ -4,11 +4,25 @@ import { NewsItem } from '@/types';
 
 interface NewsCardProps {
   news: NewsItem[];
-  type: 'motogp' | 'wsbk';
+  type: 'motogp' | 'wsbk' | 'mxgp' | 'mx2';
 }
 
+const SERIES_COLORS: Record<string, string> = {
+  motogp: '#ef4444',
+  wsbk: '#3b82f6',
+  mxgp: '#8B4513',
+  mx2: '#228B22',
+};
+
+const SERIES_LABELS: Record<string, string> = {
+  motogp: 'MotoGP',
+  wsbk: 'WSBK',
+  mxgp: 'MXGP',
+  mx2: 'MX2',
+};
+
 export function NewsCard({ news, type }: NewsCardProps) {
-  const accentColor = type === 'motogp' ? '#ef4444' : '#3b82f6';
+  const accentColor = SERIES_COLORS[type] || '#ef4444';
 
   return (
     <div className="border border-[var(--border-card)] rounded-xl bg-zinc-900 overflow-hidden">
@@ -16,7 +30,7 @@ export function NewsCard({ news, type }: NewsCardProps) {
         <div className="flex items-center gap-2">
           <span className="w-0.5 h-3.5 rounded-full flex-shrink-0" style={{ backgroundColor: accentColor }}></span>
           <span className="text-xs font-mono font-medium uppercase tracking-widest" style={{ color: accentColor }}>
-            {type === 'motogp' ? 'MotoGP' : 'WSBK'}
+            {SERIES_LABELS[type] || type.toUpperCase()}
           </span>
         </div>
       </div>

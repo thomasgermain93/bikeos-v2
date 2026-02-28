@@ -7,7 +7,7 @@ export interface Race {
   country: string;
   date: string;
   status: 'upcoming' | 'live' | 'finished';
-  type: 'motogp' | 'wsbk';
+  type: 'motogp' | 'moto2' | 'moto3' | 'wsbk' | 'mxgp' | 'mx2';
   distance?: string;
   results?: RaceResult[];
   fastestLap?: {
@@ -57,7 +57,7 @@ export interface NewsItem {
   publishedAt: string;
   source: string;
   sourceUrl: string;
-  category: 'motogp' | 'wsbk';
+  category: 'motogp' | 'moto2' | 'moto3' | 'wsbk' | 'mxgp' | 'mx2';
 }
 
-export type Series = 'motogp' | 'wsbk';
+export type Series = 'motogp' | 'moto2' | 'moto3' | 'wsbk' | 'mxgp' | 'mx2';

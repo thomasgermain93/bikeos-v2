@@ -20,6 +20,13 @@ const TEAM_COLORS: Record<string, string> = {
   'Kick Sauber': '#52E252',
 };
 
+const SERIES_COLORS: Record<string, string> = {
+  motogp: '#ef4444',
+  wsbk: '#3b82f6',
+  mxgp: '#8B4513',
+  mx2: '#228B22',
+};
+
 function getTeamColor(teamName: string): string {
   for (const [team, color] of Object.entries(TEAM_COLORS)) {
     if (teamName.includes(team)) return color;
@@ -37,8 +44,7 @@ function getBarOpacity(position: number): number {
 
 export function LastRaceCard({ race, standings }: LastRaceCardProps) {
   const raceDate = new Date(race.date);
-  const isMotoGP = race.type === 'motogp';
-  const accentColor = isMotoGP ? '#ef4444' : '#3b82f6';
+  const accentColor = SERIES_COLORS[race.type] || '#ef4444';
 
   // Get top 5 from standings as mock results
   const results = standings.slice(0, 5);
@@ -51,7 +57,7 @@ export function LastRaceCard({ race, standings }: LastRaceCardProps) {
           <div className="flex items-center gap-2">
             <span className="w-0.5 h-3.5 rounded-full flex-shrink-0" style={{ backgroundColor: accentColor }}></span>
             <span className="text-xs font-mono font-medium uppercase tracking-widest" style={{ color: accentColor }}>
-              {isMotoGP ? 'MotoGP' : 'WSBK'}
+              {race.type.toUpperCase()}
             </span>
           </div>
           <Link

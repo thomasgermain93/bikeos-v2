@@ -7,11 +7,18 @@ interface NextRaceCardProps {
   race: Race;
 }
 
+const SERIES_COLORS: Record<string, { accent: string; bg: string; label: string }> = {
+  motogp: { accent: '#ef4444', bg: '#ef444418', label: 'MotoGP' },
+  wsbk: { accent: '#3b82f6', bg: '#3b82f618', label: 'WSBK' },
+  mxgp: { accent: '#8B4513', bg: '#8B451318', label: 'MXGP' },
+  mx2: { accent: '#228B22', bg: '#228B2218', label: 'MX2' },
+};
+
 export function NextRaceCard({ race }: NextRaceCardProps) {
   const raceDate = new Date(race.date);
-  const isMotoGP = race.type === 'motogp';
-  const accentColor = isMotoGP ? '#ef4444' : '#3b82f6';
-  const bgColor = isMotoGP ? '#ef444418' : '#3b82f618';
+  const seriesColors = SERIES_COLORS[race.type] || SERIES_COLORS.motogp;
+  const accentColor = seriesColors.accent;
+  const bgColor = seriesColors.bg;
 
   return (
     <Link
@@ -23,7 +30,7 @@ export function NextRaceCard({ race }: NextRaceCardProps) {
           className="text-xs font-mono font-medium uppercase tracking-widest px-1.5 py-0.5 rounded"
           style={{ color: accentColor, backgroundColor: bgColor }}
         >
-          {isMotoGP ? 'MotoGP' : 'WSBK'}
+          {seriesColors.label}
         </span>
         <span className="text-xs font-mono text-zinc-600 uppercase tracking-widest">
           Rd {race.round} · 2025

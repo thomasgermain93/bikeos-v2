@@ -3,7 +3,7 @@ import { Standing } from '@/types';
 
 interface StandingsCardProps {
   standings: Standing[];
-  type: 'motogp' | 'wsbk';
+  type: 'motogp' | 'moto2' | 'moto3' | 'wsbk' | 'mxgp' | 'mx2';
 }
 
 const TEAM_COLORS: Record<string, string> = {
@@ -22,6 +22,29 @@ const TEAM_COLORS: Record<string, string> = {
   'Aprilia': '#0066CC',
   'Yamaha': '#00FF00',
   'Honda': '#FF0000',
+  'Husqvarna': '#0066CC',
+  'GasGas': '#CC0000',
+  'Fantic': '#00CED1',
+  'Beta': '#DC2626',
+  'Kawasaki': '#00CC00',
+};
+
+const SERIES_COLORS: Record<string, string> = {
+  motogp: '#ef4444',
+  moto2: '#FF6600',
+  moto3: '#00CC00',
+  wsbk: '#3b82f6',
+  mxgp: '#8B4513',
+  mx2: '#228B22',
+};
+
+const SERIES_LABELS: Record<string, string> = {
+  motogp: 'MotoGP',
+  moto2: 'Moto2',
+  moto3: 'Moto3',
+  wsbk: 'WSBK',
+  mxgp: 'MXGP',
+  mx2: 'MX2',
 };
 
 function getTeamColor(teamName: string): string {
@@ -32,7 +55,7 @@ function getTeamColor(teamName: string): string {
 }
 
 export function StandingsCard({ standings, type }: StandingsCardProps) {
-  const accentColor = type === 'motogp' ? '#ef4444' : '#3b82f6';
+  const accentColor = SERIES_COLORS[type] || '#ef4444';
 
   return (
     <div className="border border-[var(--border-card)] rounded-xl bg-zinc-900 overflow-hidden">
@@ -41,7 +64,7 @@ export function StandingsCard({ standings, type }: StandingsCardProps) {
           <div className="flex items-center gap-2">
             <span className="w-0.5 h-3.5 rounded-full flex-shrink-0" style={{ backgroundColor: accentColor }}></span>
             <span className="text-xs font-mono font-medium uppercase tracking-widest" style={{ color: accentColor }}>
-              {type === 'motogp' ? 'MotoGP' : 'WSBK'}
+              {SERIES_LABELS[type] || type.toUpperCase()}
             </span>
           </div>
           <Link
