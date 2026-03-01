@@ -19,6 +19,7 @@ export function NextRaceCard({ race }: NextRaceCardProps) {
   const seriesColors = SERIES_COLORS[race.type] || SERIES_COLORS.motogp;
   const accentColor = seriesColors.accent;
   const bgColor = seriesColors.bg;
+  const year = raceDate.getFullYear();
 
   return (
     <Link
@@ -33,7 +34,7 @@ export function NextRaceCard({ race }: NextRaceCardProps) {
           {seriesColors.label}
         </span>
         <span className="text-xs font-mono text-zinc-600 uppercase tracking-widest">
-          Rd {race.round} · 2026
+          Rd {race.round} · {year}
         </span>
       </div>
       <h2 className="text-2xl font-semibold text-white tracking-tight leading-tight mb-1">

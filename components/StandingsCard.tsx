@@ -48,6 +48,7 @@ const SERIES_LABELS: Record<string, string> = {
 };
 
 function getTeamColor(teamName: string): string {
+  if (!teamName) return '#666666';
   for (const [team, color] of Object.entries(TEAM_COLORS)) {
     if (teamName.toLowerCase().includes(team.toLowerCase())) return color;
   }
@@ -56,6 +57,7 @@ function getTeamColor(teamName: string): string {
 
 export function StandingsCard({ standings, type }: StandingsCardProps) {
   const accentColor = SERIES_COLORS[type] || '#ef4444';
+  const currentYear = new Date().getFullYear();
 
   return (
     <div className="border border-[var(--border-card)] rounded-xl bg-zinc-900 overflow-hidden">
@@ -76,12 +78,15 @@ export function StandingsCard({ standings, type }: StandingsCardProps) {
         </div>
         <div className="mt-1.5">
           <span className="text-sm font-medium text-zinc-400">Driver Standings</span>
-          <span className="text-zinc-600 text-xs ml-2">· 2026</span>
+          <span className="text-zinc-600 text-xs ml-2">· {currentYear}</span>
         </div>
       </div>
       <div>
         {standings.slice(0, 5).map((standing) => {
-          const teamColor = getTeamColor(standing.rider.team.name);
+          const teamName = typeof standing.rider.team === 'string'
+            ? standing.rider.team
+            : standing.rider.team?.name || '';
+          const teamColor = getTeamColor(teamName);
           let rowBgClass = '';
           if (standing.position === 1) {
             rowBgClass = 'bg-yellow-500/5';
@@ -122,7 +127,7 @@ export function StandingsCard({ standings, type }: StandingsCardProps) {
                     {standing.rider.firstName.charAt(0)}. {standing.rider.lastName}
                   </span>
                 </div>
-                <div className="text-xs text-zinc-500 truncate">{standing.rider.team.name}</div>
+                <div className="text-xs text-zinc-500 truncate">{teamName || 'Independent'}</div>
               </div>
               <span className="text-sm font-mono tabular-nums text-right w-10 flex-shrink-0 text-zinc-400">
                 {standing.points}

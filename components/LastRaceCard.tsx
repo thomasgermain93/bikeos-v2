@@ -18,6 +18,11 @@ const TEAM_COLORS: Record<string, string> = {
   'Racing Bulls': '#6692FF',
   'Williams': '#64C4FF',
   'Kick Sauber': '#52E252',
+  'Ducati': '#DC2626',
+  'KTM': '#FF6600',
+  'Aprilia': '#0066CC',
+  'Yamaha': '#00FF00',
+  'Honda': '#FF0000',
 };
 
 const SERIES_COLORS: Record<string, string> = {
@@ -28,8 +33,9 @@ const SERIES_COLORS: Record<string, string> = {
 };
 
 function getTeamColor(teamName: string): string {
+  if (!teamName) return '#666666';
   for (const [team, color] of Object.entries(TEAM_COLORS)) {
-    if (teamName.includes(team)) return color;
+    if (teamName.toLowerCase().includes(team.toLowerCase())) return color;
   }
   return '#666666';
 }
@@ -46,9 +52,20 @@ export function LastRaceCard({ race, standings }: LastRaceCardProps) {
   const raceDate = new Date(race.date);
   const accentColor = SERIES_COLORS[race.type] || '#ef4444';
 
-  // Get top 5 from standings as mock results
-  const results = standings.slice(0, 5);
-  const pointsMap = [25, 20, 16, 13, 11];
+  // Use results from race if available, otherwise fallback to standings
+  const displayResults = race.results && race.results.length > 0
+    ? race.results.slice(0, 5).map(r => ({
+        position: r.position,
+        rider: r.rider,
+        points: r.points || 0,
+        time: r.time
+      }))
+    : standings.slice(0, 5).map((s, i) => ({
+        position: i + 1,
+        rider: s.rider,
+        points: [25, 20, 16, 13, 11][i] || 0,
+        time: ''
+      }));
 
   return (
     <div className="border border-[var(--border-card)] rounded-xl bg-zinc-900 overflow-hidden">
@@ -78,20 +95,21 @@ export function LastRaceCard({ race, standings }: LastRaceCardProps) {
         </div>
       </div>
       <div>
-        {results.map((result, index) => {
-          const position = index + 1;
-          const teamColor = getTeamColor(result.rider.team.name);
-          const opacity = getBarOpacity(position);
-          const points = pointsMap[index] || 0;
+        {displayResults.map((result) => {
+          const teamName = typeof result.rider.team === 'string'
+            ? result.rider.team
+            : result.rider.team?.name || '';
+          const teamColor = getTeamColor(teamName);
+          const opacity = getBarOpacity(result.position);
 
           return (
             <div
               key={result.rider.id}
-              aria-label={`P${position} ${result.rider.firstName} ${result.rider.lastName}, ${points} points`}
+              aria-label={`P${result.position} ${result.rider.firstName} ${result.rider.lastName}, ${result.points} points`}
               className="flex items-center px-4 py-3 gap-4 min-h-[52px] border-b border-[var(--border-row)] hover:bg-zinc-800/40 transition-colors"
             >
               <span className="w-5 text-xs font-mono tabular-nums flex-shrink-0 text-zinc-500">
-                P{position}
+                P{result.position}
               </span>
               <div
                 className="w-0.5 h-8 rounded-full flex-shrink-0"
@@ -102,11 +120,14 @@ export function LastRaceCard({ race, standings }: LastRaceCardProps) {
                   <span className="hidden sm:inline">{result.rider.firstName} {result.rider.lastName}</span>
                   <span className="sm:hidden">{result.rider.firstName.charAt(0)}. {result.rider.lastName}</span>
                 </div>
-                <div className="text-xs text-zinc-500 truncate">{result.rider.team.name}</div>
+                <div className="text-xs text-zinc-500 truncate">{teamName || 'Independent'}</div>
               </div>
-              <span className="text-sm font-mono tabular-nums text-right w-10 flex-shrink-0 text-zinc-400">
-                {points}
-              </span>
+              <div className="text-right flex flex-col justify-center">
+                <span className="text-sm font-mono tabular-nums text-zinc-400">
+                    {result.points > 0 ? result.points : ''}
+                </span>
+                {result.time && <span className="text-[10px] font-mono text-zinc-600 leading-none">{result.time}</span>}
+              </div>
               <svg
                 className="md:hidden w-3 h-3 text-zinc-500 flex-shrink-0"
                 viewBox="0 0 12 12"
@@ -121,19 +142,19 @@ export function LastRaceCard({ race, standings }: LastRaceCardProps) {
           );
         })}
 
-        {/* Fastest Lap */}
-        {results[0] && (
+        {/* Fastest Lap info from race if available */}
+        {race.fastestLap && (
           <div className="flex items-center px-4 py-3 gap-4 min-h-[52px] bg-zinc-800/20">
             <span className="w-5 text-xs font-mono text-zinc-500 flex-shrink-0">FL</span>
             <div className="w-0.5 h-8 rounded-full flex-shrink-0 bg-violet-500/60"></div>
             <div className="flex-1 min-w-0">
               <span className="text-sm text-zinc-300">
-                <span className="hidden sm:inline">{results[0].rider.firstName} {results[0].rider.lastName}</span>
-                <span className="sm:hidden">{results[0].rider.firstName.charAt(0)}. {results[0].rider.lastName}</span>
+                <span className="hidden sm:inline">{race.fastestLap.rider.firstName} {race.fastestLap.rider.lastName}</span>
+                <span className="sm:hidden">{race.fastestLap.rider.firstName.charAt(0)}. {race.fastestLap.rider.lastName}</span>
               </span>
             </div>
             <span className="text-sm font-mono tabular-nums text-violet-400 text-right w-20 flex-shrink-0">
-              1:26.725
+              {race.fastestLap.time}
             </span>
           </div>
         )}

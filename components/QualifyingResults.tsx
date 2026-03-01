@@ -1,17 +1,35 @@
 'use client';
 
 import { useState } from 'react';
-import { QualifyingResult, Driver } from '@/data/api';
+
+interface QualifyingResult {
+  position: number;
+  driverId: string;
+  driverName?: string;
+  gridPosition: number;
+  q1Time?: string;
+  q2Time?: string;
+  q3Time?: string;
+}
+
+interface Driver {
+  id: string;
+  name: string;
+  number: number;
+  team: string;
+  teamId: string;
+  photo: string;
+}
 
 interface QualifyingResultsProps {
   qualifying: QualifyingResult[];
-  drivers: Driver[];
+  drivers?: Driver[];
 }
 
 type SessionType = 'Q1' | 'Q2' | 'Q3';
 
-export function QualifyingResults({ qualifying, drivers }: QualifyingResultsProps) {
-  const [activeSession, setActiveSession] = useState<SessionType>('Q3');
+export function QualifyingResults({ qualifying, drivers = [] }: QualifyingResultsProps) {
+  const [activeSession, setActiveSession] = useState<SessionType>('Q2');
 
   const getDriver = (driverId: string) => drivers.find(d => d.id === driverId);
 
@@ -63,7 +81,7 @@ export function QualifyingResults({ qualifying, drivers }: QualifyingResultsProp
 
         {/* Onglets de session */}
         <div className="flex gap-1">
-          {(['Q1', 'Q2', 'Q3'] as SessionType[]).map((session) => (
+          {(['Q1', 'Q2'] as SessionType[]).map((session) => (
             <button
               key={session}
               onClick={() => setActiveSession(session)}
@@ -87,24 +105,21 @@ export function QualifyingResults({ qualifying, drivers }: QualifyingResultsProp
           <span className="w-8">Grid</span>
           <span className="flex-1">Rider</span>
           <span className="w-20 text-right">Time</span>
-          <span className="w-16 text-right">Gap</span>
         </div>
 
         {/* Lignes */}
         {sortedResults.map((result, index) => {
           const driver = getDriver(result.driverId);
-          if (!driver) return null;
-
+          const name = driver?.name || result.driverName || result.driverId;
           const position = index + 1;
           const time = getSessionTime(result);
-          const isEliminated = activeSession === 'Q1' && position > 14;
-          const isQ2Eliminated = activeSession === 'Q2' && position > 10;
+          const isEliminated = activeSession === 'Q1' && position > 12;
 
           return (
             <div
               key={result.driverId}
               className={`flex items-center px-4 py-3 gap-2 hover:bg-zinc-800/40 transition-colors ${
-                isEliminated || isQ2Eliminated ? 'opacity-60' : ''
+                isEliminated ? 'opacity-60' : ''
               }`}
             >
               <span className={`w-10 text-sm font-mono tabular-nums ${
@@ -123,18 +138,13 @@ export function QualifyingResults({ qualifying, drivers }: QualifyingResultsProp
               <div className="flex-1 min-w-0 flex items-center gap-3">
                 <div
                   className="w-0.5 h-8 rounded-full"
-                  style={{ backgroundColor: driver.teamId === 'ducati-lenovo' ? '#DC0000' :
-                    driver.teamId === 'aprilia-racing' ? '#9D0012' :
-                    driver.teamId === 'ktm-factory' ? '#FF6600' :
-                    driver.teamId === 'yamaha-factory' ? '#0000CC' :
-                    driver.teamId === 'honda-hrc' ? '#CC0000' :
-                    '#666666' }}
+                  style={{ backgroundColor: driver?.teamId === 'ducati-lenovo' ? '#DC0000' : '#666666' }}
                 />
                 <div>
                   <div className="text-sm text-zinc-100 font-medium">
-                    {driver.name}
+                    {name}
                   </div>
-                  <div className="text-xs text-zinc-500">#{driver.number} · {driver.team}</div>
+                  {driver && <div className="text-xs text-zinc-500">#{driver.number} · {driver.team}</div>}
                 </div>
               </div>
 
@@ -142,10 +152,6 @@ export function QualifyingResults({ qualifying, drivers }: QualifyingResultsProp
                 position === 1 ? 'text-violet-400 font-medium' : 'text-zinc-300'
               }`}>
                 {time}
-              </span>
-
-              <span className="w-16 text-right text-xs font-mono tabular-nums text-zinc-500">
-                {position === 1 ? '—' : time !== '—' ? `+${(parseFloat(time.split(':')[1]) - parseFloat(sortedResults[0].q3Time?.split(':')[1] || '0')).toFixed(3)}` : '—'}
               </span>
             </div>
           );
@@ -162,10 +168,6 @@ export function QualifyingResults({ qualifying, drivers }: QualifyingResultsProp
           <span className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-violet-500/50"></span>
             Meilleur tour
-          </span>
-          <span className="flex items-center gap-1.5 ml-auto">
-            <span className="opacity-50">Grisé</span>
-            Éliminé
           </span>
         </div>
       </div>

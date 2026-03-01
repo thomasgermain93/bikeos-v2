@@ -1,4 +1,4 @@
-import { getCalendar } from '@/data/api';
+import { getMotoGPCalendar } from '@/data/api-compat';
 import RacePageClient from './RacePageClient';
 
 interface PageProps {
@@ -6,14 +6,11 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  const calendar = await getCalendar();
+  const calendar = await getMotoGPCalendar();
   const params = [];
   
   for (const round of calendar) {
-    params.push({ id: round.id + '-race' });
-    if (round.dates.sprint) {
-      params.push({ id: round.id + '-sprint' });
-    }
+    params.push({ id: round.id });
   }
   
   return params;

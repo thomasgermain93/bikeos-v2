@@ -3,6 +3,7 @@
 import { Trophy, Clock } from 'lucide-react';
 import { getMotoGPSprintResults, getQualifyingGrid } from '@/data/api-compat';
 import { useState, useEffect } from 'react';
+import { RaceResult } from '@/types';
 
 interface LastResultsProps {
   showSprint?: boolean;
@@ -10,8 +11,8 @@ interface LastResultsProps {
 }
 
 export function LastResults({ showSprint = true, showGrid = true }: LastResultsProps) {
-  const [sprintResults, setSprintResults] = useState<any[]>([]);
-  const [qualifyingGrid, setQualifyingGrid] = useState<any[]>([]);
+  const [sprintResults, setSprintResults] = useState<RaceResult[]>([]);
+  const [qualifyingGrid, setQualifyingGrid] = useState<RaceResult[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,11 +37,11 @@ export function LastResults({ showSprint = true, showGrid = true }: LastResultsP
                   Sprint Results
                 </span>
               </div>
-              <span className="text-xs text-zinc-500">Thailand GP - 28 Feb 2026</span>
+              <span className="text-xs text-zinc-500">Last Session</span>
             </div>
           </div>
           <div className="divide-y divide-[var(--border-row)]">
-            {sprintResults.slice(0, 5).map((result: any, index: number) => (
+            {sprintResults.slice(0, 5).map((result, index: number) => (
               <div
                 key={index}
                 className={`flex items-center px-4 py-3 gap-4 ${
@@ -58,8 +59,10 @@ export function LastResults({ showSprint = true, showGrid = true }: LastResultsP
                   {result.position}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{result.driver}</p>
-                  <p className="text-xs text-zinc-500 truncate">{result.team}</p>
+                  <p className="text-sm font-medium text-white truncate">{result.rider.firstName} {result.rider.lastName}</p>
+                  <p className="text-xs text-zinc-500 truncate">
+                    {typeof result.team === 'string' ? result.team : result.team?.name || 'Independent'}
+                  </p>
                 </div>
                 <div className="text-right">
                   <p className="text-xs font-mono text-zinc-400">{result.time}</p>
@@ -69,14 +72,6 @@ export function LastResults({ showSprint = true, showGrid = true }: LastResultsP
                 </div>
               </div>
             ))}
-          </div>
-          <div className="px-4 py-2 border-t border-[var(--border-row)]">
-            <a 
-              href="/motogp/race/thailand-2026-sprint/" 
-              className="text-xs text-zinc-500 hover:text-white transition-colors flex items-center justify-center gap-1"
-            >
-              View full results →
-            </a>
           </div>
         </div>
       )}
@@ -92,11 +87,11 @@ export function LastResults({ showSprint = true, showGrid = true }: LastResultsP
                   Starting Grid
                 </span>
               </div>
-              <span className="text-xs text-zinc-500">Thailand GP - Qualifying</span>
+              <span className="text-xs text-zinc-500">Qualifying</span>
             </div>
           </div>
           <div className="divide-y divide-[var(--border-row)]">
-            {qualifyingGrid.slice(0, 6).map((grid: any, index: number) => (
+            {qualifyingGrid.slice(0, 6).map((grid, index: number) => (
               <div
                 key={index}
                 className={`flex items-center px-4 py-3 gap-4 ${
@@ -109,8 +104,10 @@ export function LastResults({ showSprint = true, showGrid = true }: LastResultsP
                   P{grid.position}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{grid.driver}</p>
-                  <p className="text-xs text-zinc-500 truncate">{grid.team}</p>
+                  <p className="text-sm font-medium text-white truncate">{grid.rider.firstName} {grid.rider.lastName}</p>
+                  <p className="text-xs text-zinc-500 truncate">
+                    {typeof grid.team === 'string' ? grid.team : grid.team?.name || 'Independent'}
+                  </p>
                 </div>
                 <div className="text-right">
                   <p className="text-xs font-mono text-zinc-400">{grid.time}</p>
@@ -118,14 +115,6 @@ export function LastResults({ showSprint = true, showGrid = true }: LastResultsP
                 </div>
               </div>
             ))}
-          </div>
-          <div className="px-4 py-2 border-t border-[var(--border-row)]">
-            <a 
-              href="/motogp/race/thailand-2026-race/" 
-              className="text-xs text-zinc-500 hover:text-white transition-colors flex items-center justify-center gap-1"
-            >
-              View full grid →
-            </a>
           </div>
         </div>
       )}
