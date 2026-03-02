@@ -1,21 +1,31 @@
-import { getMotoGPCalendar } from '@/data/api-compat';
+import { getMotoGPCalendar, getMotoGPRoundById, getMotoGPRaceResults } from '@/data/api-compat';
 import RacePageClient from './RacePageClient';
+import { notFound } from 'next/navigation';
 
 interface PageProps {
   params: { id: string };
 }
 
 export async function generateStaticParams() {
-  const calendar = await getMotoGPCalendar();
-  const params = [];
-  
-  for (const round of calendar) {
-    params.push({ id: round.id });
+  try {
+    const calendar = await getMotoGPCalendar();
+    return calendar.map((round) => ({
+      id: round.id,
+    }));
+  } catch (error) {
+    console.error("Error generating static params:", error);
+    return [];
   }
-  
-  return params;
 }
 
-export default function RacePage({ params }: PageProps) {
-  return <RacePageClient params={params} />;
+export default async function RacePage({ params }: PageProps) {
+  const round = await getMotoGPRoundById(params.id);
+
+  if (!round) {
+    notFound();
+  }
+
+  const raceData = await getMotoGPRaceResults(params.id);
+
+  return <RacePageClient params={params} initialRound={round} initialRaceData={raceData} />;
 }

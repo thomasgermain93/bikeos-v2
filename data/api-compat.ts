@@ -2,6 +2,7 @@
 // TheSportsDB: https://www.thesportsdb.com/api.php
 
 import type { Race, Standing, NewsItem, RaceResult, Rider } from '@/types';
+import { fetchMotoGPNews } from './news-service';
 
 const API_KEY = process.env.THE_SPORTS_DB_API_KEY || '3';
 const BASE_URL = `https://www.thesportsdb.com/api/v1/json/${API_KEY}`;
@@ -97,11 +98,40 @@ function transformEvent(event: any): Race {
     date: date.toISOString(),
     status: event.strStatus === 'Match Finished' || date < now ? 'finished' : 'upcoming',
     type: 'motogp',
-    raceType: raceType as any, // On cast pour compatibilité avec le type Race qui attend 'race' | 'sprint'
+    raceType: raceType as any,
   };
 }
 
 // ============ FONCTIONS PRINCIPALES ============
+
+export async function getMotoGPRoundById(id: string): Promise<Race | null> {
+    const data = await fetchFromSportsDB(`/lookupevent.php?id=${id}`);
+    if (!data?.events?.[0]) return null;
+    return transformEvent(data.events[0]);
+}
+
+export async function getMotoGPRaceResults(id: string): Promise<{ qualifying: RaceResult[], sprint: RaceResult[], race: RaceResult[], fastestLap?: any }> {
+    const race = await getMotoGPRoundById(id);
+    if (!race) return { qualifying: [], sprint: [], race: [] };
+
+    const results = await getEventResults(id);
+
+    // Points mapping
+    const pointsMapSprint = [12, 9, 7, 6, 5, 4, 3, 2, 1];
+    const pointsMapRace = [25, 20, 16, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+
+    const mappedResults = results.map((r, i) => ({
+        ...r,
+        points: race.raceType === 'sprint' ? (pointsMapSprint[i] || 0) : (race.raceType === 'race' ? (pointsMapRace[i] || 0) : 0)
+    }));
+
+    return {
+        qualifying: race.raceType === 'qualifying' ? mappedResults : [],
+        sprint: race.raceType === 'sprint' ? mappedResults : [],
+        race: race.raceType === 'race' ? mappedResults : [],
+        fastestLap: undefined // Non fourni directement de façon simple par SportsDB
+    };
+}
 
 export async function getNextMotoGPRaces(): Promise<Race[]> {
   const events = await getSportsDBEvents();
@@ -157,33 +187,105 @@ export async function getMotoGPRaces(): Promise<Race[]> {
   return getMotoGPCalendar();
 }
 
+export async function getMotoGPTeams(): Promise<any[]> {
+  const data = await fetchFromSportsDB(`/search_all_teams.php?l=MotoGP`);
+  return data?.teams || [];
+}
+
 export async function getMotoGPStandings(): Promise<Standing[]> {
   const currentYear = new Date().getFullYear();
-  const data = await fetchFromSportsDB(`/lookuptable.php?l=${MOTOGP_LEAGUE_ID}&s=${currentYear}`);
+  let data = await fetchFromSportsDB(`/lookuptable.php?l=${MOTOGP_LEAGUE_ID}&s=${currentYear}`);
+
+  if (!data?.table || data.table.length === 0) {
+    const events = await getSportsDBEvents();
+    const finishedEvents = events
+      .filter((e: any) => e.strStatus === 'Match Finished' && e.strResult)
+      .sort((a: any, b: any) => new Date(b.dateEvent).getTime() - new Date(a.dateEvent).getTime());
+
+    if (finishedEvents.length > 0) {
+      const lastEvent = finishedEvents[0];
+      const resultText = lastEvent.strResult || '';
+
+      const standingsSection = resultText.split(/Championship standings|Rider Standing/i)[1];
+      if (standingsSection) {
+        const lines = standingsSection.split('\n').filter((l: string) => /^\d+/.test(l.trim()));
+        if (lines.length > 0) {
+          return lines.map((line: string): Standing => {
+            const parts = line.split('/').map(p => p.trim());
+            const pos = parseInt(parts[0]);
+            const name = parts[1] || 'Unknown';
+            const team = parts[2] || 'Independent';
+            const pts = parseInt(parts[3]) || 0;
+
+            const nameParts = name.split(' ');
+            return {
+              position: pos,
+              rider: {
+                id: name.toLowerCase().replace(/\s+/g, '-'),
+                firstName: nameParts[0],
+                lastName: nameParts.slice(1).join(' '),
+                number: 0,
+                code: name.substring(0, 3).toUpperCase(),
+                nationality: '',
+                team: {
+                  id: team.toLowerCase().replace(/\s+/g, '-'),
+                  name: team,
+                  shortName: team.substring(0, 3).toUpperCase(),
+                  color: '#ef4444'
+                },
+                color: '#ef4444'
+              },
+              points: pts,
+              wins: 0
+            };
+          });
+        }
+      }
+    }
+
+    data = await fetchFromSportsDB(`/lookuptable.php?l=${MOTOGP_LEAGUE_ID}&s=${currentYear - 1}`);
+  }
 
   if (data?.table?.length > 0) {
-    return data.table.map((s: any): Standing => ({
-      position: parseInt(s.intRank),
-      rider: {
-        id: s.idPlayer || s.strTeam,
-        firstName: s.strTeam.split(' ')[0],
-        lastName: s.strTeam.split(' ').slice(1).join(' '),
-        number: 0,
-        code: s.strTeam.substring(0, 3).toUpperCase(),
-        nationality: '',
-        team: { id: '', name: '', shortName: '', color: '#666' },
-        color: '#666'
-      },
-      points: parseInt(s.intPoints),
-      wins: parseInt(s.intWin)
-    }));
+    return data.table.map((s: any): Standing => {
+      const name = s.strTeam || s.strPlayer || 'Unknown Rider';
+      const parts = name.split(' ');
+      return {
+        position: parseInt(s.intRank) || 0,
+        rider: {
+          id: s.idPlayer || s.idTeam || name,
+          firstName: parts[0],
+          lastName: parts.slice(1).join(' '),
+          number: 0,
+          code: name.substring(0, 3).toUpperCase(),
+          nationality: '',
+          team: {
+            id: s.idTeam || '',
+            name: s.strTeam || 'Independent',
+            shortName: (s.strTeam || '').substring(0, 3).toUpperCase(),
+            color: '#ef4444'
+          },
+          color: '#ef4444'
+        },
+        points: parseInt(s.intPoints) || 0,
+        wins: parseInt(s.intWin) || 0
+      };
+    }).sort((a, b) => a.position - b.position);
   }
 
   return MOCK_STANDINGS;
 }
 
 export async function getMotoGPNews(): Promise<NewsItem[]> {
-  return MOCK_NEWS;
+  try {
+    const news = await fetchMotoGPNews();
+    if (news && news.length > 0) return news;
+  } catch (err) {
+    console.error('[API-Compat] Error loading news:', err);
+  }
+
+  const { MOTOGP_NEWS } = require('./news');
+  return MOTOGP_NEWS;
 }
 
 export async function getMotoGPSprintResults(): Promise<RaceResult[]> {
@@ -216,19 +318,6 @@ const MOCK_STANDINGS: Standing[] = [
   { position: 3, rider: { id: 'marquez', number: 93, firstName: 'Marc', lastName: 'Márquez', code: 'MAR', nationality: 'ESP', team: { id: 'g1', name: 'Gresini Racing MotoGP', shortName: 'Gresini', color: '#DC2626' }, color: '#DC2626' }, points: 392, wins: 3 },
 ];
 
-const MOCK_NEWS: NewsItem[] = [
-  {
-    id: '1',
-    title: 'MotoGP: Jorge Martín crowned 2024 World Champion',
-    excerpt: 'Jorge Martín secured his first MotoGP title after a consistent season.',
-    publishedAt: new Date().toISOString(),
-    source: 'MotoGP.com',
-    sourceUrl: 'https://www.motogp.com',
-    category: 'motogp',
-  }
-];
-
-// Fonctions legacy
 export async function getLastMotoGPSprint(): Promise<Race | null> { return null; }
 export async function getNextWSBKRace(): Promise<any> { return null; }
 export async function getNextWSBKRaces(): Promise<any[]> { return []; }

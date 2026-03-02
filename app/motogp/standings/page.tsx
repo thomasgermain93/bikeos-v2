@@ -30,57 +30,14 @@ function getTeamColor(teamName: string): string {
   return '#666666';
 }
 
-// Générer un classement complet de 20 pilotes basé sur les données existantes
-function generateFullStandings(baseStandings: Standing[]): Standing[] {
-  const additionalRiders = [
-    { firstName: 'Alex', lastName: 'Márquez', number: 73, team: 'Gresini Racing MotoGP', nationality: 'ESP' },
-    { firstName: 'Fabio', lastName: 'Quartararo', number: 20, team: 'Monster Energy Yamaha MotoGP', nationality: 'FRA' },
-    { firstName: 'Marco', lastName: 'Bezzecchi', number: 72, team: 'Pertamina Enduro VR46 Racing Team', nationality: 'ITA' },
-    { firstName: 'Franco', lastName: 'Morbidelli', number: 21, team: 'Prima Pramac Racing', nationality: 'ITA' },
-    { firstName: 'Jack', lastName: 'Miller', number: 43, team: 'Red Bull KTM Tech3', nationality: 'AUS' },
-    { firstName: 'Johann', lastName: 'Zarco', number: 5, team: 'LCR Honda', nationality: 'FRA' },
-    { firstName: 'Miguel', lastName: 'Oliveira', number: 88, team: 'Trackhouse Racing', nationality: 'POR' },
-    { firstName: 'Augusto', lastName: 'Fernández', number: 37, team: 'Red Bull KTM Tech3', nationality: 'ESP' },
-    { firstName: 'Takaaki', lastName: 'Nakagami', number: 30, team: 'LCR Honda', nationality: 'JPN' },
-    { firstName: 'Luca', lastName: 'Marini', number: 10, team: 'Repsol Honda Team', nationality: 'ITA' },
-  ];
-
-  const fullStandings = [...baseStandings];
-  
-  additionalRiders.forEach((rider, index) => {
-    const teamColor = getTeamColor(rider.team);
-    fullStandings.push({
-      position: baseStandings.length + index + 1,
-      rider: {
-        id: `rider-${rider.number}`,
-        number: rider.number,
-        firstName: rider.firstName,
-        lastName: rider.lastName,
-        code: rider.lastName.substring(0, 3).toUpperCase(),
-        nationality: rider.nationality,
-        team: {
-          id: `team-${rider.number}`,
-          name: rider.team,
-          shortName: rider.team.split(' ')[0],
-          color: teamColor,
-        },
-        color: teamColor,
-      },
-      points: 0,
-      wins: 0,
-    });
-  });
-
-  return fullStandings.slice(0, 20);
-}
-
 export default async function MotoGPStandingsPage() {
   const [standings, races] = await Promise.all([
     getMotoGPStandings(),
     getMotoGPRaces(),
   ]);
 
-  const fullStandings = generateFullStandings(standings);
+  const currentYear = new Date().getFullYear();
+  const fullStandings = standings;
   const nextRace = races.find((r: Race) => r.status === 'upcoming');
 
   return (
@@ -102,7 +59,7 @@ export default async function MotoGPStandingsPage() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <h1 className="text-3xl font-bold text-white tracking-tight">
-                  2026 Rider Standings
+                  {currentYear} Rider Standings
                 </h1>
                 <p className="text-zinc-500 mt-1">
                   FIM MotoGP World Championship — {fullStandings.length} Riders
@@ -230,10 +187,10 @@ export default async function MotoGPStandingsPage() {
           <div className="max-w-6xl mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-sm text-zinc-600">
-                © 2026 BikeOS. Live MotoGP Data.
+                © {currentYear} BikeOS. Live MotoGP Data.
               </p>
               <p className="text-sm text-zinc-600">
-                Data: Dorna Sports, PulseLive
+                Data provided by <a href="https://www.thesportsdb.com" target="_blank" className="hover:text-zinc-400 transition-colors underline">TheSportsDB API</a>
               </p>
             </div>
           </div>

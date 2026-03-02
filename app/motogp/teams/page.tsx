@@ -1,24 +1,36 @@
 import { Header } from '@/components/Header';
-import { TeamCard } from '@/components/TeamCard';
-import { getAllTeams, getAllDrivers, getConstructorStandings, Driver } from '@/data/api';
+import { getMotoGPTeams, getMotoGPStandings } from '@/data/api-compat';
 import Link from 'next/link';
 import { Trophy, Bike, Users, Star } from 'lucide-react';
 
 export const revalidate = 60;
 
 export default async function TeamsPage() {
-  const teams = getAllTeams();
-  const drivers = getAllDrivers();
-  const constructorStandings = getConstructorStandings();
+  const [teamsData, standings] = await Promise.all([
+    getMotoGPTeams(),
+    getMotoGPStandings()
+  ]);
 
-  // Trier les équipes par points constructeur
-  const sortedTeams = teams.map(team => {
-    const standing = constructorStandings.find(s => s.teamId === team.id);
+  const currentYear = new Date().getFullYear();
+
+  // Calculer les points constructeur
+  const teams = teamsData.map(team => {
+    const teamDrivers = standings.filter(s =>
+        s.rider.team.name.toLowerCase().includes(team.strTeam.toLowerCase()) ||
+        team.strTeam.toLowerCase().includes(s.rider.team.name.toLowerCase())
+    );
+
     return {
-      team,
-      points: standing?.points || 0,
-      wins: standing?.wins || 0,
-      rank: constructorStandings.findIndex(s => s.teamId === team.id) + 1 || 99,
+        id: team.idTeam,
+        name: team.strTeam,
+        constructor: team.strKeywords || 'MotoGP',
+        bike: team.strKeywords || 'MotoGP Bike',
+        nationality: team.strCountry,
+        countryCode: team.strCountry?.substring(0, 2).toUpperCase() || 'ES',
+        points: teamDrivers.reduce((acc, d) => acc + d.points, 0),
+        wins: teamDrivers.reduce((acc, d) => acc + d.wins, 0),
+        colors: { primary: '#ef4444' },
+        riders: teamDrivers.map(d => d.rider.id)
     };
   }).sort((a, b) => b.points - a.points);
 
@@ -31,14 +43,14 @@ export default async function TeamsPage() {
           <div className="max-w-6xl mx-auto px-6 py-12">
             <div className="flex items-center gap-3 mb-4">
               <span className="w-1 h-6 rounded-full bg-red-500"></span>
-              <span className="text-xs font-mono uppercase tracking-widest text-red-400">MotoGP 2026</span>
+              <span className="text-xs font-mono uppercase tracking-widest text-red-400">MotoGP {currentYear}</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold text-zinc-100 mb-3">
               Constructor Standings
             </h1>
             <p className="text-zinc-400 max-w-2xl">
-              All 11 teams competing in the 2026 MotoGP World Championship.
-              View team lineups, bikes, and constructor championship standings.
+              Teams competing in the {currentYear} MotoGP World Championship.
+              Constructor points calculated from rider results.
             </p>
           </div>
         </div>
@@ -51,7 +63,7 @@ export default async function TeamsPage() {
                 <Users className="w-4 h-4" />
                 <span className="text-xs uppercase tracking-wider">Teams</span>
               </div>
-              <div className="text-3xl font-mono font-bold text-zinc-100">11</div>
+              <div className="text-3xl font-mono font-bold text-zinc-100">{teams.length}</div>
             </div>
             <div className="p-4 rounded-xl bg-zinc-900 border border-[var(--border-card)]">
               <div className="flex items-center gap-2 text-zinc-500 mb-2">
@@ -94,9 +106,7 @@ export default async function TeamsPage() {
               </div>
 
               {/* Lignes */}
-              {sortedTeams.map(({ team, points, wins, rank }, index) => {
-                const teamDrivers = drivers.filter(d => team.riders.includes(d.id));
-
+              {teams.map((team, index) => {
                 return (
                   <div
                     key={team.id}
@@ -143,12 +153,12 @@ export default async function TeamsPage() {
 
                     <div className="sm:w-20 text-right flex items-center justify-between sm:block">
                       <span className="text-xs text-zinc-500 sm:hidden">Wins:</span>
-                      <span className="text-sm font-mono text-zinc-400">{wins}</span>
+                      <span className="text-sm font-mono text-zinc-400">{team.wins}</span>
                     </div>
 
                     <div className="sm:w-20 text-right flex items-center justify-between sm:block">
                       <span className="text-xs text-zinc-500 sm:hidden">Points:</span>
-                      <span className="text-lg font-mono font-bold text-zinc-200">{points}</span>
+                      <span className="text-lg font-mono font-bold text-zinc-200">{team.points}</span>
                     </div>
                   </div>
                 );
@@ -164,14 +174,26 @@ export default async function TeamsPage() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {sortedTeams.map(({ team, points }, index) => (
-                <TeamCard
-                  key={team.id}
-                  team={team}
-                  drivers={drivers}
-                  constructorPoints={points}
-                  rank={index + 1}
-                />
+              {teams.map((team, index) => (
+                <div key={team.id} className="p-6 border border-[var(--border-card)] rounded-xl bg-zinc-900 hover:border-zinc-700 transition-colors">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="w-1 h-12 rounded-full bg-red-500" />
+                        <div>
+                            <h3 className="text-sm font-bold text-zinc-100">{team.name}</h3>
+                            <p className="text-xs text-zinc-500">{team.bike}</p>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <div className="text-[10px] text-zinc-600 uppercase font-mono mb-1">Rank</div>
+                            <div className="text-xl font-bold text-zinc-300">#{index + 1}</div>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-[10px] text-zinc-600 uppercase font-mono mb-1">Points</div>
+                            <div className="text-xl font-bold text-red-500">{team.points}</div>
+                        </div>
+                    </div>
+                </div>
               ))}
             </div>
           </div>
@@ -182,10 +204,10 @@ export default async function TeamsPage() {
           <div className="max-w-6xl mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-sm text-zinc-600">
-                © 2026 BikeOS. MotoGP Team Data.
+                © {currentYear} BikeOS. MotoGP Team Data.
               </p>
               <p className="text-sm text-zinc-600">
-                Data: Dorna Sports
+                Data provided by <a href="https://www.thesportsdb.com" target="_blank" className="hover:text-zinc-400 transition-colors underline">TheSportsDB API</a>
               </p>
             </div>
           </div>

@@ -1,80 +1,29 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Header } from '@/components/Header';
 import { QualifyingResults } from '@/components/QualifyingResults';
 import { SprintResults } from '@/components/SprintResults';
 import { RaceResults } from '@/components/RaceResults';
-import {
-  getRoundById,
-  getRaceResults,
-} from '@/data/api';
-import { format, subDays, addHours } from 'date-fns';
-import { Trophy, Clock, MapPin, Calendar, ChevronLeft, ChevronRight, Info, Timer, Navigation2 } from 'lucide-react';
+import { format, subDays } from 'date-fns';
+import { Clock, MapPin, Calendar, ChevronLeft, ChevronRight, Info, Timer, Navigation2 } from 'lucide-react';
 import Link from 'next/link';
 
-interface RacePageProps {
+interface RacePageClientProps {
   params: { id: string };
+  initialRound: any;
+  initialRaceData: any;
 }
 
-export default function RacePage({ params }: RacePageProps) {
-  const [activeTab, setActiveTab] = useState<'qualifying' | 'sprint' | 'race'>('race');
-  const [round, setRound] = useState<any>(null);
-  const [raceData, setRaceData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+export default function RacePageClient({ params, initialRound: round, initialRaceData: raceData }: RacePageClientProps) {
+  const [activeTab, setActiveTab] = useState<'qualifying' | 'sprint' | 'race'>(() => {
+    if (raceData?.race?.length > 0) return 'race';
+    if (raceData?.sprint?.length > 0) return 'sprint';
+    if (raceData?.qualifying?.length > 0) return 'qualifying';
+    return 'race';
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const r = await getRoundById(params.id);
-        const rd = await getRaceResults(params.id);
-        setRound(r);
-        setRaceData(rd);
-        // Default to race tab, but if only sprint exists (unlikely here), switch
-        if (rd?.race?.length > 0) setActiveTab('race');
-        else if (rd?.sprint?.length > 0) setActiveTab('sprint');
-        else if (rd?.qualifying?.length > 0) setActiveTab('qualifying');
-      } catch (error) {
-        console.error("Error fetching race data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [params.id]);
-
-  if (loading) {
-    return (
-        <>
-          <Header />
-          <main className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-            <div className="flex flex-col items-center gap-4">
-                <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-                <div className="text-zinc-500 font-mono text-sm tracking-widest uppercase">Loading session data...</div>
-            </div>
-          </main>
-        </>
-      );
-  }
-
-  if (!round) {
-    return (
-      <>
-        <Header />
-        <main className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-zinc-100 mb-2">Race not found</h1>
-            <p className="text-zinc-500 mb-4">The race you are looking for does not exist or data is temporarily unavailable.</p>
-            <Link href="/motogp" className="text-red-400 hover:text-red-300 transition-colors inline-flex items-center gap-2">
-              <ChevronLeft className="w-4 h-4" /> Back to MotoGP
-            </Link>
-          </div>
-        </main>
-      </>
-    );
-  }
-
-  const raceDate = new Date(round.dates.race);
+  const raceDate = new Date(round.date);
   const hasSprint = raceData?.sprint && raceData.sprint.length > 0;
   const hasQualifying = raceData?.qualifying && raceData.qualifying.length > 0;
   const hasRace = raceData?.race && raceData.race.length > 0;
@@ -134,7 +83,7 @@ export default function RacePage({ params }: RacePageProps) {
                 </div>
                 <div>
                     <div className="text-zinc-500 text-[10px] uppercase font-mono tracking-wider">Location</div>
-                    <div className="text-zinc-200">{round.circuit.location}, {round.circuit.country}</div>
+                    <div className="text-zinc-200">{round.location}, {round.country}</div>
                 </div>
               </div>
               <div className="flex items-center gap-3 text-sm text-zinc-400">
@@ -152,7 +101,7 @@ export default function RacePage({ params }: RacePageProps) {
                 </div>
                 <div>
                     <div className="text-zinc-500 text-[10px] uppercase font-mono tracking-wider">Track</div>
-                    <div className="text-zinc-200 truncate max-w-[150px]">{round.circuit.name}</div>
+                    <div className="text-zinc-200 truncate max-w-[150px]">{round.circuit}</div>
                 </div>
               </div>
               <div className="flex items-center gap-3 text-sm text-zinc-400">
@@ -262,15 +211,15 @@ export default function RacePage({ params }: RacePageProps) {
                         <div className="space-y-4">
                             <div className="flex justify-between items-center pb-3 border-b border-zinc-800/50">
                                 <span className="text-zinc-400 text-sm">Track Name</span>
-                                <span className="text-zinc-100 font-medium">{round.circuit.name}</span>
+                                <span className="text-zinc-100 font-medium">{round.circuit}</span>
                             </div>
                             <div className="flex justify-between items-center pb-3 border-b border-zinc-800/50">
                                 <span className="text-zinc-400 text-sm">Location</span>
-                                <span className="text-zinc-100">{round.circuit.location}</span>
+                                <span className="text-zinc-100">{round.location}</span>
                             </div>
                             <div className="flex justify-between items-center">
                                 <span className="text-zinc-400 text-sm">Country</span>
-                                <span className="text-zinc-100">{round.circuit.country}</span>
+                                <span className="text-zinc-100">{round.country}</span>
                             </div>
                         </div>
                     </div>
