@@ -157,26 +157,46 @@ export async function getMotoGPRaces(): Promise<Race[]> {
   return getMotoGPCalendar();
 }
 
+export async function getMotoGPTeams(): Promise<any[]> {
+  // search_all_teams.php est plus fiable pour le MotoGP que lookup_all_teams.php
+  const data = await fetchFromSportsDB(`/search_all_teams.php?l=MotoGP`);
+  return data?.teams || [];
+}
+
 export async function getMotoGPStandings(): Promise<Standing[]> {
   const currentYear = new Date().getFullYear();
-  const data = await fetchFromSportsDB(`/lookuptable.php?l=${MOTOGP_LEAGUE_ID}&s=${currentYear}`);
+  let data = await fetchFromSportsDB(`/lookuptable.php?l=${MOTOGP_LEAGUE_ID}&s=${currentYear}`);
+
+  // Si pas de données pour l'année en cours, on essaie l'année précédente
+  if (!data?.table || data.table.length === 0) {
+    data = await fetchFromSportsDB(`/lookuptable.php?l=${MOTOGP_LEAGUE_ID}&s=${currentYear - 1}`);
+  }
 
   if (data?.table?.length > 0) {
-    return data.table.map((s: any): Standing => ({
-      position: parseInt(s.intRank),
-      rider: {
-        id: s.idPlayer || s.strTeam,
-        firstName: s.strTeam.split(' ')[0],
-        lastName: s.strTeam.split(' ').slice(1).join(' '),
-        number: 0,
-        code: s.strTeam.substring(0, 3).toUpperCase(),
-        nationality: '',
-        team: { id: '', name: '', shortName: '', color: '#666' },
-        color: '#666'
-      },
-      points: parseInt(s.intPoints),
-      wins: parseInt(s.intWin)
-    }));
+    return data.table.map((s: any): Standing => {
+      const name = s.strTeam || s.strPlayer || 'Unknown Rider';
+      const parts = name.split(' ');
+      return {
+        position: parseInt(s.intRank) || 0,
+        rider: {
+          id: s.idPlayer || s.idTeam || name,
+          firstName: parts[0],
+          lastName: parts.slice(1).join(' '),
+          number: 0,
+          code: name.substring(0, 3).toUpperCase(),
+          nationality: '',
+          team: {
+            id: s.idTeam || '',
+            name: s.strTeam || 'Independent',
+            shortName: (s.strTeam || '').substring(0, 3).toUpperCase(),
+            color: '#ef4444'
+          },
+          color: '#ef4444'
+        },
+        points: parseInt(s.intPoints) || 0,
+        wins: parseInt(s.intWin) || 0
+      };
+    }).sort((a, b) => a.position - b.position);
   }
 
   return MOCK_STANDINGS;

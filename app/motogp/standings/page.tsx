@@ -80,6 +80,7 @@ export default async function MotoGPStandingsPage() {
     getMotoGPRaces(),
   ]);
 
+  const currentYear = new Date().getFullYear();
   const fullStandings = generateFullStandings(standings);
   const nextRace = races.find((r: Race) => r.status === 'upcoming');
 
@@ -102,7 +103,7 @@ export default async function MotoGPStandingsPage() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <h1 className="text-3xl font-bold text-white tracking-tight">
-                  2026 Rider Standings
+                  {currentYear} Rider Standings
                 </h1>
                 <p className="text-zinc-500 mt-1">
                   FIM MotoGP World Championship — {fullStandings.length} Riders
@@ -230,10 +231,10 @@ export default async function MotoGPStandingsPage() {
           <div className="max-w-6xl mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-sm text-zinc-600">
-                © 2026 BikeOS. Live MotoGP Data.
+                © {currentYear} BikeOS. Live MotoGP Data.
               </p>
               <p className="text-sm text-zinc-600">
-                Data: Dorna Sports, PulseLive
+                Data provided by <a href="https://www.thesportsdb.com" target="_blank" className="hover:text-zinc-400 transition-colors underline">TheSportsDB API</a>
               </p>
             </div>
           </div>

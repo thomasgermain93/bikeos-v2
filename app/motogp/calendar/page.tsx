@@ -7,6 +7,7 @@ export const revalidate = 60;
 
 export default async function MotoGPCalendarPage() {
   const races = await getMotoGPRaces();
+  const currentYear = new Date().getFullYear();
 
   // Filtrer les courses principales (pas les sprints)
   const mainRaces = races.filter(r => r.raceType !== 'sprint');
@@ -35,13 +36,13 @@ export default async function MotoGPCalendarPage() {
                 MotoGP
               </Link>
               <span className="text-zinc-600">/</span>
-              <span className="text-zinc-300">2026 Calendar</span>
+              <span className="text-zinc-300">{currentYear} Calendar</span>
             </nav>
 
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <h1 className="text-3xl font-bold text-white tracking-tight">
-                  2026 Race Calendar
+                  {currentYear} Race Calendar
                 </h1>
                 <p className="text-zinc-500 mt-1">
                   FIM MotoGP World Championship — {mainRaces.length} Rounds
@@ -162,10 +163,10 @@ export default async function MotoGPCalendarPage() {
           <div className="max-w-6xl mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-sm text-zinc-600">
-                © 2026 BikeOS. Live MotoGP Data.
+                © {currentYear} BikeOS. Live MotoGP Data.
               </p>
               <p className="text-sm text-zinc-600">
-                Data: Dorna Sports, PulseLive
+                Data provided by <a href="https://www.thesportsdb.com" target="_blank" className="hover:text-zinc-400 transition-colors underline">TheSportsDB API</a>
               </p>
             </div>
           </div>
